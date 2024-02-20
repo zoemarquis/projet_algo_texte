@@ -23,5 +23,5 @@ def fetch(ids, regions):
             for feature in record.features:
                 for region in regions:
                     if feature.type == region:
-                        analyse.analyse_bornes(str(feature.location)[1:-4], len(record.seq))
+                        analyse.analyse_bornes(str(feature.location), len(record.seq))
     return 0

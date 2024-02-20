@@ -1,5 +1,5 @@
 def transforme_bornes(txt, borne_min, borne_max):
-    tmp = txt.split(':')
+    tmp = txt[1:-4].split(':')
     if len(tmp) != 2:
         return 0
     try:
@@ -9,7 +9,7 @@ def transforme_bornes(txt, borne_min, borne_max):
         print("Parsing Error")
         return 0
 
-    if borne_inf < borne_sup and borne_inf > borne_min and borne_sup < borne_max:
+    if borne_min < borne_inf < borne_sup < borne_max:
         print("borne_inf", borne_inf, " borne_sup", borne_sup)
         return [(borne_inf, borne_sup)]
     else:

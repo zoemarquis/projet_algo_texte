@@ -1,95 +1,69 @@
 import csv
-import requests
 import os
-import traceback
+import requests
+from datetime import date
+from dateutil import parser
 
-request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt")
+# Date de notre arborescence
+tree_date = None
 
-set_kingdom = {}
-path_arborescence = "Arborescence_GenBank/"
-#On sauvegarde le fichier overview.txt
-
-with open("overview.txt", "wb") as f:
-    f.write(request.content)
-
-# On lit le fichier pour récupérer l'arborescence
-with open("overview.txt", "r") as overview_file:
-    file = csv.reader(overview_file, delimiter="\t")
-    next(file)
-    for row in file:
-        kingdom, group, subgroup = row[1], row[2], row[3]
-        # On cherche l'unicité des éléments, set_kingdom est un dictionnaire dont les valeurs sont des dictionnaires (groups)
-        set_kingdom.setdefault(kingdom, {})
-        # Même chose avec les groupes, qui auront comme valeur un set de sous-groupes
-        set_kingdom[kingdom].setdefault(group, set())
-        set_kingdom[kingdom][group].add(subgroup)
-
-generation_dossier = False;
-generation_group = False;
-
-# Est ce qu'on met tous les dossiers dans un sous dossier??
-# Si oui il faut voir comment l'implementer.
-# Fait ici mais a voir pour la maj
-if not os.path.exists(path_arborescence):
-    os.mkdir(path_arborescence)
-
-# Affichage (temporaire)
-for kingdom, groups in set_kingdom.items():
-    if not os.path.exists(path_arborescence + kingdom):
-        # Simplement pour un affichage visuel qu'on cree l'arborescence
-        if not generation_dossier:
-            print(f"\033[92mGeneration de l'arborescence...\033[0m")
-            generation_dossier = True
-
-        try:
-            os.mkdir(path_arborescence + kingdom)
-        except OSError as e:
-            print(f"Erreur lors de la creation du dossier '{kingdom}': {e}")
-
-        # Affichage du dossier a generer
-        print(f"Generation du dossier '{path_arborescence + kingdom}' ...done !")
-
-    # else:
-        # A voir pour la mise a jour des dossiers/fichiers ensuite
-        # print(f"Le dossier '{path_arborescence + kingdom}' existe deja")
-
-    # Generation et affichage des groupes
-    for group, subgroups in groups.items():
-        path_group = path_arborescence + os.path.join(kingdom, group)
-        path_group = path_group.replace(" ", "_")
-        if not os.path.exists(path_group):
-            if not generation_dossier:
-                print(f"\033[92mGeneration de l'arborescence...\033[0m")
-                generation_dossier = True
-            if not generation_group:
-                print(f"\t\033[92mGeneration (partielle ou complete) des groupes de '{kingdom}'...\033[0m")
-                generation_group = True
-
-            # print(path_arborescence +  os.path.join(kingdom, group))
-            try:
-                os.mkdir(path_group)
-            except OSError as e:
-                traceback.print_exc()
-                print(f"Erreur lors de la creation du groupe '{group}': {e}")
-
-            # Affichage du dossier a generer
-            # print(f"Generation du dossier '{group}' ...done !")
-
-        # else:
-            # print(f"Groupe existe deja '{path_group}' ")
-
-        # Generation et affichage des sous-groupes
-        # for subgroup in subgroups:
-        #     print("\t\t" + subgroup)
+# Dictionnaire des Kingdoms et de leur fichier (NC)
+kingdoms_file = {
+    "eukaryota": "eukaryota.txt",
+    "bacteria": "bacteria.txt",
+    "viruses": "viruses.txt",
+    "archaea": "archaea.txt"
+}
 
 
-    if generation_group:
-        print(f"--\033[92mFin de la generation des groupes de '{kingdom}'\033[0m")
-        generation_group = False
+# Récupération des fichiers contenant la liste des séquences NC pour chaque Kingdom
+def write_tree_files():
+    global tree_date
 
-if generation_dossier:
-    print("\033[92mFin de la generation de l'arborescence.\033[0m")
+    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Eukaryota.ids")
+    with open("eukaryota.txt", "wb") as f:
+        f.write(request.content)
+    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Bacteria.ids")
+    with open("bacteria.txt", "wb") as f:
+        f.write(request.content)
+    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Viruses.ids")
+    with open("viruses.txt", "wb") as f:
+        f.write(request.content)
+    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Archaea.ids")
+    with open("archaea.txt", "wb") as f:
+        f.write(request.content)
 
 
+# Renvoie un booléen, True s'il faut mettre l'arbre à jour, False sinon
+def update():
+    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt")
+    with open("overview.txt", "wb") as f:
+        f.write(request.content)
+    last_modified = parser.parse(request.headers["last-modified"])
+    return tree_date is None or last_modified > tree_date
 
 
+# Fonction principale de création de l'arborescence
+def get_tree():
+    global kingdoms_file, tree_date
+    if update():
+        # Mise à jour de la date de notre arborescence si mise à jour
+        tree_date = date.today()
+        write_tree_files()
+        kingdom_nc = {}
+        # Pour chaque royaume on récupère le nom des organismes (row[5]) ayant une séquence NC
+        for kingdom, filename in kingdoms_file.items():
+            with open(filename, "r") as file:
+                reader = csv.reader(file, delimiter="\t")
+                kingdom_nc[kingdom] = [row[5] for row in reader]
+
+        # Pour tout organisme dans le fichier overview, s'il contient un NC, on l'ajoute à notre arborescence
+        with open("overview.txt", "r") as overview_file:
+            file = csv.reader(overview_file, delimiter="\t")
+            for row in file:
+                organism, kingdom, group, subgroup = row[0], row[1], row[2], row[3]
+                for k, v in kingdom_nc.items():
+                    if organism in v:
+                        # Path Result/Kingdom/Group/Subgroup/Organism
+                        directory = os.path.join("Results", kingdom, group, subgroup, organism)
+                        os.makedirs(directory, exist_ok=True)

@@ -1,11 +1,10 @@
 import csv
 import os
+import shutil
 import requests
 from datetime import date
 from dateutil import parser
-
-# Date de notre arborescence
-tree_date = None
+from utils.fio import request_kingdom
 
 # Dictionnaire des Kingdoms et de leur fichier (NC)
 kingdoms_file = {
@@ -17,45 +16,52 @@ kingdoms_file = {
 
 
 # Récupération des fichiers contenant la liste des séquences NC pour chaque Kingdom
-def write_tree_files():
-    global tree_date
-
-    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Eukaryota.ids")
-    with open("eukaryota.txt", "wb") as f:
-        f.write(request.content)
-    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Bacteria.ids")
-    with open("bacteria.txt", "wb") as f:
-        f.write(request.content)
-    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Viruses.ids")
-    with open("viruses.txt", "wb") as f:
-        f.write(request.content)
-    request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/Archaea.ids")
-    with open("archaea.txt", "wb") as f:
-        f.write(request.content)
+def write_kingdom_files():
+    for kingdom in kingdoms_file.keys():
+        request_kingdom(kingdom)
 
 
 # Renvoie un booléen, True s'il faut mettre l'arbre à jour, False sinon
 def update():
     request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt")
+
     with open("overview.txt", "wb") as f:
         f.write(request.content)
+    # On récupère la date de la dernière modification de la liste des organismes de la base de données
     last_modified = parser.parse(request.headers["last-modified"])
-    return tree_date is None or last_modified > tree_date
+
+    # On récupère la date de notre arborescence
+    try:
+        with open(".date", "r") as f:
+            tree_date = f.read()
+    except FileNotFoundError:
+        return True
+
+    return last_modified.date() > parser.parse(tree_date).date()
 
 
 # Fonction principale de création de l'arborescence
 def get_tree():
-    global kingdoms_file, tree_date
+    global kingdoms_file
+
     if update():
-        # Mise à jour de la date de notre arborescence si mise à jour
-        tree_date = date.today()
-        write_tree_files()
+        # Mise à jour de la date de notre arborescence
+        with open(".date", "wb") as f:
+            f.write(str(date.today()).encode('utf-8'))
+        write_kingdom_files()
         kingdom_nc = {}
-        # Pour chaque royaume on récupère le nom des organismes (row[5]) ayant une séquence NC
+
+        # Pour chaque royaume on récupère le nom des organismes (row[5]) ayant au moins une séquence NC
         for kingdom, filename in kingdoms_file.items():
             with open(filename, "r") as file:
                 reader = csv.reader(file, delimiter="\t")
                 kingdom_nc[kingdom] = [row[5] for row in reader]
+
+        # On supprime l'arborescence (si elle existe) pour ne pas laisser d'organisme qui n'existe plus
+        try:
+            shutil.rmtree('./Results')
+        except FileNotFoundError:
+            pass
 
         # Pour tout organisme dans le fichier overview, s'il contient un NC, on l'ajoute à notre arborescence
         with open("overview.txt", "r") as overview_file:

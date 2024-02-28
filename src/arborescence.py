@@ -4,6 +4,9 @@ import shutil
 import requests
 from datetime import date
 from dateutil import parser
+
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.fio import request_kingdom
 
 # Dictionnaire des Kingdoms et de leur fichier (NC)
@@ -73,3 +76,5 @@ def get_tree():
                         # Path Result/Kingdom/Group/Subgroup/Organism
                         directory = os.path.join("Results", kingdom, group, subgroup, organism)
                         os.makedirs(directory, exist_ok=True)
+
+get_tree()

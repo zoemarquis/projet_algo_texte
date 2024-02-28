@@ -14,7 +14,7 @@ def get_path_from_organism(organismRecherche):
         for row in file:
             organism, kingdom, group, subgroup = row[0], row[1], row[2], row[3]
             if organismRecherche == organism:
-                return kingdom, group, subgroup
+                return f"Results/{kingdom}/{group}/{subgroup}/{organism}"
 
 def get_ids(organismRecherche, kingdom):
     listeIds = []

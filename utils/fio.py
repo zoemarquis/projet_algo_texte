@@ -7,7 +7,6 @@ def request_kingdom(kingdom):
     with open(kingdom + ".txt", "wb") as f:
         f.write(request.content)
 
-
 def get_path_from_organism(organismRecherche):
     
     with open("../src/overview.txt", "r") as overview_file:

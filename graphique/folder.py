@@ -17,8 +17,8 @@ def create_folder_structure(root_dir):
 class FolderTree(tk.Frame):
     def __init__(self, master, folder_structure, labelframe_recap, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.recap = tk.Label(labelframe_recap, text="Selected Folder: None", foreground="white")
-        self.recap.pack()
+        self.recap = tk.Label(labelframe_recap, text="Selected Folder: None", foreground="white", anchor="w")
+        self.recap.pack(fill="x")
 
         self.tree = ttk.Treeview(self)
         self.tree = ttk.Treeview(self, columns=("fullpath",), show="tree")

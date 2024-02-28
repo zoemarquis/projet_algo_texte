@@ -5,6 +5,11 @@ from tkinter import ttk
 import folder
 import theme 
 
+def change_label_frame_font(label_frame, font_name, font_size):
+    style = ttk.Style()
+    style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))
+
+
 # Lien de la case "All" avec la fonction toggle_all
 def all_command():
     toggle_all(variables["All"], variables, checkboxes)
@@ -40,28 +45,28 @@ def update_progress():
 if __name__ == "__main__":
     fenetre = tk.Tk()
 
+    style = ttk.Style(fenetre)
+    style.configure(".", font=("Comic Sans MS", 12))
+
     fenetre.title("GENBANK PARSER")
     fenetre.geometry("1300x800")
 
     fenetre.update()
-    # Récupére la largeur
     width = fenetre.winfo_width() 
-    # Récupére la hauteur
     height = fenetre.winfo_height()
 
-    frame_global = tk.Frame(fenetre)
-    frame_global.pack(expand = 1, fill = "both")
+    frame_root = tk.Frame(fenetre)
+    frame_root.pack(expand = 1, fill = "both")
 
-    label = tk.Label(frame_global, text="Acquisition des régions fonctionnelles dans les génomes", fg="white", justify="left")
+    label = tk.Label(frame_root, text="Acquisition des régions fonctionnelles dans les génomes", fg="white", justify="left")
     label.grid(row=0, column=0, sticky="w")
 
-    frame_principal = tk.Frame(frame_global)
-    #frame_principal.pack(expand = 1, fill = "both")
+    frame_principal = tk.Frame(frame_root)
     frame_principal.grid(row=1, column=0, sticky="nsew")
 
-    frame_global.rowconfigure(0, weight=1)
-    frame_global.rowconfigure(1, weight=10)
-    frame_global.columnconfigure(0, weight=1)
+    frame_root.rowconfigure(0, weight=1)
+    frame_root.rowconfigure(1, weight=10)
+    frame_root.columnconfigure(0, weight=1)
 
     ## gauche - droite
     frame_principal.columnconfigure(0, weight=3)
@@ -70,7 +75,7 @@ if __name__ == "__main__":
     frame_principal.rowconfigure(1, weight=1)
 
     ## contenu de gauche
-    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence")
+    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised")
     frame_arbo.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
     frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif")
@@ -85,7 +90,7 @@ if __name__ == "__main__":
     frame_bas.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
     ### contenu de haut
-    frame_cases = tk.LabelFrame(frame_haut, text="cases")
+    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised")
     frame_cases.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
     #case à cocher
     regions = ["All", "CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
@@ -126,7 +131,7 @@ if __name__ == "__main__":
     # ## contenu de bas
     frame_loadbar = tk.Frame(frame_bas)
     frame_loadbar.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-    label = tk.Label(frame_loadbar, text="loadbar")
+    label = tk.Label(frame_loadbar, text="loadbar") 
 
     # Configuration initiale de la progression
     progress_running = False
@@ -141,7 +146,12 @@ if __name__ == "__main__":
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
 
-
+    style = ttk.Style()
+    style.theme_use("classic")  # Changer le thème du style, vous pouvez utiliser "clam", "alt", "default", "classic", etc.
+    
+    # Changer l'apparence du Treeview
+    style.configure("Treeview", background="#d3d3d3", foreground="black", rowheight=25, fieldbackground="#d3d3d3")
+    style.map("Treeview", background=[('selected', '#347083')])
 
     root_dir = "./Results"
     folder_structure = folder.create_folder_structure(root_dir)
@@ -149,6 +159,6 @@ if __name__ == "__main__":
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)
     folder_tree.pack(expand=True, fill=tk.BOTH)
 
-    theme.configurer_background(frame_global)
+    theme.configurer_background(frame_root)
 
     fenetre.mainloop()

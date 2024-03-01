@@ -4,6 +4,7 @@ from tkinter import ttk
 
 import folder
 import theme 
+import terminal
 
 def change_label_frame_font(label_frame, font_name, font_size):
     style = ttk.Style()
@@ -93,8 +94,8 @@ if __name__ == "__main__":
     frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised")
     frame_cases.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
     #case à cocher
-    regions = ["All", "CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
-               "Intron", "Telomère", "Mobile élément", "tRNA"]
+    regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
+               "Intron", "Telomère", "Mobile élément", "tRNA", "All"]
 
     # Dictionnaires pour stocker les variables et les widgets des cases à cocher
     variables = {}
@@ -103,15 +104,26 @@ if __name__ == "__main__":
     # Zone de saisie
     zone_entre = tk.StringVar()
     frame_saisie = tk.Frame(frame_cases)
-    frame_saisie.pack()
+    frame_saisie.grid(row=0, column=0)
+    #frame_saisie.pack()
     zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
-    zone_texte.pack(padx=10, pady=10)
+    zone_texte.pack(padx=0, pady=0)
 
     # Création des cases à cocher
+    r = 1
+    c = 0
     for i in regions:
         var = tk.BooleanVar(value=False)
         cb = tk.Checkbutton(frame_cases, text=i, variable=var)
-        cb.pack(anchor="w")
+        #cb.pack(anchor="w")
+        if i == "All":
+            cb.grid(row=2, column=5)
+        else :
+            cb.grid(row=r, column=c)
+        c+=1
+        if c >= 5 :
+            c = 0
+            r += 1
         variables[i] = var
         checkboxes[i] = cb
 
@@ -124,6 +136,9 @@ if __name__ == "__main__":
     frame_log = tk.LabelFrame(frame_haut, text="log")
     frame_log.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
+    term = terminal.Terminal(frame_log, bg="black")
+    term.pack(fill="both", expand=True)
+    
     frame_haut.rowconfigure(0, weight=1)
     frame_haut.rowconfigure(1, weight=1)
     frame_haut.columnconfigure(0, weight=1)
@@ -140,7 +155,7 @@ if __name__ == "__main__":
     loadbar.pack( fill='x', expand=True, padx=10, pady=10)
     loadbar.pack(ipady=10)
     bouton = tk.Button(frame_loadbar, text="Start", command=toggle_progress)
-    bouton.pack(side='bottom',fill="x",expand=True, padx=10, pady=10)
+    bouton.pack(side='bottom', padx=10, pady=10) #, fill="x", expand=True,)
 
     frame_bas.rowconfigure(0, weight=1)
     frame_bas.rowconfigure(1, weight=1)

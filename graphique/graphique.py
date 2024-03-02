@@ -69,20 +69,51 @@ if __name__ == "__main__":
     height = fenetre.winfo_height()
     
 ########### MODIF CHAIMA
-    def on_info_click(event):
-        info_menu = tk.Menu(fenetre, tearoff=0)
-        info_menu.add_command(label="Martin DENIAU")
-        info_menu.add_command(label="Chaïma JAIDANE")
-        info_menu.add_command(label="Charlotte KRUZIC")
-        info_menu.add_command(label="Zoé MARQUIS")
-        info_menu.add_command(label="Valentin MASSEBEUF")
-        info_menu.add_command(label="Clément OBERHAUSER")
-        info_menu.add_separator()
-        info_menu.add_command(label="Fermer", command=lambda: info_menu.unpost())
-        try:
-            info_menu.tk_popup(event.x_root, event.y_root)
-        finally:
-            info_menu.grab_release()
+    class ToolTip(object):
+        def __init__(self, widget):
+            self.widget = widget
+            self.tipwindow = None
+            self.x = self.y = 0
+            self.text = ""
+
+        def show_tip(self, text):
+            "Affiche le texte du tooltip"
+            self.text = text
+            if self.tipwindow or not self.text:
+                return
+            x = self.widget.winfo_rootx() + 20  # Position horizontale légèrement à droite du widget
+            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20  # Position verticale juste en dessous
+            self.tipwindow = tw = tk.Toplevel(self.widget)
+            tw.wm_overrideredirect(True)
+            tw.wm_geometry("+%d+%d" % (x, y))
+            label = tk.Label(tw, text=self.text, justify=tk.LEFT,
+                            background="lightyellow", relief=tk.SOLID, borderwidth=1,
+                            font=("Arial", "10", "normal"))
+            label.pack(ipadx=4, ipady=4)
+
+            # Ajuster la position pour s'assurer que l'infobulle ne dépasse pas du cadre de la fenêtre
+            tw.update_idletasks()
+            tw_width = tw.winfo_width()
+            tw_height = tw.winfo_height()
+            screen_width = tw.winfo_screenwidth()
+            screen_height = tw.winfo_screenheight()
+            if x + tw_width > screen_width:
+                x = screen_width - tw_width
+            if y + tw_height > screen_height:
+                y = screen_height - tw_height
+            tw.wm_geometry("+%d+%d" % (x, y))
+
+        def hide_tip(self):
+            if self.tipwindow:
+                self.tipwindow.destroy()
+                self.tipwindow = None
+
+    def enter(event):
+        tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
+
+    def leave(event):
+        tooltip.hide_tip()
+
 ########### FIN MODIF CHAIMA
     
     frame_root = tk.Frame(fenetre)
@@ -95,10 +126,14 @@ if __name__ == "__main__":
     label.grid(row=0, column=0, sticky="ew")
 
 ######### MODIF CHAIMA
-    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
-                        width=2, height=1, borderwidth=2, relief="solid")
+
+    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="black", bg="white",
+                      width=2, height=1, borderwidth=2, relief="solid")
     label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
-    label_info.bind("<Button-1>", on_info_click)
+
+    tooltip = ToolTip(label_info)
+    label_info.bind("<Enter>", enter)
+    label_info.bind("<Leave>", leave)
 ######### FIN MODIF CHAIMA
 
     frame_titre.rowconfigure(0, weight=1)
@@ -264,7 +299,7 @@ if __name__ == "__main__":
     style.configure("Treeview", background="#d3d3d3", foreground="black", rowheight=25, fieldbackground="#d3d3d3")
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "./Results"
+    root_dir = "../src/Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)

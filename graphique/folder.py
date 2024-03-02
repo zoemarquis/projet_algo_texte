@@ -77,14 +77,16 @@ class FolderTree(tk.Frame):
         style.configure("Custom.Treeview", background="#d3d3d3", fieldbackground="#d3d3d3", foreground="black")
         style.map("Custom.Treeview", background=[('selected', '#347083')])
 
-        self.recap_text = tk.Text(labelframe_recap, height=10, width=50, background=theme.couleur_frame)
-        self.recap_text.pack(side=tk.LEFT, fill="both", expand=True)
-        self.recap_scrollbar = tk.Scrollbar(labelframe_recap, command=self.recap_text.yview)
-        self.recap_scrollbar.pack(side=tk.RIGHT, fill="y")
+        self.recap_text = labelframe_recap
+        #self.recap_text = tk.Label(labelframe_recap)
+        #self.recap_text.pack()
+        #self.recap_text.pack(side=tk.LEFT, fill="both", expand=True)
+        #self.recap_scrollbar = tk.Scrollbar(labelframe_recap, command=self.recap_text.yview)
+        #self.recap_scrollbar.pack(side=tk.RIGHT, fill="y")
         # change_scrollbar_color(self.recap_scrollbar, "white", "white", "white")
 
-        self.recap_text.configure(yscrollcommand=self.recap_scrollbar.set)
-        self.recap_text.bind("<Key>", lambda e: "break")  # Désactiver l'édition
+        #self.recap_text.configure(yscrollcommand=self.recap_scrollbar.set)
+        #self.recap_text.bind("<Key>", lambda e: "break")  # Désactiver l'édition
 
         # Utilisation du style personnalisé pour le Treeview
         self.tree = ttk.Treeview(self, style="Custom.Treeview", selectmode="none", columns=("fullpath",), show="tree")
@@ -115,10 +117,16 @@ class FolderTree(tk.Frame):
 
     def update_recap(self):
         # Effacer le contenu précédent et afficher les éléments sélectionnés
-        self.recap_text.delete('1.0', tk.END)
-        for item_id in self.selected_items:
-            folder_name = self.tree.item(item_id)['text']
-            self.recap_text.insert(tk.END, folder_name + '\n')
+        #self.recap_text.delete('1.0', tk.END)
+        recap_text = ""
+        for i,option in enumerate(self.selected_items):
+            if i % 2 == 0:  # Si c'est le début d'une nouvelle ligne
+                if i != 0:  # Si ce n'est pas la première ligne
+                    recap_text += ", \n"  # Ajouter un saut de ligne pour séparer les lignes
+            else:
+                recap_text += ", "  # Ajouter une virgule pour séparer les options
+            recap_text += self.tree.item(option, "text")
+        self.recap_text.config(text="Arborescence:\n"+recap_text)
 
     def populate_tree(self, folder_structure, parent=""):
         for folder in folder_structure:

@@ -6,6 +6,19 @@ import folder
 import theme 
 import terminal
 
+def update_recap(check_vars, options, recap_label):
+    selected_options = [option for option in options if check_vars[option].get()]
+    recap_text = ""
+    for i, option in enumerate(selected_options):
+        if i % 2 == 0:  # Si c'est le début d'une nouvelle ligne
+            if i != 0:  # Si ce n'est pas la première ligne
+                recap_text += ", \n"  # Ajouter un saut de ligne pour séparer les lignes
+        
+        else:
+            recap_text += ", "  # Ajouter une virgule pour séparer les options
+        recap_text += option  # Ajouter l'option au texte du récapitulatif
+    recap_label.config(text="Régions:\n"+recap_text)
+
 def change_cursor(event):
     event.widget.config(cursor="hand2")  # Change le curseur en main pointant
 
@@ -126,9 +139,8 @@ if __name__ == "__main__":
     label.grid(row=0, column=0, sticky="ew")
 
 ######### MODIF CHAIMA
-    
     label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
-                        width=2, height=1, borderwidth=2, relief="solid")
+                        width=2, height=1, borderwidth=2)
     label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
     
     tooltip = ToolTip(label_info)
@@ -159,6 +171,16 @@ if __name__ == "__main__":
     frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
+    recap_arbo = tk.Label(frame_recap, text="Arborescence:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
+    recap_arbo.grid(row=0, column=0, sticky="nsew")
+
+    recap_cases = tk.Label(frame_recap, text="Régions:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
+    recap_cases.grid(row=0, column=1, sticky="nsew")
+
+    frame_recap.rowconfigure(0, weight=1)
+    frame_recap.columnconfigure(0, weight=1)
+    frame_recap.columnconfigure(1, weight=1)
+
     ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
     ## haut = choix + log, bas = progress bar + bouton
     frame_haut = tk.Frame(frame_principal)
@@ -185,6 +207,8 @@ if __name__ == "__main__":
     # Dictionnaires pour stocker les variables et les widgets des cases à cocher
     variables = {}
     checkboxes = {}
+    check_vars = []
+    check_vars = {option: tk.BooleanVar(value=False) for option in regions}
 
     # Zone de saisie
     zone_entre = tk.StringVar()
@@ -194,26 +218,6 @@ if __name__ == "__main__":
     zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
     zone_texte.pack(expand=1)
    
-    # # Création des cases à cocher
-    # r = 1
-    # c = 0
-    # for i in regions:
-    #     var = tk.BooleanVar(value=False)
-    #     cb = tk.Checkbutton(frame_cases, text=i, variable=var)
-    #     #cb.pack(anchor="w")
-    #     if i == "All":
-    #         cb.grid(row=2, column=5)
-    #     else :
-    #         cb.grid(row=r, column=c)
-    #     c+=1
-    #     if c >= 5 :
-    #         c = 0
-    #         r += 1
-    #     variables[i] = var
-    #     checkboxes[i] = cb
-
-    # variables["All"].trace("w", lambda *args: all_command())
-
 ############# MODIF CHAIMA
     def configure_grid():
         frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
@@ -231,6 +235,7 @@ if __name__ == "__main__":
         for region in regions:
             var = tk.BooleanVar(value=False)
             variables[region] = var
+            #check_vars.append(var)
 
             if region == "All":  # Traiter "All" séparément
                 cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
@@ -238,7 +243,7 @@ if __name__ == "__main__":
                 cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
                 checkboxes[region] = cb
             else:
-                cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], command=lambda: update_recap(check_vars, regions, recap_cases))#, background=theme.couleur_frame) #,
                 cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
                 checkboxes[region] = cb
 
@@ -280,9 +285,15 @@ if __name__ == "__main__":
     # Configuration initiale de la progression
     progress_running = False
 
-    loadbar = ttk.Progressbar(frame_bas, orient='horizontal', mode='determinate')
-    loadbar.pack(fill='x', expand=True)
-    loadbar.pack(ipady=8)
+    style = ttk.Style()
+    style.theme_use('clam')  # Choix d'un thème, ici 'clam'
+    style.configure("Custom.Horizontal.TProgressbar", troughcolor=theme.couleur_frame, background="lightblue")  # Personnalisation des couleurs
+
+
+    loadbar = ttk.Progressbar(frame_bas, orient='horizontal', mode='determinate', style="Custom.Horizontal.TProgressbar")
+    loadbar.grid(row=0, column=0, sticky="ewns",pady = (0,30))
+    #loadbar.pack(fill='x', expand=True)
+    #loadbar.pack(ipady=8)
 
     #style = ttk.Style()
     style.map("Custom.TButton",
@@ -291,7 +302,7 @@ if __name__ == "__main__":
               relief = "groove")
 
     bouton = ttk.Button(frame_bas, text="Start", command=toggle_progress, style="Custom.TButton")
-    bouton.pack()
+    bouton.grid(row=1, column=0)
     bouton.bind("<Enter>", change_cursor)
     
     frame_bas.rowconfigure(0, weight=1)
@@ -305,10 +316,10 @@ if __name__ == "__main__":
     style.configure("Treeview", rowheight=25)
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "../src/Results"
+    root_dir = "./Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
-    folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)
+    folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)
     folder_tree.pack(expand=True, fill=tk.BOTH)
     change_treeview_colors(folder_tree, text_color=theme.couleur_texte, select_color= "lightblue", background_color=theme.couleur_frame)
     theme.configurer_background(frame_root)

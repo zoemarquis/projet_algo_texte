@@ -305,7 +305,7 @@ if __name__ == "__main__":
     style.configure("Treeview", rowheight=25)
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "./Results"
+    root_dir = "../src/Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)

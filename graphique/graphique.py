@@ -6,9 +6,16 @@ import folder
 import theme 
 import terminal
 
+
+couleur_frames = "#535878"  
+couleur_fond = "#1B3358"  
+couleur_texte = "white"  
+
+
 def change_label_frame_font(label_frame, font_name, font_size):
     style = ttk.Style()
     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))
+
 
 
 # Lien de la case "All" avec la fonction toggle_all
@@ -55,12 +62,30 @@ if __name__ == "__main__":
     fenetre.update()
     width = fenetre.winfo_width() 
     height = fenetre.winfo_height()
-
+    
+########### MODIF CHAIMA
+    def on_info_click(event):
+        info_menu = tk.Menu(fenetre, tearoff=0)
+        info_menu.add_command(label="Martin DENIAU")
+        info_menu.add_command(label="Chaïma JAIDANE")
+        info_menu.add_command(label="Charlotte KRUZIC")
+        info_menu.add_command(label="Zoé MARQUIS")
+        info_menu.add_command(label="Valentin MASSEBEUF")
+        info_menu.add_command(label="Clément OBERHAUSER")
+        info_menu.add_separator()
+        info_menu.add_command(label="Fermer", command=lambda: info_menu.unpost())
+        try:
+            info_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            info_menu.grab_release()
+########### FIN MODIF CHAIMA
+    
     frame_root = tk.Frame(fenetre)
     frame_root.pack(expand = 1, fill = "both")
 
-    label = tk.Label(frame_root, text="Acquisition des régions fonctionnelles dans les génomes", fg="white", justify="left")
-    label.grid(row=0, column=0, sticky="w")
+    label = tk.Label(frame_root, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 15), fg="white")
+    label.grid(row=0, column=0, sticky="ew", padx=10)
+    frame_root.columnconfigure(0, weight=1)
 
     frame_principal = tk.Frame(frame_root)
     frame_principal.grid(row=1, column=0, sticky="nsew")
@@ -69,18 +94,27 @@ if __name__ == "__main__":
     frame_root.rowconfigure(1, weight=10)
     frame_root.columnconfigure(0, weight=1)
 
+######### MODIF CHAIMA
+    label_info = tk.Label(frame_root, text="i", font=("Arial", 14, "bold"), fg="black", bg="white",
+                        width=2, height=1, borderwidth=2, relief="solid")
+    label_info.grid(row=0, column=1, padx=5, pady=20, sticky="w")
+    label_info.bind("<Button-1>", on_info_click)
+######### FIN MODIF CHAIMA
+
     ## gauche - droite
+  
     frame_principal.columnconfigure(0, weight=3)
     frame_principal.columnconfigure(1, weight=5)
     frame_principal.rowconfigure(0, weight=3)
     frame_principal.rowconfigure(1, weight=1)
 
     ## contenu de gauche
-    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised")
+    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=couleur_frames)
     frame_arbo.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
-    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif")
+    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif",bg=couleur_frames)
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
 
     ## contenu de droite
     ## haut - bas dans droite
@@ -91,7 +125,7 @@ if __name__ == "__main__":
     frame_bas.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
     ### contenu de haut
-    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised")
+    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised",bg=couleur_frames)
     frame_cases.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
     #case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
@@ -104,36 +138,73 @@ if __name__ == "__main__":
     # Zone de saisie
     zone_entre = tk.StringVar()
     frame_saisie = tk.Frame(frame_cases)
-    frame_saisie.grid(row=0, column=0)
+    frame_saisie.grid(row=2, column=5, sticky="ew")
     #frame_saisie.pack()
     zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
     zone_texte.pack(padx=0, pady=0)
+   
+    # # Création des cases à cocher
+    # r = 1
+    # c = 0
+    # for i in regions:
+    #     var = tk.BooleanVar(value=False)
+    #     cb = tk.Checkbutton(frame_cases, text=i, variable=var)
+    #     #cb.pack(anchor="w")
+    #     if i == "All":
+    #         cb.grid(row=2, column=5)
+    #     else :
+    #         cb.grid(row=r, column=c)
+    #     c+=1
+    #     if c >= 5 :
+    #         c = 0
+    #         r += 1
+    #     variables[i] = var
+    #     checkboxes[i] = cb
 
-    # Création des cases à cocher
-    r = 1
-    c = 0
-    for i in regions:
-        var = tk.BooleanVar(value=False)
-        cb = tk.Checkbutton(frame_cases, text=i, variable=var)
-        #cb.pack(anchor="w")
-        if i == "All":
-            cb.grid(row=2, column=5)
-        else :
-            cb.grid(row=r, column=c)
-        c+=1
-        if c >= 5 :
-            c = 0
-            r += 1
-        variables[i] = var
-        checkboxes[i] = cb
+    # variables["All"].trace("w", lambda *args: all_command())
 
-    variables["All"].trace("w", lambda *args: all_command())
+############# MODIF CHAIMA
+    def configure_grid():
+        frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
+        num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
+        # Assurez-vous que la colonne pour "All" est considérée séparément
+        column_width = frame_width // (num_columns + 1)  # Largeur disponible pour chaque colonne, +1 pour "All"
+
+        # Configuration de la largeur des colonnes pour un espacement équitable
+        for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
+            frame_cases.grid_columnconfigure(c, minsize=column_width)
+
+        # Positionnement des cases à cocher
+        r = 0  # Ligne de départ
+        c = 0  # Colonne de départ
+        for region in regions:
+            var = tk.BooleanVar(value=False)
+            variables[region] = var
+
+            if region == "All":  # Traiter "All" séparément
+                cb = tk.Checkbutton(frame_cases, text=region, variable=var)
+                # Placer "All" dans sa propre colonne à l'extrémité droite
+                cb.grid(row=0, column=num_columns, sticky="w", padx=20)
+                checkboxes[region] = cb
+            else:
+                cb = tk.Checkbutton(frame_cases, text=region, variable=var)
+                cb.grid(row=r, column=c, sticky="w", padx=20)  # Ajoute un espacement horizontal
+                checkboxes[region] = cb
+
+                c += 1
+                if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
+                    c = 0
+                    r += 1
+        variables["All"].trace("w", lambda *args: all_command())
+    # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
+    fenetre.after(100, configure_grid)
+################### FIN MODIF CHAIMA
 
     # test=tk.BooleanVar()
     # check1=tk.Checkbutton(frame_cases, text="test", variable=test)
     # check1.pack(anchor="w")
 
-    frame_log = tk.LabelFrame(frame_haut, text="log")
+    frame_log = tk.LabelFrame(frame_haut, text="log",bg=couleur_frames)
     frame_log.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
     term = terminal.Terminal(frame_log, bg="black")
@@ -144,7 +215,7 @@ if __name__ == "__main__":
     frame_haut.columnconfigure(0, weight=1)
 
     # ## contenu de bas
-    frame_loadbar = tk.Frame(frame_bas)
+    frame_loadbar = tk.Frame(frame_bas,background=couleur_frames)
     frame_loadbar.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
     label = tk.Label(frame_loadbar, text="loadbar") 
 
@@ -155,7 +226,7 @@ if __name__ == "__main__":
     loadbar.pack( fill='x', expand=True, padx=10, pady=10)
     loadbar.pack(ipady=10)
     bouton = tk.Button(frame_loadbar, text="Start", command=toggle_progress)
-    bouton.pack(side='bottom', padx=10, pady=10) #, fill="x", expand=True,)
+    bouton.pack(side='bottom', padx=10, pady=10)#, fill="x", expand=True)
 
     frame_bas.rowconfigure(0, weight=1)
     frame_bas.rowconfigure(1, weight=1)
@@ -168,7 +239,7 @@ if __name__ == "__main__":
     style.configure("Treeview", background="#d3d3d3", foreground="black", rowheight=25, fieldbackground="#d3d3d3")
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "./Results"
+    root_dir = "../src/Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)

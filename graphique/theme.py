@@ -12,7 +12,7 @@ from tkinter import ttk
 #     for child in widget.winfo_children():
 #         configurer_background(child, bg_principal, bg_frame)
 
-def configurer_background(widget, bg_frame="#282C34", bg_principal="#3C3F41"):
+def configurer_background(widget, bg_frame="#1B3358", bg_principal="#1B3358"):
     # Appliquer la couleur de fond principale au widget principal
     if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
         widget.configure(bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame)

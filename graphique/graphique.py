@@ -6,6 +6,9 @@ import folder
 import theme 
 import terminal
 
+def change_cursor(event):
+    event.widget.config(cursor="hand2")  # Change le curseur en main pointant
+
 def change_button_style(button, background_color, foreground_color):
     style = ttk.Style()
     style.configure("Custom.TButton",
@@ -20,8 +23,6 @@ def change_treeview_colors(treeview, text_color, select_color, background_color)
 def change_label_frame_font(label_frame, font_name, font_size):
     style = ttk.Style()
     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))
-
-
 
 # Lien de la case "All" avec la fonction toggle_all
 def all_command():
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     fenetre = tk.Tk()
 
     style = ttk.Style(fenetre)
-    style.configure(".", font=("Comic Sans MS", 12))
+    #style.configure(".", font=("Comic Sans MS", 12))
 
     fenetre.title("GENBANK PARSER")
     fenetre.geometry("1300x800")
@@ -69,20 +70,50 @@ if __name__ == "__main__":
     height = fenetre.winfo_height()
     
 ########### MODIF CHAIMA
-    def on_info_click(event):
-        info_menu = tk.Menu(fenetre, tearoff=0)
-        info_menu.add_command(label="Martin DENIAU")
-        info_menu.add_command(label="Chaïma JAIDANE")
-        info_menu.add_command(label="Charlotte KRUZIC")
-        info_menu.add_command(label="Zoé MARQUIS")
-        info_menu.add_command(label="Valentin MASSEBEUF")
-        info_menu.add_command(label="Clément OBERHAUSER")
-        info_menu.add_separator()
-        info_menu.add_command(label="Fermer", command=lambda: info_menu.unpost())
-        try:
-            info_menu.tk_popup(event.x_root, event.y_root)
-        finally:
-            info_menu.grab_release()
+    class ToolTip(object):
+        def __init__(self, widget):
+            self.widget = widget
+            self.tipwindow = None
+            self.x = self.y = 0
+            self.text = ""
+
+        def show_tip(self, text):
+            "Affiche le texte du tooltip"
+            self.text = text
+            if self.tipwindow or not self.text:
+                return
+            x = self.widget.winfo_rootx() + 20  # Position horizontale légèrement à droite du widget
+            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20  # Position verticale juste en dessous
+            self.tipwindow = tw = tk.Toplevel(self.widget)
+            tw.wm_overrideredirect(True)
+            tw.wm_geometry("+%d+%d" % (x, y))
+            label = tk.Label(tw, text=self.text, justify=tk.LEFT,
+                            background="lightyellow", relief=tk.SOLID, borderwidth=1,
+                            font=("Arial", "10", "normal"))
+            label.pack(ipadx=4, ipady=4)
+
+            # Ajuster la position pour s'assurer que l'infobulle ne dépasse pas du cadre de la fenêtre
+            tw.update_idletasks()
+            tw_width = tw.winfo_width()
+            tw_height = tw.winfo_height()
+            screen_width = tw.winfo_screenwidth()
+            screen_height = tw.winfo_screenheight()
+            if x + tw_width > screen_width:
+                x = screen_width - tw_width
+            if y + tw_height > screen_height:
+                y = screen_height - tw_height
+            tw.wm_geometry("+%d+%d" % (x, y))
+
+        def hide_tip(self):
+            if self.tipwindow:
+                self.tipwindow.destroy()
+                self.tipwindow = None
+
+    def enter(event):
+        tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
+
+    def leave(event):
+        tooltip.hide_tip()
 ########### FIN MODIF CHAIMA
     
     frame_root = tk.Frame(fenetre)
@@ -95,10 +126,14 @@ if __name__ == "__main__":
     label.grid(row=0, column=0, sticky="ew")
 
 ######### MODIF CHAIMA
+    
     label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
                         width=2, height=1, borderwidth=2, relief="solid")
     label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
-    label_info.bind("<Button-1>", on_info_click)
+    
+    tooltip = ToolTip(label_info)
+    label_info.bind("<Enter>", enter)
+    label_info.bind("<Leave>", leave)
 ######### FIN MODIF CHAIMA
 
     frame_titre.rowconfigure(0, weight=1)
@@ -108,20 +143,20 @@ if __name__ == "__main__":
     frame_principal = tk.Frame(frame_root)
     frame_principal.grid(row=1, column=0, sticky="nsew", padx=30, pady=(0,30))
 
+    frame_principal.grid_columnconfigure(0, weight=2)
+    frame_principal.grid_columnconfigure(1, weight=5)
+    frame_principal.grid_rowconfigure(0, weight=9)
+    frame_principal.grid_rowconfigure(1, weight=1)
+
     frame_root.rowconfigure(0, weight=1)
-    frame_root.rowconfigure(1, weight=9)
+    frame_root.rowconfigure(1, weight=10)
     frame_root.columnconfigure(0, weight=1)
 
-    frame_principal.columnconfigure(0, weight=3)
-    frame_principal.columnconfigure(1, weight=5)
-    frame_principal.rowconfigure(0, weight=10)
-    frame_principal.rowconfigure(1, weight=1)
-
     ## GAUCHE : ARBO + RECAP
-    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=theme.couleur_frame)
+    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=theme.couleur_frame, foreground="white")
     frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0, 10))
 
-    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame)
+    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
     ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
@@ -142,7 +177,7 @@ if __name__ == "__main__":
 
     ### choix
     frame_cases = tk.Frame(frame_choix, bg=theme.couleur_frame)
-    frame_cases.grid(row=0, column=0, sticky="nsew")
+    frame_cases.grid(row=0, column=0, sticky="nsew", pady=(0,5))
     # case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
                "Intron", "Telomère", "Mobile élément", "tRNA", "All"]
@@ -153,7 +188,6 @@ if __name__ == "__main__":
 
     # Zone de saisie
     zone_entre = tk.StringVar()
-
     frame_saisie = tk.Frame(frame_choix, bg=theme.couleur_frame)
     frame_saisie.grid(row=1, column=0, sticky="nsew")
     #frame_saisie.pack()
@@ -201,11 +235,11 @@ if __name__ == "__main__":
             if region == "All":  # Traiter "All" séparément
                 cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
                 # Placer "All" dans sa propre colonne à l'extrémité droite
-                cb.grid(row=0, column=num_columns)
+                cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
                 checkboxes[region] = cb
             else:
                 cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
-                cb.grid(row=r, column=c, sticky="we")  # Ajoute un espacement horizontal
+                cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
                 checkboxes[region] = cb
 
                 c += 1
@@ -216,12 +250,12 @@ if __name__ == "__main__":
 
     frame_cases.rowconfigure(0, weight=1)
     frame_cases.rowconfigure(1, weight=1)
-    frame_cases.columnconfigure(0, weight=1)
-    frame_cases.columnconfigure(1, weight=1)
-    frame_cases.columnconfigure(2, weight=1)
-    frame_cases.columnconfigure(3, weight=1)
-    frame_cases.columnconfigure(4, weight=1)
-    frame_cases.columnconfigure(5, weight=1)
+    frame_cases.grid_columnconfigure(0, weight=1)
+    frame_cases.grid_columnconfigure(1, weight=1)
+    frame_cases.grid_columnconfigure(2, weight=1)
+    frame_cases.grid_columnconfigure(3, weight=1)
+    frame_cases.grid_columnconfigure(4, weight=1)
+    frame_cases.grid_columnconfigure(5, weight=1)
 
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
     fenetre.after(100, configure_grid)
@@ -250,18 +284,25 @@ if __name__ == "__main__":
     loadbar.pack(fill='x', expand=True)
     loadbar.pack(ipady=8)
 
-    bouton = tk.Button(frame_bas, text="Start", command=toggle_progress)
+    #style = ttk.Style()
+    style.map("Custom.TButton",
+              background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],
+              foreground=[("!disabled", "white")],
+              relief = "groove")
+
+    bouton = ttk.Button(frame_bas, text="Start", command=toggle_progress, style="Custom.TButton")
     bouton.pack()
+    bouton.bind("<Enter>", change_cursor)
     
     frame_bas.rowconfigure(0, weight=1)
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
 
-    style = ttk.Style()
-    style.theme_use("classic")  # Changer le thème du style, vous pouvez utiliser "clam", "alt", "default", "classic", etc.
+    #style = ttk.Style()
+    #style.theme_use("classic")  # Changer le thème du style, vous pouvez utiliser "clam", "alt", "default", "classic", etc.
     
     # Changer l'apparence du Treeview
-    style.configure("Treeview", background="#d3d3d3", foreground="black", rowheight=25, fieldbackground="#d3d3d3")
+    style.configure("Treeview", rowheight=25)
     style.map("Treeview", background=[('selected', '#347083')])
 
     root_dir = "./Results"

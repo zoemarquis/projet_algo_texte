@@ -7,10 +7,20 @@ import theme
 import terminal
 
 
-couleur_frames = "#535878"  
+couleur_frame = "#535878"  
 couleur_fond = "#1B3358"  
 couleur_texte = "white"  
 
+def change_button_style(button, background_color, foreground_color):
+    style = ttk.Style()
+    style.configure("Custom.TButton",
+                    background=background_color,
+                    foreground=foreground_color)
+
+def change_treeview_colors(treeview, text_color, select_color, background_color):
+    style = ttk.Style()
+    style.configure("Custom.Treeview", foreground=text_color, fieldbackground=background_color, background=background_color)
+    style.map("Custom.Treeview", background=[('selected', select_color)])
 
 def change_label_frame_font(label_frame, font_name, font_size):
     style = ttk.Style()
@@ -83,51 +93,51 @@ if __name__ == "__main__":
     frame_root = tk.Frame(fenetre)
     frame_root.pack(expand = 1, fill = "both")
 
-    label = tk.Label(frame_root, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 15), fg="white")
-    label.grid(row=0, column=0, sticky="ew", padx=10)
-    frame_root.columnconfigure(0, weight=1)
+    frame_titre = tk.Frame(frame_root)
+    frame_titre.grid(row=0, column=0, sticky="nsew", padx=30, pady=0)
 
-    frame_principal = tk.Frame(frame_root)
-    frame_principal.grid(row=1, column=0, sticky="nsew")
-
-    frame_root.rowconfigure(0, weight=1)
-    frame_root.rowconfigure(1, weight=10)
-    frame_root.columnconfigure(0, weight=1)
+    label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=couleur_frame)
+    label.grid(row=0, column=0, sticky="ew")
 
 ######### MODIF CHAIMA
-    label_info = tk.Label(frame_root, text="i", font=("Arial", 14, "bold"), fg="black", bg="white",
+    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
                         width=2, height=1, borderwidth=2, relief="solid")
-    label_info.grid(row=0, column=1, padx=5, pady=20, sticky="w")
+    label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
     label_info.bind("<Button-1>", on_info_click)
 ######### FIN MODIF CHAIMA
 
-    ## gauche - droite
-  
+    frame_titre.rowconfigure(0, weight=1)
+    frame_titre.columnconfigure(0, weight=20)
+    frame_titre.columnconfigure(1, weight=1)
+
+    frame_principal = tk.Frame(frame_root)
+    frame_principal.grid(row=1, column=0, sticky="nsew", padx=30, pady=(0,30))
+
+    frame_root.rowconfigure(0, weight=1)
+    frame_root.rowconfigure(1, weight=9)
+    frame_root.columnconfigure(0, weight=1)
+
     frame_principal.columnconfigure(0, weight=3)
     frame_principal.columnconfigure(1, weight=5)
-    frame_principal.rowconfigure(0, weight=3)
+    frame_principal.rowconfigure(0, weight=4)
     frame_principal.rowconfigure(1, weight=1)
 
-    ## contenu de gauche
-    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=couleur_frames)
-    frame_arbo.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+    ## GAUCHE : ARBO + RECAP
+    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=couleur_frame)
+    frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0, 10))
 
-    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif",bg=couleur_frames)
-    frame_recap.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=couleur_frame)
+    frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
-
-    ## contenu de droite
-    ## haut - bas dans droite
+    ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
+    ## haut = choix + log, bas = progress bar + bouton
     frame_haut = tk.Frame(frame_principal)
-    frame_haut.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+    frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10,0), pady=(0,10))
 
-    frame_bas = tk.Frame(frame_principal)
-    frame_bas.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
-
-    ### contenu de haut
-    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised",bg=couleur_frames)
-    frame_cases.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-    #case à cocher
+    ### choix
+    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised",bg=couleur_frame)
+    frame_cases.grid(row=0, column=0, sticky="nsew", padx=0, pady=(0,10))
+    # case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
                "Intron", "Telomère", "Mobile élément", "tRNA", "All"]
 
@@ -184,11 +194,11 @@ if __name__ == "__main__":
             if region == "All":  # Traiter "All" séparément
                 cb = tk.Checkbutton(frame_cases, text=region, variable=var)
                 # Placer "All" dans sa propre colonne à l'extrémité droite
-                cb.grid(row=0, column=num_columns, sticky="w", padx=20)
+                cb.grid(row=0, column=num_columns, sticky="w")
                 checkboxes[region] = cb
             else:
                 cb = tk.Checkbutton(frame_cases, text=region, variable=var)
-                cb.grid(row=r, column=c, sticky="w", padx=20)  # Ajoute un espacement horizontal
+                cb.grid(row=r, column=c, sticky="w")  # Ajoute un espacement horizontal
                 checkboxes[region] = cb
 
                 c += 1
@@ -204,8 +214,8 @@ if __name__ == "__main__":
     # check1=tk.Checkbutton(frame_cases, text="test", variable=test)
     # check1.pack(anchor="w")
 
-    frame_log = tk.LabelFrame(frame_haut, text="log",bg=couleur_frames)
-    frame_log.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+    frame_log = tk.LabelFrame(frame_haut, text="log",bg=couleur_frame)
+    frame_log.grid(row=1, column=0, sticky="nsew", padx=0, pady=(10,0))
 
     term = terminal.Terminal(frame_log, bg="black")
     term.pack(fill="both", expand=True)
@@ -214,20 +224,22 @@ if __name__ == "__main__":
     frame_haut.rowconfigure(1, weight=1)
     frame_haut.columnconfigure(0, weight=1)
 
-    # ## contenu de bas
-    frame_loadbar = tk.Frame(frame_bas,background=couleur_frames)
-    frame_loadbar.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-    label = tk.Label(frame_loadbar, text="loadbar") 
+    ## BAS
+    frame_bas = tk.Frame(frame_principal, background=couleur_frame, relief="solid", borderwidth=2)
+    frame_bas.grid(row=1, column=1, sticky="nsew", padx=(10,0), pady=(10,0))
+
+    label = tk.Label(frame_bas, text="loadbar") 
 
     # Configuration initiale de la progression
     progress_running = False
 
-    loadbar = ttk.Progressbar(frame_loadbar, orient='horizontal', length=280, mode='determinate')
-    loadbar.pack( fill='x', expand=True, padx=10, pady=10)
-    loadbar.pack(ipady=10)
-    bouton = tk.Button(frame_loadbar, text="Start", command=toggle_progress)
-    bouton.pack(side='bottom', padx=10, pady=10)#, fill="x", expand=True)
+    loadbar = ttk.Progressbar(frame_bas, orient='horizontal', mode='determinate')
+    loadbar.pack(fill='x', expand=True)
+    loadbar.pack(ipady=8)
 
+    bouton = tk.Button(frame_bas, text="Start", command=toggle_progress)
+    bouton.pack()
+    
     frame_bas.rowconfigure(0, weight=1)
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
@@ -239,12 +251,13 @@ if __name__ == "__main__":
     style.configure("Treeview", background="#d3d3d3", foreground="black", rowheight=25, fieldbackground="#d3d3d3")
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "../src/Results"
+    root_dir = "./Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)
     folder_tree.pack(expand=True, fill=tk.BOTH)
-
+    change_treeview_colors(folder_tree, text_color=couleur_texte, select_color= "lightblue", background_color=couleur_frame)
     theme.configurer_background(frame_root)
 
     fenetre.mainloop()
+

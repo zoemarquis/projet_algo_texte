@@ -59,6 +59,11 @@ def create_folder_structure(root_dir):
 #                 self.tree.item(item_id, open=True)
 
 
+def change_scrollbar_color(scrollbar, background_color, trough_color, border_color):
+    style = ttk.Style()
+    style.configure("Custom.Vertical.TScrollbar", background=background_color, troughcolor=trough_color, bordercolor=border_color)
+
+
 ###### MODIF CHAIMA POUR SELECTIONNER PLUSIEURS APRES A DECIDER
 class FolderTree(tk.Frame):
 
@@ -75,6 +80,8 @@ class FolderTree(tk.Frame):
         self.recap_text.pack(side=tk.LEFT, fill="both", expand=True)
         self.recap_scrollbar = tk.Scrollbar(labelframe_recap, command=self.recap_text.yview)
         self.recap_scrollbar.pack(side=tk.RIGHT, fill="y")
+        change_scrollbar_color(self.recap_scrollbar, "white", "white", "white")
+
         self.recap_text.configure(yscrollcommand=self.recap_scrollbar.set)
         self.recap_text.bind("<Key>", lambda e: "break")  # Désactiver l'édition
 

@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk 
+import theme
 
 def create_folder_structure(root_dir):
     folder_structure = []
@@ -76,11 +77,11 @@ class FolderTree(tk.Frame):
         style.configure("Custom.Treeview", background="#d3d3d3", fieldbackground="#d3d3d3", foreground="black")
         style.map("Custom.Treeview", background=[('selected', '#347083')])
 
-        self.recap_text = tk.Text(labelframe_recap, height=10, width=50)
+        self.recap_text = tk.Text(labelframe_recap, height=10, width=50, background=theme.couleur_frame)
         self.recap_text.pack(side=tk.LEFT, fill="both", expand=True)
         self.recap_scrollbar = tk.Scrollbar(labelframe_recap, command=self.recap_text.yview)
         self.recap_scrollbar.pack(side=tk.RIGHT, fill="y")
-        change_scrollbar_color(self.recap_scrollbar, "white", "white", "white")
+        # change_scrollbar_color(self.recap_scrollbar, "white", "white", "white")
 
         self.recap_text.configure(yscrollcommand=self.recap_scrollbar.set)
         self.recap_text.bind("<Key>", lambda e: "break")  # Désactiver l'édition

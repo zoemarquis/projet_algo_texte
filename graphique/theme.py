@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk 
 
+couleur_frame = "#535878"  
+couleur_fond = "#1B3358"  
+couleur_texte = "white"  
+
 # def configurer_background(widget, bg_frame="#282C34", bg_principal="#3C3F41"):
 #     # Appliquer la couleur de fond principale au widget principal
 #     if isinstance(widget, tk.Tk) or isinstance(widget, tk.Frame):

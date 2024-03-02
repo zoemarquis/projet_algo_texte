@@ -6,11 +6,6 @@ import folder
 import theme 
 import terminal
 
-
-couleur_frame = "#535878"  
-couleur_fond = "#1B3358"  
-couleur_texte = "white"  
-
 def change_button_style(button, background_color, foreground_color):
     style = ttk.Style()
     style.configure("Custom.TButton",
@@ -96,7 +91,7 @@ if __name__ == "__main__":
     frame_titre = tk.Frame(frame_root)
     frame_titre.grid(row=0, column=0, sticky="nsew", padx=30, pady=0)
 
-    label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=couleur_frame)
+    label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=theme.couleur_frame)
     label.grid(row=0, column=0, sticky="ew")
 
 ######### MODIF CHAIMA
@@ -119,14 +114,14 @@ if __name__ == "__main__":
 
     frame_principal.columnconfigure(0, weight=3)
     frame_principal.columnconfigure(1, weight=5)
-    frame_principal.rowconfigure(0, weight=4)
+    frame_principal.rowconfigure(0, weight=10)
     frame_principal.rowconfigure(1, weight=1)
 
     ## GAUCHE : ARBO + RECAP
-    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=couleur_frame)
+    frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=theme.couleur_frame)
     frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0, 10))
 
-    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=couleur_frame)
+    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame)
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
     ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
@@ -134,9 +129,20 @@ if __name__ == "__main__":
     frame_haut = tk.Frame(frame_principal)
     frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10,0), pady=(0,10))
 
+    frame_haut.columnconfigure(0, weight=1)
+    frame_haut.rowconfigure(0, weight=1)
+    frame_haut.rowconfigure(1, weight=2)
+
+    frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
+    frame_choix.grid(row=0, column=0, sticky="nsew")
+
+    frame_choix.rowconfigure(0, weight=1)
+    frame_choix.rowconfigure(1, weight=1)
+    frame_choix.columnconfigure(0, weight=1)
+
     ### choix
-    frame_cases = tk.LabelFrame(frame_haut, text="cases", relief="raised",bg=couleur_frame)
-    frame_cases.grid(row=0, column=0, sticky="nsew", padx=0, pady=(0,10))
+    frame_cases = tk.Frame(frame_choix, bg=theme.couleur_frame)
+    frame_cases.grid(row=0, column=0, sticky="nsew")
     # case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
                "Intron", "Telomère", "Mobile élément", "tRNA", "All"]
@@ -147,11 +153,12 @@ if __name__ == "__main__":
 
     # Zone de saisie
     zone_entre = tk.StringVar()
-    frame_saisie = tk.Frame(frame_cases)
-    frame_saisie.grid(row=2, column=5, sticky="ew")
+
+    frame_saisie = tk.Frame(frame_choix, bg=theme.couleur_frame)
+    frame_saisie.grid(row=1, column=0, sticky="nsew")
     #frame_saisie.pack()
     zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
-    zone_texte.pack(padx=0, pady=0)
+    zone_texte.pack(expand=1)
    
     # # Création des cases à cocher
     # r = 1
@@ -192,20 +199,30 @@ if __name__ == "__main__":
             variables[region] = var
 
             if region == "All":  # Traiter "All" séparément
-                cb = tk.Checkbutton(frame_cases, text=region, variable=var)
+                cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
                 # Placer "All" dans sa propre colonne à l'extrémité droite
-                cb.grid(row=0, column=num_columns, sticky="w")
+                cb.grid(row=0, column=num_columns)
                 checkboxes[region] = cb
             else:
-                cb = tk.Checkbutton(frame_cases, text=region, variable=var)
-                cb.grid(row=r, column=c, sticky="w")  # Ajoute un espacement horizontal
+                cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
+                cb.grid(row=r, column=c, sticky="we")  # Ajoute un espacement horizontal
                 checkboxes[region] = cb
 
                 c += 1
                 if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
                     c = 0
                     r += 1
-        variables["All"].trace("w", lambda *args: all_command())
+        variables["All"].trace("rwua", lambda *args: all_command())
+
+    frame_cases.rowconfigure(0, weight=1)
+    frame_cases.rowconfigure(1, weight=1)
+    frame_cases.columnconfigure(0, weight=1)
+    frame_cases.columnconfigure(1, weight=1)
+    frame_cases.columnconfigure(2, weight=1)
+    frame_cases.columnconfigure(3, weight=1)
+    frame_cases.columnconfigure(4, weight=1)
+    frame_cases.columnconfigure(5, weight=1)
+
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
     fenetre.after(100, configure_grid)
 ################### FIN MODIF CHAIMA
@@ -214,18 +231,14 @@ if __name__ == "__main__":
     # check1=tk.Checkbutton(frame_cases, text="test", variable=test)
     # check1.pack(anchor="w")
 
-    frame_log = tk.LabelFrame(frame_haut, text="log",bg=couleur_frame)
+    frame_log = tk.LabelFrame(frame_haut, text="log",bg=theme.couleur_frame)
     frame_log.grid(row=1, column=0, sticky="nsew", padx=0, pady=(10,0))
 
     term = terminal.Terminal(frame_log, bg="black")
     term.pack(fill="both", expand=True)
     
-    frame_haut.rowconfigure(0, weight=1)
-    frame_haut.rowconfigure(1, weight=1)
-    frame_haut.columnconfigure(0, weight=1)
-
     ## BAS
-    frame_bas = tk.Frame(frame_principal, background=couleur_frame, relief="solid", borderwidth=2)
+    frame_bas = tk.Frame(frame_principal, background=theme.couleur_frame, relief="solid", borderwidth=2)
     frame_bas.grid(row=1, column=1, sticky="nsew", padx=(10,0), pady=(10,0))
 
     label = tk.Label(frame_bas, text="loadbar") 
@@ -256,7 +269,7 @@ if __name__ == "__main__":
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, frame_recap)
     folder_tree.pack(expand=True, fill=tk.BOTH)
-    change_treeview_colors(folder_tree, text_color=couleur_texte, select_color= "lightblue", background_color=couleur_frame)
+    change_treeview_colors(folder_tree, text_color=theme.couleur_texte, select_color= "lightblue", background_color=theme.couleur_frame)
     theme.configurer_background(frame_root)
 
     fenetre.mainloop()

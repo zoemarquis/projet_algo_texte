@@ -4,10 +4,10 @@ import threading
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src')) 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..')) 
 import sequence
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..')) 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..')) 
 import utils.fio
 
 

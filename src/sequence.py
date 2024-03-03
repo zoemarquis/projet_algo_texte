@@ -1,6 +1,8 @@
 from Bio import Entrez, SeqIO
 import analyse
 
+import threading
+
 
 def search(domain, name):
     Entrez.email = "martin.deniau@etu.unistra.fr"

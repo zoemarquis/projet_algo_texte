@@ -19,8 +19,7 @@ def get_ids(category, kingdom):
     else:
         return []
     
-#ids premiers viruses
-kingdom = ["viruses","bacteria"]
+# ids premiers viruses et bacteria
 name_viruses = ["Abaca bunchy top virus", 
               "Abalone herpesvirus Victoria/AUS/2009", 
               "Abalone shriveling syndrome-associated virus", 
@@ -53,25 +52,15 @@ name_bacteria =["'Brassica napus' phytoplasma",
 ids_viruses = [get_ids(name, "viruses") for name in name_viruses]
 ids_bacteria = [get_ids(name, "bacteria") for name in name_bacteria]
 
-
+#à modifier en fonction de ce que l'on cherche
 all_ids = ids_viruses + ids_bacteria
 
 # Nombre de threads (erreur "Too many request" si > 3)
 nb_threads = 3
-ids_per_thread = len(all_ids) // nb_threads
-def fetch(ids, regions):
-    for id in ids:
-        print("Fetching sequence", id)
-        handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text")
-        print("Fetched")
-        for record in SeqIO.parse(handle, "gb"):
-            for feature in record.features:
-                for region in regions:
-                    if feature.type == region:
-                        analyse.analyse_bornes(str(feature.location), len(record.seq))
+nb_ids_thread = len(all_ids) // nb_threads
 
 # partage ids entre les threads
-thread_ids = [all_ids[i:i + ids_per_thread] for i in range(0, len(all_ids), ids_per_thread)]
+thread_ids = [all_ids[i:i + nb_ids_thread] for i in range(0, len(all_ids), nb_ids_thread)]
 
 
 threads = []

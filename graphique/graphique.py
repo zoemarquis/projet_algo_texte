@@ -18,6 +18,11 @@ def update_recap(check_vars, options, recap_label):
             recap_text += ", "  # Ajouter une virgule pour séparer les options
         recap_text += option  # Ajouter l'option au texte du récapitulatif
     recap_label.config(text="Régions:\n"+recap_text)
+    
+# def update_recap(check_vars, selected_options, recap_label):
+#     recap_text = "Régions sélectionnées:\n" + ", ".join(selected_options)        
+#     recap_label.config(text=recap_text)
+#     variables["All"].trace_add("write", lambda *args: all_command())
 
 def change_cursor(event):
     event.widget.config(cursor="hand2")  # Change le curseur en main pointant
@@ -38,8 +43,26 @@ def change_label_frame_font(label_frame, font_name, font_size):
     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))
 
 # Lien de la case "All" avec la fonction toggle_all
+# def all_command():
+#     toggle_all(variables["All"], variables, checkboxes)
+
+################# MODIF CHAIMA
 def all_command():
+    all_checked = variables["All"].get()
+    if all_checked:
+        # Si "All" est cochée, mettez à jour toutes les variables et le texte de récapitulation
+        for region, var in check_vars.items():
+            var.set(True)
+        # Liste toutes les régions sauf "All" pour le récapitulatif
+        update_recap(check_vars, [region for region in regions if region != "All"], recap_cases)
+    else:
+        # Si "All" est décochée, réinitialisez
+        for region, var in check_vars.items():
+            var.set(False)
+        update_recap(check_vars, [], recap_cases)
     toggle_all(variables["All"], variables, checkboxes)
+
+################# FIN MODIF CHAIMA
 
 def toggle_all(master_var, all_vars, all_checkboxes):
     # Si la case "All" est cochée, cochez toutes les cases et les désactivez
@@ -68,6 +91,22 @@ def update_progress():
     elif not progress_running or current_value == 100:
         progress_running = False  # Arrête la progression
         bouton.config(text="Start")  # Réinitialise le texte du bouton
+
+########## MODIF CHAIMA
+# Fonction de rappel pour la zone de texte
+def on_text_entry(event=None):
+    entered_text = zone_entre.get().strip()  # Obtient le texte et supprime les espaces blancs au début et à la fin
+    for region, var in check_vars.items():
+        if entered_text.lower() == region.lower():  # Vérifie si le texte correspond à une région (insensible à la casse)
+            var.set(True)  # Coche la case à cocher correspondante
+            update_recap(check_vars, regions, recap_cases)  # Met à jour le récapitulatif
+            break  # Sort de la boucle après avoir trouvé et coché la case correspondante
+
+# Lier l'événement de relâchement de touche à la zone de texte
+    zone_texte.bind('<KeyRelease>', on_text_entry)
+
+########## FIN MODIF CHAIMA
+
 
 if __name__ == "__main__":
     fenetre = tk.Tk()
@@ -128,7 +167,6 @@ if __name__ == "__main__":
     def leave(event):
         tooltip.hide_tip()
 ########### FIN MODIF CHAIMA
-    
     frame_root = tk.Frame(fenetre)
     frame_root.pack(expand = 1, fill = "both")
 
@@ -137,7 +175,6 @@ if __name__ == "__main__":
 
     label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=theme.couleur_frame)
     label.grid(row=0, column=0, sticky="ew")
-
 ######### MODIF CHAIMA
     label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
                         width=2, height=1, borderwidth=2)
@@ -198,7 +235,7 @@ if __name__ == "__main__":
     frame_choix.columnconfigure(0, weight=1)
 
     ### choix
-    frame_cases = tk.Frame(frame_choix, bg=theme.couleur_frame)
+    frame_cases = tk.LabelFrame(frame_choix, text="Sélection des régions", bg=theme.couleur_frame, fg="white")    
     frame_cases.grid(row=0, column=0, sticky="nsew", pady=(0,5))
     # case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
@@ -212,47 +249,104 @@ if __name__ == "__main__":
 
     # Zone de saisie
     zone_entre = tk.StringVar()
-    frame_saisie = tk.Frame(frame_choix, bg=theme.couleur_frame)
-    frame_saisie.grid(row=1, column=0, sticky="nsew")
-    #frame_saisie.pack()
-    zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
-    zone_texte.pack(expand=1)
+    # frame_saisie = tk.Frame(frame_choix, bg=theme.couleur_frame)
+    # frame_saisie.grid(row=1, column=0, sticky="nsew")
+    # #frame_saisie.pack()
+    # zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
+    # zone_texte.pack(expand=1)
    
 ############# MODIF CHAIMA
+    # def configure_grid():
+    #     frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
+    #     num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
+    #     # Assurez-vous que la colonne pour "All" est considérée séparément
+    #     column_width = frame_width // (num_columns + 1)
+        
+
+    #     # Configuration de la largeur des colonnes pour un espacement équitable
+    #     for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
+    #         frame_cases.grid_columnconfigure(c, minsize=column_width)
+
+    #     # Positionnement des cases à cocher
+    #     r = 0  # Ligne de départ
+    #     c = 0  # Colonne de départ
+    #     for region in regions:
+    #         var = tk.BooleanVar(value=False)
+    #         variables[region] = var
+    #         #check_vars.append(var)
+
+    #         if region == "All":  # Traiter "All" séparément
+    #             #cb = tk.Checkbutton(frame_cases, text=region, variable=var,background=theme.couleur_frame)#)
+    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
+    #             # Placer "All" dans sa propre colonne à l'extrémité droite
+    #             cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
+    #             checkboxes[region] = cb
+    #         else:
+    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
+    #                                  command=lambda: update_recap(check_vars, regions, recap_cases),style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
+    #                                  # #,
+    #             # style = ttk.Style()
+    #             # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
+    #             style = ttk.Style()
+    #             style.map("CustomCheckbutton.TCheckbutton",
+    #                     background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
+
+
+    #             cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
+    #             checkboxes[region] = cb
+
+    #             c += 1
+    #             if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
+    #                 c = 0
+    #                 r += 1
     def configure_grid():
-        frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
-        num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
-        # Assurez-vous que la colonne pour "All" est considérée séparément
-        column_width = frame_width // (num_columns + 1)  # Largeur disponible pour chaque colonne, +1 pour "All"
+        frame_width = frame_cases.winfo_width()
+        num_columns = 5
+        column_width = frame_width // (num_columns + 2)
 
-        # Configuration de la largeur des colonnes pour un espacement équitable
-        for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
-            frame_cases.grid_columnconfigure(c, minsize=column_width)
+        # Calculez l'espacement uniforme en fonction du nombre total de colonnes et de la largeur disponible
+        total_spacing = frame_width - (num_columns * column_width)
+        spacing_per_column = total_spacing // (num_columns + 1)
 
-        # Positionnement des cases à cocher
-        r = 0  # Ligne de départ
-        c = 0  # Colonne de départ
+        for c in range(num_columns + 1):
+            # Configurez l'espacement pour chaque colonne
+            frame_cases.grid_columnconfigure(c, minsize=column_width, pad=spacing_per_column)
+
+        r, c = 0, 0
         for region in regions:
             var = tk.BooleanVar(value=False)
             variables[region] = var
-            #check_vars.append(var)
 
-            if region == "All":  # Traiter "All" séparément
-                cb = tk.Checkbutton(frame_cases, text=region, variable=var, background=theme.couleur_frame)
-                # Placer "All" dans sa propre colonne à l'extrémité droite
-                cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
+            if region == "All":
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
+                # Ajustez la position du bouton "All" si nécessaire, en fonction de votre conception
+                cb.grid(row=0, column=num_columns, sticky="w", padx=0, pady=0)
                 checkboxes[region] = cb
             else:
-                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], command=lambda: update_recap(check_vars, regions, recap_cases))#, background=theme.couleur_frame) #,
-                cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region],
+                                    command=lambda: update_recap(check_vars, regions, recap_cases), style="CustomCheckbutton.TCheckbutton")
+                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=5)
                 checkboxes[region] = cb
+                style = ttk.Style()
+                style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
+                #style.map("CustomCheckbutton.TCheckbutton",background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
 
                 c += 1
-                if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
+                if c >= num_columns:
                     c = 0
                     r += 1
         variables["All"].trace("rwua", lambda *args: all_command())
+        frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame)
+        # Placer la frame_saisie en bas à gauche
+        frame_saisie.grid(row=r-1, column=num_columns, sticky="nsew")
+        zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
+        zone_texte.pack(expand=True)
 
+       
+
+
+        # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
+        frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
     frame_cases.rowconfigure(0, weight=1)
     frame_cases.rowconfigure(1, weight=1)
     frame_cases.grid_columnconfigure(0, weight=1)
@@ -264,6 +358,8 @@ if __name__ == "__main__":
 
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
     fenetre.after(100, configure_grid)
+    
+    
 ################### FIN MODIF CHAIMA
 
     # test=tk.BooleanVar()
@@ -316,7 +412,8 @@ if __name__ == "__main__":
     style.configure("Treeview", rowheight=25)
     style.map("Treeview", background=[('selected', '#347083')])
 
-    root_dir = "./Results"
+    #root_dir = "./Results"
+    root_dir = "../src/Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)

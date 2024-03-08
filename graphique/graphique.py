@@ -18,7 +18,7 @@ def update_recap(check_vars, options, recap_label):
             recap_text += ", "  # Ajouter une virgule pour séparer les options
         recap_text += option  # Ajouter l'option au texte du récapitulatif
     recap_label.config(text="Régions:\n"+recap_text)
-    
+
 # def update_recap(check_vars, selected_options, recap_label):
 #     recap_text = "Régions sélectionnées:\n" + ", ".join(selected_options)        
 #     recap_label.config(text=recap_text)
@@ -95,15 +95,20 @@ def update_progress():
 ########## MODIF CHAIMA
 # Fonction de rappel pour la zone de texte
 def on_text_entry(event=None):
-    entered_text = zone_entre.get().strip()  # Obtient le texte et supprime les espaces blancs au début et à la fin
-    for region, var in check_vars.items():
-        if entered_text.lower() == region.lower():  # Vérifie si le texte correspond à une région (insensible à la casse)
-            var.set(True)  # Coche la case à cocher correspondante
-            update_recap(check_vars, regions, recap_cases)  # Met à jour le récapitulatif
-            break  # Sort de la boucle après avoir trouvé et coché la case correspondante
-
-# Lier l'événement de relâchement de touche à la zone de texte
-
+    entered_text = zone_entre.get().strip().lower()  # Obtient le texte et le convertit en minuscules
+    if entered_text == "all":
+        # Si "All" est entré, coche toutes les cases sauf "All"
+        for region, var in check_vars.items():
+            if region.lower() != "all":
+                var.set(True)
+        update_recap(check_vars, [region for region in regions if region.lower() != "all"], recap_cases)  # Met à jour le récapitulatif sans inclure "All"
+    else:
+        # Sinon, vérifie si le texte correspond à une région et coche la case correspondante
+        for region, var in check_vars.items():
+            if entered_text == region.lower():
+                var.set(True)  # Coche la case à cocher correspondante
+                update_recap(check_vars, regions, recap_cases)  # Met à jour le récapitulatif
+                break
 
 ########## FIN MODIF CHAIMA
 
@@ -122,50 +127,39 @@ if __name__ == "__main__":
     height = fenetre.winfo_height()
     
 ########### MODIF CHAIMA
-    class ToolTip(object):
-        def __init__(self, widget):
-            self.widget = widget
-            self.tipwindow = None
-            self.x = self.y = 0
-            self.text = ""
+    # class ToolTip(object):
+    #      # Initialisation sans changement
+    #     def __init__(self, widget):
+    #         self.widget = widget
+    #         self.tipwindow = None
+    #         self.x = self.y = 0
 
-        def show_tip(self, text):
-            "Affiche le texte du tooltip"
-            self.text = text
-            if self.tipwindow or not self.text:
-                return
-            x = self.widget.winfo_rootx() + 20  # Position horizontale légèrement à droite du widget
-            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20  # Position verticale juste en dessous
-            self.tipwindow = tw = tk.Toplevel(self.widget)
-            tw.wm_overrideredirect(True)
-            tw.wm_geometry("+%d+%d" % (x, y))
-            label = tk.Label(tw, text=self.text, justify=tk.LEFT,
-                            background="lightyellow", relief=tk.SOLID, borderwidth=1,
-                            font=("Arial", "10", "normal"))
-            label.pack(ipadx=4, ipady=4)
+    #     def show_tip(self, text):
+    #         "Affiche le texte du tooltip"
+    #         if self.tipwindow or not text:
+    #             return
+    #         x = self.widget.winfo_rootx() + 25
+    #         y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20
+    #         self.tipwindow = tw = tk.Toplevel(self.widget)
+    #         tw.wm_overrideredirect(True)
+    #         tw.wm_geometry("+%d+%d" % (x, y))
+    #         label = tk.Label(tw, text=text, justify=tk.LEFT,
+    #                         background="lightyellow", relief=tk.SOLID, borderwidth=1,
+    #                         font=("Arial", "10", "normal"))
+    #         label.pack(ipadx=1, ipady=1)
 
-            # Ajuster la position pour s'assurer que l'infobulle ne dépasse pas du cadre de la fenêtre
-            tw.update_idletasks()
-            tw_width = tw.winfo_width()
-            tw_height = tw.winfo_height()
-            screen_width = tw.winfo_screenwidth()
-            screen_height = tw.winfo_screenheight()
-            if x + tw_width > screen_width:
-                x = screen_width - tw_width
-            if y + tw_height > screen_height:
-                y = screen_height - tw_height
-            tw.wm_geometry("+%d+%d" % (x, y))
+    #     def hide_tip(self):
+    #         if self.tipwindow:
+    #             self.tipwindow.destroy()
+    #             self.tipwindow = None
 
-        def hide_tip(self):
-            if self.tipwindow:
-                self.tipwindow.destroy()
-                self.tipwindow = None
+    # # Modification de la façon dont vous liez l'événement et appelez show_tip/hide_tip
+    # def enter(event):
+    #     tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
 
-    def enter(event):
-        tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
+    # def leave(event):
+    #     tooltip.hide_tip()
 
-    def leave(event):
-        tooltip.hide_tip()
 ########### FIN MODIF CHAIMA
     frame_root = tk.Frame(fenetre)
     frame_root.pack(expand = 1, fill = "both")
@@ -176,13 +170,44 @@ if __name__ == "__main__":
     label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=theme.couleur_frame)
     label.grid(row=0, column=0, sticky="ew")
 ######### MODIF CHAIMA
-    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
-                        width=2, height=1, borderwidth=2)
-    label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
+    # label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
+    #                     width=2, height=1, borderwidth=2)
+    # label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
     
-    tooltip = ToolTip(label_info)
-    label_info.bind("<Enter>", enter)
-    label_info.bind("<Leave>", leave)
+    # tooltip = ToolTip(label_info)
+    # label_info.bind("<Enter>", enter)
+    # label_info.bind("<Leave>", leave)
+  
+    
+    image = tk.PhotoImage(file="../image/info-2.png")
+    label_info = tk.Label(frame_titre,image=image, font=("Arial", 14, "bold"), fg="white", bg="white",
+                      width=50, height=50, borderwidth=2)
+    label_info.config(image=image)
+    label_info.grid(row=0, column=1, padx=0, pady=20, sticky="e")
+
+    # Création d'un label pour le texte du tooltip qui sera affiché ou caché
+    tooltip_text = tk.Label(frame_titre, text="Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER", fg="white", bg="lightyellow", bd=1, relief="solid")
+    tooltip_text.grid(row=0, column=2, sticky="e")
+    tooltip_text.grid_remove()  # Cacher initialement le tooltip
+
+    # Fonction pour montrer le tooltip
+    def show_tooltip(event):
+        tooltip_text.grid()  # Affiche le texte
+
+    # Fonction pour cacher le tooltip
+    def hide_tooltip(event):
+        tooltip_text.grid_remove()  # Cache le texte
+
+    # Liens d'événements
+    label_info.bind("<Enter>", show_tooltip)
+    label_info.bind("<Leave>", hide_tooltip)
+
+    # tooltip = ToolTip(label_info)  # Vous devez créer tooltip avec label_info comme widget cible
+    # label_info.bind("<Enter>", enter)
+    # label_info.bind("<Leave>", leave)
+    
+    
+
 ######### FIN MODIF CHAIMA
 
     frame_titre.rowconfigure(0, weight=1)
@@ -256,49 +281,49 @@ if __name__ == "__main__":
     # zone_texte.pack(expand=1)
    
 ############# MODIF CHAIMA
-    # def configure_grid():
-    #     frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
-    #     num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
-    #     # Assurez-vous que la colonne pour "All" est considérée séparément
-    #     column_width = frame_width // (num_columns + 1)
+    def configure_grid():
+        frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
+        num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
+        # Assurez-vous que la colonne pour "All" est considérée séparément
+        column_width = frame_width // (num_columns + 1)
         
 
-    #     # Configuration de la largeur des colonnes pour un espacement équitable
-    #     for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
-    #         frame_cases.grid_columnconfigure(c, minsize=column_width)
+        # Configuration de la largeur des colonnes pour un espacement équitable
+        for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
+            frame_cases.grid_columnconfigure(c, minsize=column_width)
 
-    #     # Positionnement des cases à cocher
-    #     r = 0  # Ligne de départ
-    #     c = 0  # Colonne de départ
-    #     for region in regions:
-    #         var = tk.BooleanVar(value=False)
-    #         variables[region] = var
-    #         #check_vars.append(var)
+        # Positionnement des cases à cocher
+        r = 0  # Ligne de départ
+        c = 0  # Colonne de départ
+        for region in regions:
+            var = tk.BooleanVar(value=False)
+            variables[region] = var
+            #check_vars.append(var)
 
-    #         if region == "All":  # Traiter "All" séparément
-    #             #cb = tk.Checkbutton(frame_cases, text=region, variable=var,background=theme.couleur_frame)#)
-    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
-    #             # Placer "All" dans sa propre colonne à l'extrémité droite
-    #             cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
-    #             checkboxes[region] = cb
-    #         else:
-    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
-    #                                  command=lambda: update_recap(check_vars, regions, recap_cases),style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
-    #                                  # #,
-    #             # style = ttk.Style()
-    #             # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
-    #             style = ttk.Style()
-    #             style.map("CustomCheckbutton.TCheckbutton",
-    #                     background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
+            if region == "All":  # Traiter "All" séparément
+                #cb = tk.Checkbutton(frame_cases, text=region, variable=var,background=theme.couleur_frame)#)
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
+                # Placer "All" dans sa propre colonne à l'extrémité droite
+                cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
+                checkboxes[region] = cb
+            else:
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
+                                     command=lambda: update_recap(check_vars, regions, recap_cases),style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
+                                     # #,
+                # style = ttk.Style()
+                # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
+                style = ttk.Style()
+                style.map("CustomCheckbutton.TCheckbutton",
+                        background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
 
 
-    #             cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
-    #             checkboxes[region] = cb
+                cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
+                checkboxes[region] = cb
 
-    #             c += 1
-    #             if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
-    #                 c = 0
-    #                 r += 1
+                c += 1
+                if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
+                    c = 0
+                    r += 1
     def configure_grid():
         frame_width = frame_cases.winfo_width()
         num_columns = 5
@@ -346,6 +371,11 @@ if __name__ == "__main__":
 
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
         frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
+   # Réactive la zone de texte sinon
+
+        
+
+    
     frame_cases.rowconfigure(0, weight=1)
     frame_cases.rowconfigure(1, weight=1)
     frame_cases.grid_columnconfigure(0, weight=1)

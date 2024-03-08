@@ -103,7 +103,7 @@ def on_text_entry(event=None):
             break  # Sort de la boucle après avoir trouvé et coché la case correspondante
 
 # Lier l'événement de relâchement de touche à la zone de texte
-    zone_texte.bind('<KeyRelease>', on_text_entry)
+
 
 ########## FIN MODIF CHAIMA
 
@@ -341,8 +341,7 @@ if __name__ == "__main__":
         frame_saisie.grid(row=r-1, column=num_columns, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
         zone_texte.pack(expand=True)
-
-       
+        zone_texte.bind('<KeyRelease>', on_text_entry)
 
 
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire

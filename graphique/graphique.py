@@ -17,7 +17,7 @@ def update_recap(check_vars, options, recap_label):
         else:
             recap_text += ", "  # Ajouter une virgule pour séparer les options
         recap_text += option  # Ajouter l'option au texte du récapitulatif
-    recap_label.config(text="Régions:\n"+recap_text)
+    recap_cases.itemconfig(text_recap_cases,text="Régions:\n"+recap_text)
 
 # def update_recap(check_vars, selected_options, recap_label):
 #     recap_text = "Régions sélectionnées:\n" + ", ".join(selected_options)        
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     # label_info.bind("<Leave>", leave)
   
     
-    image = tk.PhotoImage(file="../image/info-2.png")
+    image = tk.PhotoImage(file="image/info-2.png")
     label_info = tk.Label(frame_titre,image=image, font=("Arial", 14, "bold"), fg="white", bg="white",
                       width=50, height=50, borderwidth=2)
     label_info.config(image=image)
@@ -233,15 +233,40 @@ if __name__ == "__main__":
     frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
-    recap_arbo = tk.Label(frame_recap, text="Arborescence:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
-    recap_arbo.grid(row=0, column=0, sticky="nsew")
+##### arbo
+    #recap_arbo = tk.Label(frame_recap, text="Arborescence:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
+    #recap_arbo.grid(row=0, column=0, sticky="nsew")
+    f_arbo = tk.Frame(frame_recap)
+    f_arbo.grid(row=0, column=0, sticky="nw")
 
-    recap_cases = tk.Label(frame_recap, text="Régions:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
-    recap_cases.grid(row=0, column=1, sticky="nsew")
+    recap_arbo = tk.Canvas(f_arbo, bg="pink")
+    recap_arbo.pack(side="left", fill="both", expand=True)
+    #recap_arbo.grid(row=0, column=0, sticky="nw")
+    text_recap_arbo = recap_arbo.create_text(20,20,text="Dossiers:", fill="black", anchor="nw")
+
+
+##### cases
+    f_cases = tk.Frame(frame_recap)
+    f_cases.grid(row=0, column=1, sticky="nw")
+
+    recap_cases = tk.Canvas(f_cases, bg="lightblue")
+    #recap_cases.grid(row=0, column=1, sticky="nw")
+    recap_cases.pack(side="left", fill="both", expand=True)
+    text_recap_cases = recap_cases.create_text(20,20,text="Régions:", fill="black", anchor="nw")
+
+    # Créer une scrollbar pour la direction verticale
+    scrollbar_y = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
+    scrollbar_y.pack(side="right", fill="y")
+
+    # Connecter la scrollbar à la direction verticale du Canvas
+    recap_cases.configure(yscrollcommand=scrollbar_y.set)
+
+    #recap_cases = tk.Label(frame_recap, text="Régions:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
+    #recap_cases.grid(row=0, column=1, sticky="nsew")
 
     frame_recap.rowconfigure(0, weight=1)
-    frame_recap.columnconfigure(0, weight=1)
-    frame_recap.columnconfigure(1, weight=1)
+    frame_recap.grid_columnconfigure(0, weight=1)
+    frame_recap.grid_columnconfigure(1, weight=1)
 
     ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
     ## haut = choix + log, bas = progress bar + bouton
@@ -442,10 +467,11 @@ if __name__ == "__main__":
     style.map("Treeview", background=[('selected', '#347083')])
 
     #root_dir = "./Results"
-    root_dir = "../src/Results"
+    root_dir = "Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
-    folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)
+    #folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)
+    folder_tree = folder.FolderTree(frame_arbo, folder_structure, text_recap_arbo, recap_arbo)
     folder_tree.pack(expand=True, fill=tk.BOTH)
     change_treeview_colors(folder_tree, text_color=theme.couleur_texte, select_color= "lightblue", background_color=theme.couleur_frame)
     theme.configurer_background(frame_root)

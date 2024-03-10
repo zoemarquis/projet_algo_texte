@@ -68,7 +68,7 @@ def change_scrollbar_color(scrollbar, background_color, trough_color, border_col
 ###### MODIF CHAIMA POUR SELECTIONNER PLUSIEURS APRES A DECIDER
 class FolderTree(tk.Frame):
 
-    def __init__(self, master, folder_structure, labelframe_recap, *args, **kwargs):
+    def __init__(self, master, folder_structure, recap, canvas_arbo, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.selected_items = set()  # Ensemble pour garder une trace des éléments sélectionnés
 
@@ -77,7 +77,8 @@ class FolderTree(tk.Frame):
         style.configure("Custom.Treeview", background="#d3d3d3", fieldbackground="#d3d3d3", foreground="black")
         style.map("Custom.Treeview", background=[('selected', '#347083')])
 
-        self.recap_text = labelframe_recap
+        self.recap_text = recap
+        self.canvas_arbo = canvas_arbo
         #self.recap_text = tk.Label(labelframe_recap)
         #self.recap_text.pack()
         #self.recap_text.pack(side=tk.LEFT, fill="both", expand=True)
@@ -126,7 +127,9 @@ class FolderTree(tk.Frame):
             else:
                 recap_text += ", "  # Ajouter une virgule pour séparer les options
             recap_text += self.tree.item(option, "text")
-        self.recap_text.config(text="Arborescence:\n"+recap_text)
+        #self.recap_text.config(text="Arborescence:\n"+recap_text)
+        self.canvas_arbo.itemconfig(self.recap_text, text="Arborescence:\n"+recap_text)
+
 
     def populate_tree(self, folder_structure, parent=""):
         for folder in folder_structure:

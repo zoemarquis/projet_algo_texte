@@ -6,23 +6,35 @@ import folder
 import theme 
 import terminal
 
-def update_recap(check_vars, options, recap_label):
-    selected_options = [option for option in options if check_vars[option].get()]
-    recap_text = ""
-    for i, option in enumerate(selected_options):
-        if i % 2 == 0:  # Si c'est le début d'une nouvelle ligne
-            if i != 0:  # Si ce n'est pas la première ligne
-                recap_text += ", \n"  # Ajouter un saut de ligne pour séparer les lignes
-        
-        else:
-            recap_text += ", "  # Ajouter une virgule pour séparer les options
-        recap_text += option  # Ajouter l'option au texte du récapitulatif
-    recap_cases.itemconfig(text_recap_cases,text="Régions:\n"+recap_text)
 
-# def update_recap(check_vars, selected_options, recap_label):
-#     recap_text = "Régions sélectionnées:\n" + ", ".join(selected_options)        
-#     recap_label.config(text=recap_text)
-#     variables["All"].trace_add("write", lambda *args: all_command())
+additional_regions = set()
+
+def update_recap(check_vars, options, recap_label):
+    # Sélectionnez les options qui sont cochées
+    selected_options = [option for option in options if check_vars.get(option, tk.BooleanVar()).get()]
+    # Ajoutez les régions supplémentaires à la liste des options sélectionnées
+    all_options = selected_options + list(additional_regions)
+    recap_text = "Régions:\n"
+    for i, option in enumerate(all_options):
+        if i > 0:  # Ajouter une virgule avant tous les éléments sauf le premier
+            recap_text += ", "
+        if i % 2 == 0 and i > 0:  # Ajouter un saut de ligne tous les deux éléments
+            recap_text += "\n"
+        recap_text += option
+    recap_cases.itemconfig(text_recap_cases, text=recap_text)
+# def update_recap(check_vars, options, recap_label):
+#     selected_options = [option for option in options if check_vars[option].get()]
+#     recap_text = ""
+#     for i, option in enumerate(selected_options):
+#         if i % 2 == 0:  # Si c'est le début d'une nouvelle ligne
+#             if i != 0:  # Si ce n'est pas la première ligne
+#                 recap_text += ", \n"  # Ajouter un saut de ligne pour séparer les lignes
+        
+#         else:
+#             recap_text += ", "  # Ajouter une virgule pour séparer les options
+#         recap_text += option  # Ajouter l'option au texte du récapitulatif
+#     recap_cases.itemconfig(text_recap_cases,text="Régions:\n"+recap_text)
+
 
 def change_cursor(event):
     event.widget.config(cursor="hand2")  # Change le curseur en main pointant
@@ -94,21 +106,59 @@ def update_progress():
 
 ########## MODIF CHAIMA
 # Fonction de rappel pour la zone de texte
+# def on_text_entry(event=None):
+#     entered_text = zone_entre.get().strip().lower()  # Obtient le texte et le convertit en minuscules
+#     if entered_text == "all":
+#         # Si "All" est entré, coche toutes les cases sauf "All"
+#         for region, var in check_vars.items():
+#             if region.lower() != "all":
+#                 var.set(True)
+#         update_recap(check_vars, [region for region in regions if region.lower() != "all"], recap_cases)  # Met à jour le récapitulatif sans inclure "All"
+#     else:
+#         # Sinon, vérifie si le texte correspond à une région et coche la case correspondante
+#         for region, var in check_vars.items():
+#             if entered_text == region.lower():
+#                 var.set(True)  # Coche la case à cocher correspondante
+#                 update_recap(check_vars, regions, recap_cases)  # Met à jour le récapitulatif
+#                 break
+# Ensemble pour stocker les régions supplémentaires
+# def on_text_entry(event=None):
+#     entered_text = zone_entre.get().strip()  # Obtenez le texte entré sans la conversion en minuscules pour conserver la casse
+#     if entered_text:  # Si du texte a été entré
+#         if entered_text.lower() == "all":  # Si le texte est "all", cochez toutes les cases
+#             for region, var in check_vars.items():
+#                 var.set(True)
+#             update_recap(check_vars, regions, recap_cases)
+#         else:
+#             # Ajoutez la région entrée à l'ensemble des régions supplémentaires
+#             additional_regions.add(entered_text)
+#             update_recap(check_vars, regions + list(additional_regions), recap_cases)
+#         zone_entre.set("")  # Nettoyez la zone de texte après l'ajout
+
 def on_text_entry(event=None):
-    entered_text = zone_entre.get().strip().lower()  # Obtient le texte et le convertit en minuscules
-    if entered_text == "all":
-        # Si "All" est entré, coche toutes les cases sauf "All"
-        for region, var in check_vars.items():
-            if region.lower() != "all":
+    entered_text = zone_entre.get().strip()  # Obtenez le texte entré
+    if entered_text:  # Si du texte a été entré
+        region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
+        if entered_text.lower() == "all":
+            # Si le texte est "all", cochez toutes les cases
+            for region, var in check_vars.items():
                 var.set(True)
-        update_recap(check_vars, [region for region in regions if region.lower() != "all"], recap_cases)  # Met à jour le récapitulatif sans inclure "All"
-    else:
-        # Sinon, vérifie si le texte correspond à une région et coche la case correspondante
-        for region, var in check_vars.items():
-            if entered_text == region.lower():
-                var.set(True)  # Coche la case à cocher correspondante
-                update_recap(check_vars, regions, recap_cases)  # Met à jour le récapitulatif
-                break
+            update_recap(check_vars, regions, recap_cases)
+        else:
+            for region in regions:
+                if entered_text.lower() == region.lower():
+                    check_vars[region].set(True)  # Cochez la case de la région correspondante
+                    update_recap(check_vars, regions, recap_cases)
+                    region_found = True  # Marquez que la région a été trouvée et cochée
+                    break  # Sortez de la boucle une fois la région trouvée
+            if not region_found:
+                # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions` et mettez à jour le récapitulatif
+                # Assurez-vous que `additional_regions` est défini quelque part dans votre code, par exemple en l'initialisant comme un set vide en dehors de cette fonction
+                if entered_text.lower() not in [region.lower() for region in regions + list(additional_regions)]:
+                    additional_regions.add(entered_text)  # Ajoutez la région à la liste des régions supplémentaires
+                    update_recap(check_vars, regions + list(additional_regions), recap_cases)
+        zone_entre.set("")  # Nettoyez la zone de texte après l'ajout ou si la région est déjà présente
+        # Mettez à jour la scrollbar si nécessaire, en fonction de la hauteur du contenu de votre récapitulatif
 
 ########## FIN MODIF CHAIMA
 
@@ -179,7 +229,7 @@ if __name__ == "__main__":
     # label_info.bind("<Leave>", leave)
   
     
-    image = tk.PhotoImage(file="image/info-2.png")
+    image = tk.PhotoImage(file="../image/info-2.png")
     label_info = tk.Label(frame_titre,image=image, font=("Arial", 14, "bold"), fg="white", bg="white",
                       width=50, height=50, borderwidth=2)
     label_info.config(image=image)
@@ -239,7 +289,8 @@ if __name__ == "__main__":
     f_arbo = tk.Frame(frame_recap)
     f_arbo.grid(row=0, column=0, sticky="nw")
 
-    recap_arbo = tk.Canvas(f_arbo, bg="pink")
+    #recap_arbo = tk.Canvas(f_arbo, bg="pink")
+    recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=100)
     recap_arbo.pack(side="left", fill="both", expand=True)
     #recap_arbo.grid(row=0, column=0, sticky="nw")
     text_recap_arbo = recap_arbo.create_text(20,20,text="Dossiers:", fill="black", anchor="nw")
@@ -391,7 +442,7 @@ if __name__ == "__main__":
         frame_saisie.grid(row=r-1, column=num_columns, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
         zone_texte.pack(expand=True)
-        zone_texte.bind('<KeyRelease>', on_text_entry)
+        zone_texte.bind('<Return>', on_text_entry)
 
 
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
@@ -467,7 +518,7 @@ if __name__ == "__main__":
     style.map("Treeview", background=[('selected', '#347083')])
 
     #root_dir = "./Results"
-    root_dir = "Results"
+    root_dir = "../src/Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     #folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)

@@ -2,8 +2,11 @@ import tkinter as tk
 from tkinter import ttk 
 
 couleur_frame = "#535878"  
-couleur_fond = "#1B3358"  
+#556C96"#"#516079"#BE9CC7"#535878"  
+couleur_fond = "#1B3358"
+#516079#"#556C96"#1C2942"#1B3358"  
 couleur_texte = "white"  
+couleur_selection="red"
 
 # def configurer_background(widget, bg_frame="#282C34", bg_principal="#3C3F41"):
 #     # Appliquer la couleur de fond principale au widget principal
@@ -16,7 +19,7 @@ couleur_texte = "white"
 #     for child in widget.winfo_children():
 #         configurer_background(child, bg_principal, bg_frame)
 
-def configurer_background(widget, bg_frame="#1B3358", bg_principal="#1B3358"):
+def configurer_background(widget, bg_frame=couleur_fond, bg_principal=couleur_fond):
     # Appliquer la couleur de fond principale au widget principal
     if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
         widget.configure(bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame)

@@ -134,31 +134,57 @@ def update_progress():
 #             additional_regions.add(entered_text)
 #             update_recap(check_vars, regions + list(additional_regions), recap_cases)
 #         zone_entre.set("")  # Nettoyez la zone de texte après l'ajout
-
 def on_text_entry(event=None):
     entered_text = zone_entre.get().strip()  # Obtenez le texte entré
     if entered_text:  # Si du texte a été entré
-        region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
-        if entered_text.lower() == "all":
-            # Si le texte est "all", cochez toutes les cases
-            for region, var in check_vars.items():
-                var.set(True)
-            update_recap(check_vars, regions, recap_cases)
-        else:
-            for region in regions:
-                if entered_text.lower() == region.lower():
-                    check_vars[region].set(True)  # Cochez la case de la région correspondante
-                    update_recap(check_vars, regions, recap_cases)
-                    region_found = True  # Marquez que la région a été trouvée et cochée
-                    break  # Sortez de la boucle une fois la région trouvée
-            if not region_found:
-                # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions` et mettez à jour le récapitulatif
-                # Assurez-vous que `additional_regions` est défini quelque part dans votre code, par exemple en l'initialisant comme un set vide en dehors de cette fonction
-                if entered_text.lower() not in [region.lower() for region in regions + list(additional_regions)]:
-                    additional_regions.add(entered_text)  # Ajoutez la région à la liste des régions supplémentaires
-                    update_recap(check_vars, regions + list(additional_regions), recap_cases)
+        # Séparez le texte entré en régions basées sur le séparateur ";"
+        entered_regions = entered_text.split(";")
+        for entered_region in entered_regions:
+            entered_region = entered_region.strip()  # Supprimez les espaces superflus de chaque région
+            region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
+            if entered_region.lower() == "all":
+                # Si le texte est "all", cochez toutes les cases
+                for region, var in check_vars.items():
+                    var.set(True)
+                update_recap(check_vars, regions, recap_cases)
+            else:
+                for region in regions:
+                    if entered_region.lower() == region.lower():
+                        check_vars[region].set(True)  # Cochez la case de la région correspondante
+                        update_recap(check_vars, regions, recap_cases)
+                        region_found = True  # Marquez que la région a été trouvée et cochée
+                        break  # Sortez de la boucle une fois la région trouvée
+                if not region_found:
+                    # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions`
+                    if entered_region.lower() not in [region.lower() for region in regions + list(additional_regions)]:
+                        additional_regions.add(entered_region)  # Ajoutez la région à la liste des régions supplémentaires
+                        update_recap(check_vars, regions + list(additional_regions), recap_cases)
         zone_entre.set("")  # Nettoyez la zone de texte après l'ajout ou si la région est déjà présente
-        # Mettez à jour la scrollbar si nécessaire, en fonction de la hauteur du contenu de votre récapitulatif
+
+# def on_text_entry(event=None):
+#     entered_text = zone_entre.get().strip()  # Obtenez le texte entré
+#     if entered_text:  # Si du texte a été entré
+#         region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
+#         if entered_text.lower() == "all":
+#             # Si le texte est "all", cochez toutes les cases
+#             for region, var in check_vars.items():
+#                 var.set(True)
+#             update_recap(check_vars, regions, recap_cases)
+#         else:
+#             for region in regions:
+#                 if entered_text.lower() == region.lower():
+#                     check_vars[region].set(True)  # Cochez la case de la région correspondante
+#                     update_recap(check_vars, regions, recap_cases)
+#                     region_found = True  # Marquez que la région a été trouvée et cochée
+#                     break  # Sortez de la boucle une fois la région trouvée
+#             if not region_found:
+#                 # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions` et mettez à jour le récapitulatif
+#                 # Assurez-vous que `additional_regions` est défini quelque part dans votre code, par exemple en l'initialisant comme un set vide en dehors de cette fonction
+#                 if entered_text.lower() not in [region.lower() for region in regions + list(additional_regions)]:
+#                     additional_regions.add(entered_text)  # Ajoutez la région à la liste des régions supplémentaires
+#                     update_recap(check_vars, regions + list(additional_regions), recap_cases)
+#         zone_entre.set("")  # Nettoyez la zone de texte après l'ajout ou si la région est déjà présente
+#         # Mettez à jour la scrollbar si nécessaire, en fonction de la hauteur du contenu de votre récapitulatif
 
 ########## FIN MODIF CHAIMA
 
@@ -177,38 +203,38 @@ if __name__ == "__main__":
     height = fenetre.winfo_height()
     
 ########### MODIF CHAIMA
-    # class ToolTip(object):
-    #      # Initialisation sans changement
-    #     def __init__(self, widget):
-    #         self.widget = widget
-    #         self.tipwindow = None
-    #         self.x = self.y = 0
+    class ToolTip(object):
+         # Initialisation sans changement
+        def __init__(self, widget):
+            self.widget = widget
+            self.tipwindow = None
+            self.x = self.y = 0
 
-    #     def show_tip(self, text):
-    #         "Affiche le texte du tooltip"
-    #         if self.tipwindow or not text:
-    #             return
-    #         x = self.widget.winfo_rootx() + 25
-    #         y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20
-    #         self.tipwindow = tw = tk.Toplevel(self.widget)
-    #         tw.wm_overrideredirect(True)
-    #         tw.wm_geometry("+%d+%d" % (x, y))
-    #         label = tk.Label(tw, text=text, justify=tk.LEFT,
-    #                         background="lightyellow", relief=tk.SOLID, borderwidth=1,
-    #                         font=("Arial", "10", "normal"))
-    #         label.pack(ipadx=1, ipady=1)
+        def show_tip(self, text):
+            "Affiche le texte du tooltip"
+            if self.tipwindow or not text:
+                return
+            x = self.widget.winfo_rootx() + 25
+            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20
+            self.tipwindow = tw = tk.Toplevel(self.widget)
+            tw.wm_overrideredirect(True)
+            tw.wm_geometry("+%d+%d" % (x, y))
+            label = tk.Label(tw, text=text, justify=tk.LEFT,
+                            background="lightyellow", relief=tk.SOLID, borderwidth=1,
+                            font=("Arial", "10", "normal"))
+            label.pack(ipadx=1, ipady=1)
 
-    #     def hide_tip(self):
-    #         if self.tipwindow:
-    #             self.tipwindow.destroy()
-    #             self.tipwindow = None
+        def hide_tip(self):
+            if self.tipwindow:
+                self.tipwindow.destroy()
+                self.tipwindow = None
 
-    # # Modification de la façon dont vous liez l'événement et appelez show_tip/hide_tip
-    # def enter(event):
-    #     tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
+    # Modification de la façon dont vous liez l'événement et appelez show_tip/hide_tip
+    def enter(event):
+        tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
 
-    # def leave(event):
-    #     tooltip.hide_tip()
+    def leave(event):
+        tooltip.hide_tip()
 
 ########### FIN MODIF CHAIMA
     frame_root = tk.Frame(fenetre)
@@ -220,44 +246,42 @@ if __name__ == "__main__":
     label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 25), fg=theme.couleur_frame)
     label.grid(row=0, column=0, sticky="ew")
 ######### MODIF CHAIMA
-    # label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
-    #                     width=2, height=1, borderwidth=2)
-    # label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
+    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
+                        width=2, height=1, borderwidth=2)
+    label_info.grid(row=0, column=1, padx=5, pady=20, sticky="e")
     
-    # tooltip = ToolTip(label_info)
-    # label_info.bind("<Enter>", enter)
-    # label_info.bind("<Leave>", leave)
+    tooltip = ToolTip(label_info)
+    label_info.bind("<Enter>", enter)
+    label_info.bind("<Leave>", leave)
   
     
-    image = tk.PhotoImage(file="../image/info-2.png")
-    label_info = tk.Label(frame_titre,image=image, font=("Arial", 14, "bold"), fg="white", bg="white",
-                      width=50, height=50, borderwidth=2)
-    label_info.config(image=image)
-    label_info.grid(row=0, column=1, padx=0, pady=20, sticky="e")
+    # image = tk.PhotoImage(file="image/info-2.png")
+    # label_info = tk.Label(frame_titre,image=image, font=("Arial", 14, "bold"), fg="white", bg="white",
+    #                   width=50, height=50, borderwidth=2)
+    # label_info.config(image=image)
+    # label_info.grid(row=0, column=1, padx=0, pady=20, sticky="e")
 
-    # Création d'un label pour le texte du tooltip qui sera affiché ou caché
-    tooltip_text = tk.Label(frame_titre, text="Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER", fg="white", bg="lightyellow", bd=1, relief="solid")
-    tooltip_text.grid(row=0, column=2, sticky="e")
-    tooltip_text.grid_remove()  # Cacher initialement le tooltip
+    # # Création d'un label pour le texte du tooltip qui sera affiché ou caché
+    # tooltip_text = tk.Label(frame_titre, text="Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER", fg="white", bg="lightyellow", bd=1, relief="solid")
+    # tooltip_text.grid(row=0, column=2, sticky="e")
+    # tooltip_text.grid_remove()  # Cacher initialement le tooltip
 
-    # Fonction pour montrer le tooltip
-    def show_tooltip(event):
-        tooltip_text.grid()  # Affiche le texte
+    # # Fonction pour montrer le tooltip
+    # def show_tooltip(event):
+    #     tooltip_text.grid()  # Affiche le texte
 
-    # Fonction pour cacher le tooltip
-    def hide_tooltip(event):
-        tooltip_text.grid_remove()  # Cache le texte
+    # # Fonction pour cacher le tooltip
+    # def hide_tooltip(event):
+    #     tooltip_text.grid_remove()  # Cache le texte
 
-    # Liens d'événements
-    label_info.bind("<Enter>", show_tooltip)
-    label_info.bind("<Leave>", hide_tooltip)
+    # # Liens d'événements
+    # label_info.bind("<Enter>", show_tooltip)
+    # label_info.bind("<Leave>", hide_tooltip)
 
     # tooltip = ToolTip(label_info)  # Vous devez créer tooltip avec label_info comme widget cible
     # label_info.bind("<Enter>", enter)
     # label_info.bind("<Leave>", leave)
     
-    
-
 ######### FIN MODIF CHAIMA
 
     frame_titre.rowconfigure(0, weight=1)
@@ -286,24 +310,58 @@ if __name__ == "__main__":
 ##### arbo
     #recap_arbo = tk.Label(frame_recap, text="Arborescence:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
     #recap_arbo.grid(row=0, column=0, sticky="nsew")
+   # Créer une fonction pour effacer l'ensemble des régions et éléments sélectionnés
+    def effacer_selection():
+        # Réinitialisez les variables de case à cocher à False
+        for var in check_vars.values():
+            var.set(False)
+        
+        # Effacer les régions supplémentaires ajoutées
+        additional_regions.clear()
+
+        # Effacer le contenu de la zone de texte
+        zone_entre.set("")
+
+        # Mettez à jour le récapitulatif pour refléter les changements
+        update_recap(check_vars, regions + list(additional_regions), recap_cases)
+        recap_arbo.itemconfig(text_recap_arbo, text="Arborescence:\n")
+
+    # Créer un bouton dans la frame récapitulative pour effacer la sélection
+    
+    bouton_effacer_selection = ttk.Button(frame_recap, text="Effacer la sélection", command=effacer_selection,style="Custom.TButton")
+    bouton_effacer_selection.grid(row=1, column=0, sticky="nsew", pady=(0,0))
+
+    
     f_arbo = tk.Frame(frame_recap)
-    f_arbo.grid(row=0, column=0, sticky="nw")
+    f_arbo.grid(row=0, column=0, sticky="w")
 
     #recap_arbo = tk.Canvas(f_arbo, bg="pink")
-    recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=100)
+    recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=200)
     recap_arbo.pack(side="left", fill="both", expand=True)
+    
     #recap_arbo.grid(row=0, column=0, sticky="nw")
-    text_recap_arbo = recap_arbo.create_text(20,20,text="Dossiers:", fill="black", anchor="nw")
+    text_recap_arbo = recap_arbo.create_text(20,20,text="Dossier:", fill="black", anchor="nw")
 
+    scrollbar_y = tk.Scrollbar(f_arbo, orient="vertical", command=recap_arbo.yview)
+    scrollbar_y.pack(side="right", fill="y")
+    
+    # scrollbar_x = tk.Scrollbar(f_arbo, orient="horizontal", command=recap_arbo.xview)
+    # scrollbar_x.pack(side="bottom", fill="x", expand=True)  # Utilise fill="x" et expand=True pour remplir toute la largeur
 
+    # recap_arbo.configure(xscrollcommand=scrollbar_x.set)
+    recap_arbo.configure(yscrollcommand=scrollbar_y.set)
+
+    
+    
 ##### cases
     f_cases = tk.Frame(frame_recap)
-    f_cases.grid(row=0, column=1, sticky="nw")
+    f_cases.grid(row=0, column=1, sticky="w")
 
-    recap_cases = tk.Canvas(f_cases, bg="lightblue")
+    recap_cases = tk.Canvas(f_cases, bg="lightblue", height=100, width=200)
     #recap_cases.grid(row=0, column=1, sticky="nw")
     recap_cases.pack(side="left", fill="both", expand=True)
     text_recap_cases = recap_cases.create_text(20,20,text="Régions:", fill="black", anchor="nw")
+    
 
     # Créer une scrollbar pour la direction verticale
     scrollbar_y = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
@@ -357,6 +415,7 @@ if __name__ == "__main__":
     # zone_texte.pack(expand=1)
    
 ############# MODIF CHAIMA
+     
     def configure_grid():
         frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
         num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
@@ -384,7 +443,8 @@ if __name__ == "__main__":
                 checkboxes[region] = cb
             else:
                 cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
-                                     command=lambda: update_recap(check_vars, regions, recap_cases),style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
+                                     command=lambda: update_recap(check_vars, regions, recap_cases),
+                                     style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
                                      # #,
                 # style = ttk.Style()
                 # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
@@ -488,7 +548,7 @@ if __name__ == "__main__":
 
     style = ttk.Style()
     style.theme_use('clam')  # Choix d'un thème, ici 'clam'
-    style.configure("Custom.Horizontal.TProgressbar", troughcolor=theme.couleur_frame, background="lightblue")  # Personnalisation des couleurs
+    style.configure("Custom.Horizontal.TProgressbar", troughcolor=theme.couleur_frame, background=theme.couleur_selection)  # Personnalisation des couleurs
 
 
     loadbar = ttk.Progressbar(frame_bas, orient='horizontal', mode='determinate', style="Custom.Horizontal.TProgressbar")
@@ -518,7 +578,7 @@ if __name__ == "__main__":
     style.map("Treeview", background=[('selected', '#347083')])
 
     #root_dir = "./Results"
-    root_dir = "../src/Results"
+    root_dir = "Results"
     folder_structure = folder.create_folder_structure(root_dir)
 
     #folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)

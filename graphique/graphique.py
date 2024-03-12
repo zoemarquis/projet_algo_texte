@@ -324,11 +324,11 @@ if __name__ == "__main__":
 
         # Mettez à jour le récapitulatif pour refléter les changements
         update_recap(check_vars, regions + list(additional_regions), recap_cases)
-        recap_arbo.itemconfig(text_recap_arbo, text="Arborescence:\n")
+        recap_arbo.itemconfig(text_recap_arbo, text="Dossier:\n")
 
     # Créer un bouton dans la frame récapitulative pour effacer la sélection
     
-    bouton_effacer_selection = ttk.Button(frame_recap, text="Effacer la sélection", command=effacer_selection,style="Custom.TButton")
+    bouton_effacer_selection = ttk.Button(frame_recap, text="Tout effacer", command=effacer_selection,style="Custom.TButton")
     bouton_effacer_selection.grid(row=1, column=0, sticky="nsew", pady=(0,0))
 
     
@@ -336,7 +336,7 @@ if __name__ == "__main__":
     f_arbo.grid(row=0, column=0, sticky="w")
 
     #recap_arbo = tk.Canvas(f_arbo, bg="pink")
-    recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=200)
+    recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=400)
     recap_arbo.pack(side="left", fill="both", expand=True)
     
     #recap_arbo.grid(row=0, column=0, sticky="nw")
@@ -579,10 +579,10 @@ if __name__ == "__main__":
 
     #root_dir = "./Results"
     root_dir = "Results"
-    folder_structure = folder.create_folder_structure(root_dir)
+    folder_structure, dict_path = folder.create_folder_structure(root_dir)
 
     #folder_tree = folder.FolderTree(frame_arbo, folder_structure, recap_arbo)
-    folder_tree = folder.FolderTree(frame_arbo, folder_structure, text_recap_arbo, recap_arbo)
+    folder_tree = folder.FolderTree(frame_arbo, folder_structure, dict_path, text_recap_arbo, recap_arbo)
     folder_tree.pack(expand=True, fill=tk.BOTH)
     change_treeview_colors(folder_tree, text_color=theme.couleur_texte, select_color= "lightblue", background_color=theme.couleur_frame)
     theme.configurer_background(frame_root)

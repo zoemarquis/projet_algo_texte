@@ -9,31 +9,43 @@ import terminal
 
 additional_regions = set()
 
-def update_recap(check_vars, options, recap_label):
-    # Sélectionnez les options qui sont cochées
-    selected_options = [option for option in options if check_vars.get(option, tk.BooleanVar()).get()]
-    # Ajoutez les régions supplémentaires à la liste des options sélectionnées
-    all_options = selected_options + list(additional_regions)
-    recap_text = "Régions:\n"
-    for i, option in enumerate(all_options):
-        if i > 0:  # Ajouter une virgule avant tous les éléments sauf le premier
-            recap_text += ", "
-        if i % 2 == 0 and i > 0:  # Ajouter un saut de ligne tous les deux éléments
-            recap_text += "\n"
-        recap_text += option
-    recap_cases.itemconfig(text_recap_cases, text=recap_text)
 # def update_recap(check_vars, options, recap_label):
-#     selected_options = [option for option in options if check_vars[option].get()]
-#     recap_text = ""
-#     for i, option in enumerate(selected_options):
-#         if i % 2 == 0:  # Si c'est le début d'une nouvelle ligne
-#             if i != 0:  # Si ce n'est pas la première ligne
-#                 recap_text += ", \n"  # Ajouter un saut de ligne pour séparer les lignes
+#     # Sélectionnez les options qui sont cochées
+#     selected_options = [option for option in options if check_vars.get(option, tk.BooleanVar()).get()]
+#     # Ajoutez les régions supplémentaires à la liste des options sélectionnées
+#     all_options = selected_options + list(additional_regions)
+#     recap_text = "Régions:\n"
+#     for i, option in enumerate(all_options):
+#         if i > 0:  # Ajouter une virgule avant tous les éléments sauf le premier
+#             recap_text += ", "
+#         if i % 2 == 0 and i > 0:  # Ajouter un saut de ligne tous les deux éléments
+#             recap_text += "\n"
+#         recap_text += option
+#     recap_cases.itemconfig(text_recap_cases, text=recap_text)
+
+def update_recap(check_vars, options, recap_inner_frame):
+    # Nettoyer le frame récapitulatif avant de le mettre à jour
+    for widget in recap_inner_frame.winfo_children():
+        widget.destroy()
+
+    all_options = sorted(list(additional_regions) + [option for option in options if check_vars.get(option, tk.BooleanVar()).get()])
+    
+    for option in all_options:
+        option_frame = tk.Frame(recap_inner_frame)
+        option_frame.pack(fill=tk.X, expand=True)
         
-#         else:
-#             recap_text += ", "  # Ajouter une virgule pour séparer les options
-#         recap_text += option  # Ajouter l'option au texte du récapitulatif
-#     recap_cases.itemconfig(text_recap_cases,text="Régions:\n"+recap_text)
+        option_label = tk.Label(option_frame, text=option, bg="lightblue")
+        option_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        delete_button = tk.Button(option_frame, text="✕", command=lambda o=option: remove_region(o, check_vars, options, recap_inner_frame))
+        delete_button.pack(side=tk.RIGHT)
+        
+def remove_region(region, check_vars, options, recap_inner_frame):
+    if region in additional_regions:
+        additional_regions.remove(region)
+    else:
+        check_vars[region].set(False)
+    update_recap(check_vars, options, recap_inner_frame)
 
 
 def change_cursor(event):
@@ -291,8 +303,8 @@ if __name__ == "__main__":
     frame_principal = tk.Frame(frame_root)
     frame_principal.grid(row=1, column=0, sticky="nsew", padx=30, pady=(0,30))
 
-    frame_principal.grid_columnconfigure(0, weight=2)
-    frame_principal.grid_columnconfigure(1, weight=5)
+    frame_principal.grid_columnconfigure(0, weight=1)
+    frame_principal.grid_columnconfigure(1, weight=3)
     frame_principal.grid_rowconfigure(0, weight=9)
     frame_principal.grid_rowconfigure(1, weight=1)
 
@@ -300,11 +312,25 @@ if __name__ == "__main__":
     frame_root.rowconfigure(1, weight=10)
     frame_root.columnconfigure(0, weight=1)
 
-    ## GAUCHE : ARBO + RECAP
+    ## GAUCHE : ARBO + Case à cocher
     frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=theme.couleur_frame, foreground="white")
     frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0, 10))
+    
+    frame_haut = tk.Frame(frame_principal)
+    frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10,0), pady=(0,10))
 
-    frame_recap = tk.LabelFrame(frame_principal, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
+    frame_haut.columnconfigure(0, weight=1)
+    frame_haut.rowconfigure(0, weight=1)
+    frame_haut.rowconfigure(1, weight=2)
+
+    frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
+    frame_choix.grid(row=0, column=0, sticky="nsew")
+
+    frame_choix.rowconfigure(0, weight=1)
+    frame_choix.rowconfigure(1, weight=1)
+    frame_choix.columnconfigure(0, weight=1)
+
+    frame_recap = tk.LabelFrame(frame_choix, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
     frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
 
 ##### arbo
@@ -339,18 +365,11 @@ if __name__ == "__main__":
     recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=400)
     recap_arbo.pack(side="left", fill="both", expand=True)
     
+
     #recap_arbo.grid(row=0, column=0, sticky="nw")
     text_recap_arbo = recap_arbo.create_text(20,20,text="Dossier:", fill="black", anchor="nw")
 
-    scrollbar_y = tk.Scrollbar(f_arbo, orient="vertical", command=recap_arbo.yview)
-    scrollbar_y.pack(side="right", fill="y")
-    
-    # scrollbar_x = tk.Scrollbar(f_arbo, orient="horizontal", command=recap_arbo.xview)
-    # scrollbar_x.pack(side="bottom", fill="x", expand=True)  # Utilise fill="x" et expand=True pour remplir toute la largeur
-
-    # recap_arbo.configure(xscrollcommand=scrollbar_x.set)
-    recap_arbo.configure(yscrollcommand=scrollbar_y.set)
-
+  
     
     
 ##### cases
@@ -359,16 +378,18 @@ if __name__ == "__main__":
 
     recap_cases = tk.Canvas(f_cases, bg="lightblue", height=100, width=200)
     #recap_cases.grid(row=0, column=1, sticky="nw")
-    recap_cases.pack(side="left", fill="both", expand=True)
+    recap_cases.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    
     text_recap_cases = recap_cases.create_text(20,20,text="Régions:", fill="black", anchor="nw")
     
+    scrollbar_regions = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
+    scrollbar_regions.pack(side=tk.RIGHT, fill="y")
+    # # Créer une scrollbar pour la direction verticale
+    # scrollbar_y = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
+    # scrollbar_y.pack(side="right", fill="y")
 
-    # Créer une scrollbar pour la direction verticale
-    scrollbar_y = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
-    scrollbar_y.pack(side="right", fill="y")
-
-    # Connecter la scrollbar à la direction verticale du Canvas
-    recap_cases.configure(yscrollcommand=scrollbar_y.set)
+    # # Connecter la scrollbar à la direction verticale du Canvas
+    recap_cases.configure(yscrollcommand=scrollbar_regions.set)
 
     #recap_cases = tk.Label(frame_recap, text="Régions:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
     #recap_cases.grid(row=0, column=1, sticky="nsew")
@@ -379,23 +400,11 @@ if __name__ == "__main__":
 
     ## DROITE : CHOIX + LOG + BOUTON + PROGRESS BAR
     ## haut = choix + log, bas = progress bar + bouton
-    frame_haut = tk.Frame(frame_principal)
-    frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10,0), pady=(0,10))
-
-    frame_haut.columnconfigure(0, weight=1)
-    frame_haut.rowconfigure(0, weight=1)
-    frame_haut.rowconfigure(1, weight=2)
-
-    frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
-    frame_choix.grid(row=0, column=0, sticky="nsew")
-
-    frame_choix.rowconfigure(0, weight=1)
-    frame_choix.rowconfigure(1, weight=1)
-    frame_choix.columnconfigure(0, weight=1)
-
+   
+   
     ### choix
-    frame_cases = tk.LabelFrame(frame_choix, text="Sélection des régions", bg=theme.couleur_frame, fg="white")    
-    frame_cases.grid(row=0, column=0, sticky="nsew", pady=(0,5))
+    frame_cases = tk.LabelFrame(frame_principal, text="Sélection des régions", bg=theme.couleur_frame, fg="white")    
+    frame_cases.grid(row=1, column=0, sticky="nsew", padx=(0,10),pady=(0,10))
     # case à cocher
     regions = ["CDS", "ncRNA", "3'UTR", "Centromère", "rRNA", "5'UTR",
                "Intron", "Telomère", "Mobile élément", "tRNA", "All"]
@@ -416,53 +425,53 @@ if __name__ == "__main__":
    
 ############# MODIF CHAIMA
      
-    def configure_grid():
-        frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
-        num_columns = 5  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
-        # Assurez-vous que la colonne pour "All" est considérée séparément
-        column_width = frame_width // (num_columns + 1)
+    # def configure_grid():
+    #     frame_width = frame_cases.winfo_width()  # Obtention de la largeur de frame_cases
+    #     num_columns = 2  # Nombre souhaité de colonnes, sans compter la colonne pour "All"
+    #     # Assurez-vous que la colonne pour "All" est considérée séparément
+    #     column_width = frame_width // (num_columns + 1)
         
 
-        # Configuration de la largeur des colonnes pour un espacement équitable
-        for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
-            frame_cases.grid_columnconfigure(c, minsize=column_width)
+    #     # Configuration de la largeur des colonnes pour un espacement équitable
+    #     for c in range(num_columns + 1):  # +1 pour inclure la colonne "All"
+    #         frame_cases.grid_columnconfigure(c, minsize=column_width)
 
-        # Positionnement des cases à cocher
-        r = 0  # Ligne de départ
-        c = 0  # Colonne de départ
-        for region in regions:
-            var = tk.BooleanVar(value=False)
-            variables[region] = var
-            #check_vars.append(var)
+    #     # Positionnement des cases à cocher
+    #     r = 0  # Ligne de départ
+    #     c = 0  # Colonne de départ
+    #     for region in regions:
+    #         var = tk.BooleanVar(value=False)
+    #         variables[region] = var
+    #         #check_vars.append(var)
 
-            if region == "All":  # Traiter "All" séparément
-                #cb = tk.Checkbutton(frame_cases, text=region, variable=var,background=theme.couleur_frame)#)
-                cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
-                # Placer "All" dans sa propre colonne à l'extrémité droite
-                cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
-                checkboxes[region] = cb
-            else:
-                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
-                                     command=lambda: update_recap(check_vars, regions, recap_cases),
-                                     style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
-                                     # #,
-                # style = ttk.Style()
-                # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
-                style = ttk.Style()
-                style.map("CustomCheckbutton.TCheckbutton",
-                        background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
+    #         if region == "All":  # Traiter "All" séparément
+    #             #cb = tk.Checkbutton(frame_cases, text=region, variable=var,background=theme.couleur_frame)#)
+    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
+    #             # Placer "All" dans sa propre colonne à l'extrémité droite
+    #             cb.grid(row=0, column=num_columns, rowspan=2, sticky="w") 
+    #             checkboxes[region] = cb
+    #         else:
+    #             cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region], 
+    #                                  command=lambda: update_recap(check_vars, regions, recap_cases),
+    #                                  style="CustomCheckbutton.TCheckbutton")#,background=theme.couleur_frame)
+    #                                  # #,
+    #             # style = ttk.Style()
+    #             # style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
+    #             style = ttk.Style()
+    #             style.map("CustomCheckbutton.TCheckbutton",
+    #                     background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
 
 
-                cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
-                checkboxes[region] = cb
+    #             cb.grid(row=r, column=c, sticky="wns")  # Ajoute un espacement horizontal
+    #             checkboxes[region] = cb
 
-                c += 1
-                if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
-                    c = 0
-                    r += 1
+    #             c += 1
+    #             if c >= num_columns:  # Passage à la ligne suivante après num_columns cases (ne compte pas "All")
+    #                 c = 0
+    #                 r += 1
     def configure_grid():
         frame_width = frame_cases.winfo_width()
-        num_columns = 5
+        num_columns = 2
         column_width = frame_width // (num_columns + 2)
 
         # Calculez l'espacement uniforme en fonction du nombre total de colonnes et de la largeur disponible
@@ -508,10 +517,6 @@ if __name__ == "__main__":
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
         frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
    # Réactive la zone de texte sinon
-
-        
-
-    
     frame_cases.rowconfigure(0, weight=1)
     frame_cases.rowconfigure(1, weight=1)
     frame_cases.grid_columnconfigure(0, weight=1)

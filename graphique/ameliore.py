@@ -252,14 +252,14 @@ if __name__ == "__main__":
             "Affiche le texte du tooltip"
             if self.tipwindow or not text:
                 return
-            x = self.widget.winfo_rootx() - 150
+            x = self.widget.winfo_rootx() - 100
             y = self.widget.winfo_rooty() + self.widget.winfo_height() 
             self.tipwindow = tw = tk.Toplevel(self.widget)
             tw.wm_overrideredirect(True)
             tw.wm_geometry("+%d+%d" % (x, y))
             label = tk.Label(tw, text=text, justify=tk.LEFT,
                             background="lightyellow", relief=tk.SOLID, borderwidth=1,
-                            font=("Arial", "10", "normal"))
+                            font=("Arial", "10", "normal"), foreground="black")
             label.pack(ipadx=1, ipady=1)
 
         def hide_tip(self):

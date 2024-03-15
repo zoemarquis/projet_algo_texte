@@ -470,7 +470,7 @@ if __name__ == "__main__":
     #                 c = 0
     #                 r += 1
     def configure_grid():
-        frame_width = frame_cases.winfo_width()
+        frame_width = frame_cases.winfo_height()
         num_columns = 2
         column_width = frame_width // (num_columns + 2)
 

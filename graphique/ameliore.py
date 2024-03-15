@@ -283,11 +283,11 @@ if __name__ == "__main__":
 #PARTIE GAUCHE
     ##PARTIE ARBORESCENCE
     frame_arbo = tk.LabelFrame(frame_principal, text="Arborescence", relief="raised",bg=theme.couleur_frame, foreground="white")
-    frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0, 10))
+    frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0,10), pady=(0,10))
 
     ##PARTIE SÉLÉCTION DES RÉGIONS
     frame_cases = tk.LabelFrame(frame_principal, text="Sélection des régions", bg=theme.couleur_frame, fg="white")    
-    frame_cases.grid(row=1, column=0, sticky="nsew", padx=(0,10),pady=(0,10))
+    frame_cases.grid(row=1, column=0, sticky="nsew", padx=(0,10),pady=(10,0))
 
     frame_cases.rowconfigure(0, weight=1)
     frame_cases.rowconfigure(1, weight=1)
@@ -311,9 +311,9 @@ if __name__ == "__main__":
     # Zone de saisie
     zone_entre = tk.StringVar()
 
-    def configure_grid():
+    def configure_grid(num_columns=2):
         frame_width = frame_cases.winfo_height()
-        num_columns = 2
+        #num_columns = 2
         column_width = frame_width // (num_columns + 2)
 
         # Calculez l'espacement uniforme en fonction du nombre total de colonnes et de la largeur disponible
@@ -332,44 +332,44 @@ if __name__ == "__main__":
             if region == "All":
                 cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
                 # Ajustez la position du bouton "All" si nécessaire, en fonction de votre conception
-                cb.grid(row=0, column=num_columns, sticky="w", padx=0, pady=0)
+                cb.grid(row=r+1, column=0, sticky="w", padx=0, pady=0)
                 checkboxes[region] = cb
             else:
                 cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region],
                                     command=lambda: update_recap(check_vars, regions, recap_cases), style="CustomCheckbutton.TCheckbutton")
-                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=5)
+                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
                 checkboxes[region] = cb
                 style = ttk.Style()
                 style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
                 #style.map("CustomCheckbutton.TCheckbutton",background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
-
-                c += 1
-                if c >= num_columns:
-                    c = 0
-                    r += 1
+            
+            c += 1
+            if c >= num_columns:
+                c = 0
+                r += 1
         variables["All"].trace("rwua", lambda *args: all_command())
-        frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame)
+        frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame, relief="solid", borderwidth=1)
         # Placer la frame_saisie en bas à gauche
-        frame_saisie.grid(row=r-1, column=num_columns, sticky="nsew")
+        frame_saisie.grid(row=r+1, column=1, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
         zone_texte.pack(expand=True)
         zone_texte.bind('<Return>', on_text_entry)
 
-
+        return r,c
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
-        frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
+        #frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
+
+    r, c = configure_grid()
+
    # Réactive la zone de texte sinon
-    frame_cases.rowconfigure(0, weight=1)
-    frame_cases.rowconfigure(1, weight=1)
-    frame_cases.grid_columnconfigure(0, weight=1)
-    frame_cases.grid_columnconfigure(1, weight=1)
-    frame_cases.grid_columnconfigure(2, weight=1)
-    frame_cases.grid_columnconfigure(3, weight=1)
-    frame_cases.grid_columnconfigure(4, weight=1)
-    frame_cases.grid_columnconfigure(5, weight=1)
+    for i in range(r+1):
+        frame_cases.grid_rowconfigure(i, weight=1)
+    for i in range(c):
+        frame_cases.grid_columnconfigure(i, weight=1)
 
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
-    fenetre.after(100, configure_grid)
+    #fenetre.after(100, configure_grid)
+
 
 #PARTIE DROITE
     ##PARTIE RÉCAPITULATIF
@@ -387,7 +387,7 @@ if __name__ == "__main__":
     frame_choix.columnconfigure(0, weight=1)
     
     frame_recap = tk.LabelFrame(frame_choix, text="Récapitulatif", relief="raised", bg=theme.couleur_frame, foreground="white")
-    frame_recap.grid(row=1, column=0, sticky="nsew", padx=(0,10), pady=(10,0))
+    frame_recap.grid(row=1, column=0, sticky="nsew", pady=(0,10))
     frame_recap.rowconfigure(0, weight=1)
     frame_recap.grid_columnconfigure(0, weight=1)
     frame_recap.grid_columnconfigure(1, weight=1)
@@ -465,9 +465,10 @@ if __name__ == "__main__":
 
     term = terminal.Terminal(frame_log, bg="black")
     term.pack(fill="both", expand=True)
+
+    term.write("triple monstre")
     
     ## BAS
-   
 
     label = tk.Label(frame_bas, text="loadbar") 
 

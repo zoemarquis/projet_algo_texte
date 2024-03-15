@@ -252,8 +252,8 @@ if __name__ == "__main__":
             "Affiche le texte du tooltip"
             if self.tipwindow or not text:
                 return
-            x = self.widget.winfo_rootx() + 25
-            y = self.widget.winfo_rooty() + self.widget.winfo_height() + 20
+            x = self.widget.winfo_rootx() - 150
+            y = self.widget.winfo_rooty() + self.widget.winfo_height() 
             self.tipwindow = tw = tk.Toplevel(self.widget)
             tw.wm_overrideredirect(True)
             tw.wm_geometry("+%d+%d" % (x, y))
@@ -332,7 +332,7 @@ if __name__ == "__main__":
             if region == "All":
                 cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
                 # Ajustez la position du bouton "All" si nécessaire, en fonction de votre conception
-                cb.grid(row=r+1, column=0, sticky="w", padx=0, pady=0)
+                cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
                 checkboxes[region] = cb
             else:
                 cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region],
@@ -350,7 +350,7 @@ if __name__ == "__main__":
         variables["All"].trace("rwua", lambda *args: all_command())
         frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame, relief="solid", borderwidth=1)
         # Placer la frame_saisie en bas à gauche
-        frame_saisie.grid(row=r+1, column=1, sticky="nsew")
+        frame_saisie.grid(row=r, column=1, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
         zone_texte.pack(expand=True)
         zone_texte.bind('<Return>', on_text_entry)
@@ -364,11 +364,11 @@ if __name__ == "__main__":
    # Réactive la zone de texte sinon
     for i in range(r+1):
         frame_cases.grid_rowconfigure(i, weight=1)
-    for i in range(c):
+    for i in range(c+1):
         frame_cases.grid_columnconfigure(i, weight=1)
 
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
-    #fenetre.after(100, configure_grid)
+    fenetre.after(100, configure_grid)
 
 
 #PARTIE DROITE
@@ -393,7 +393,7 @@ if __name__ == "__main__":
     frame_recap.grid_columnconfigure(1, weight=1)
     
         ##FRAME BAS CONTIENT PROGRESS BAR ET BOUTON
-    frame_bas = tk.Frame(frame_principal, background=theme.couleur_frame, relief="solid", borderwidth=2)
+    frame_bas = tk.Frame(frame_principal, background=theme.couleur_frame, relief="solid", borderwidth=1)
     frame_bas.grid(row=1, column=1, sticky="nsew", padx=(10,0), pady=(10,0))
     
     ###Bouton effacé
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     #recap_arbo.grid(row=0, column=0, sticky="nw")
     text_recap_arbo = recap_arbo.create_text(20,20,text="Dossier:", fill="black", anchor="nw")
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
-    fenetre.after(100, configure_grid)
+    #fenetre.after(100, configure_grid)
 
     
     ###Créer un Canvas pour le récapitulatif des régions

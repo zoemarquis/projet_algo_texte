@@ -198,7 +198,51 @@ def on_text_entry(event=None):
 #         # Mettez à jour la scrollbar si nécessaire, en fonction de la hauteur du contenu de votre récapitulatif
 
 ########## FIN MODIF CHAIMA
+def configure_grid(num_columns=2):
+        frame_width = frame_cases.winfo_height()
+        #num_columns = 2
+        column_width = frame_width // (num_columns + 2)
 
+        # Calculez l'espacement uniforme en fonction du nombre total de colonnes et de la largeur disponible
+        total_spacing = frame_width - (num_columns * column_width)
+        spacing_per_column = total_spacing // (num_columns + 1)
+
+        for c in range(num_columns + 1):
+            # Configurez l'espacement pour chaque colonne
+            frame_cases.grid_columnconfigure(c, minsize=column_width, pad=spacing_per_column)
+
+        r, c = 0, 0
+        for region in regions:
+            var = tk.BooleanVar(value=False)
+            variables[region] = var
+
+            if region == "All":
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
+                # Ajustez la position du bouton "All" si nécessaire, en fonction de votre conception
+                cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
+                checkboxes[region] = cb
+            else:
+                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region],
+                                    command=lambda: update_recap(check_vars, regions, recap_cases), style="CustomCheckbutton.TCheckbutton")
+                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
+                checkboxes[region] = cb
+                style = ttk.Style()
+                style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
+                #style.map("CustomCheckbutton.TCheckbutton",background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
+            
+            c += 1
+            if c >= num_columns:
+                c = 0
+                r += 1
+        variables["All"].trace("rwua", lambda *args: all_command())
+        frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame, relief="solid", borderwidth=1)
+        # Placer la frame_saisie en bas à gauche
+        frame_saisie.grid(row=r, column=1, sticky="nsew")
+        zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
+        zone_texte.pack(expand=True)
+        zone_texte.bind('<Return>', on_text_entry)
+
+        return r,c
 
 if __name__ == "__main__":
     fenetre = tk.Tk()
@@ -311,51 +355,7 @@ if __name__ == "__main__":
     # Zone de saisie
     zone_entre = tk.StringVar()
 
-    def configure_grid(num_columns=2):
-        frame_width = frame_cases.winfo_height()
-        #num_columns = 2
-        column_width = frame_width // (num_columns + 2)
-
-        # Calculez l'espacement uniforme en fonction du nombre total de colonnes et de la largeur disponible
-        total_spacing = frame_width - (num_columns * column_width)
-        spacing_per_column = total_spacing // (num_columns + 1)
-
-        for c in range(num_columns + 1):
-            # Configurez l'espacement pour chaque colonne
-            frame_cases.grid_columnconfigure(c, minsize=column_width, pad=spacing_per_column)
-
-        r, c = 0, 0
-        for region in regions:
-            var = tk.BooleanVar(value=False)
-            variables[region] = var
-
-            if region == "All":
-                cb = ttk.Checkbutton(frame_cases, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
-                # Ajustez la position du bouton "All" si nécessaire, en fonction de votre conception
-                cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
-                checkboxes[region] = cb
-            else:
-                cb = ttk.Checkbutton(frame_cases, text=region, variable=check_vars[region],
-                                    command=lambda: update_recap(check_vars, regions, recap_cases), style="CustomCheckbutton.TCheckbutton")
-                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
-                checkboxes[region] = cb
-                style = ttk.Style()
-                style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
-                #style.map("CustomCheckbutton.TCheckbutton",background=[("!disabled", theme.couleur_frame)],foreground=[("!disabled", "white")])
-            
-            c += 1
-            if c >= num_columns:
-                c = 0
-                r += 1
-        variables["All"].trace("rwua", lambda *args: all_command())
-        frame_saisie = tk.Frame(frame_cases, bg=theme.couleur_frame, relief="solid", borderwidth=1)
-        # Placer la frame_saisie en bas à gauche
-        frame_saisie.grid(row=r, column=1, sticky="nsew")
-        zone_texte = tk.Entry(frame_saisie, textvariable=zone_entre)
-        zone_texte.pack(expand=True)
-        zone_texte.bind('<Return>', on_text_entry)
-
-        return r,c
+   
         # Ajuster la hauteur de la frame_saisie pour correspondre aux autres éléments si nécessaire
         #frame_saisie.grid_rowconfigure(0, minsize=20)  # Aju
 

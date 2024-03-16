@@ -315,7 +315,6 @@ if __name__ == "__main__":
     # Appel de configure_grid une fois que la fenêtre est affichée pour avoir les bonnes dimensions
     fenetre.after(100, configure_grid)
 
-
 #PARTIE DROITE
     ##PARTIE RÉCAPITULATIF
         ##FRAME HAUT CONTIENT RÉCAP ET LOG
@@ -340,41 +339,38 @@ if __name__ == "__main__":
     
         ###Créer un bouton dans la frame récapitulative pour effacer la sélection
     bouton_effacer_selection = ttk.Button(frame_recap, text="TOUT EFFACER", command=effacer_selection,style="Custom.TButton")
-    # bouton_effacer_selection.grid(row=1, column=0,sticky="nsew", padx=(50,50), pady=(10,10))
-    # Place le bouton de façon à ce qu'il s'étende sur deux colonnes et le centre horizontalement
     bouton_effacer_selection.grid(row=1, column=0,padx=(300,300), pady=(10,10), sticky="ew", columnspan=2)
    
         ###Créer un Canvas pour le récapitulatif de l'arborescence
     f_arbo = tk.Frame(frame_recap)
-    f_arbo.grid(row=0, column=0, sticky="nsew")
+    f_arbo.grid(row=0, column=1, sticky="nsew")
 
     recap_arbo = tk.Canvas(f_arbo, bg="pink",height=100, width=100)
-    recap_arbo.pack(side="left", fill="both", expand=True)
+    recap_arbo.pack(side="right", fill="both", expand=True)
     
     text_recap_arbo = recap_arbo.create_text(20,20,text="Dossier:", fill="black", anchor="nw")
     
-    scrollbar_arbo = tk.Scrollbar(f_arbo, orient="vertical", command=recap_arbo.yview)
-    scrollbar_arbo.pack(side=tk.RIGHT, fill="y")
-    recap_arbo.configure(yscrollcommand=scrollbar_arbo.set)
+    # scrollbar_arbo = tk.Scrollbar(f_arbo, orient="vertical", command=recap_arbo.yview)
+    # scrollbar_arbo.pack(side="right", fill="y")
+    # recap_arbo.configure(yscrollcommand=scrollbar_arbo.set)
 
         ###Créer un Canvas pour le récapitulatif des régions
     f_cases = tk.Frame(frame_recap)
-    f_cases.grid(row=0, column=1, sticky="nsew")
+    f_cases.grid(row=0, column=0, sticky="nsew")
 
-    recap_cases = tk.Canvas(f_cases, bg="lightblue", height=100, width=200)
-    recap_cases.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    recap_cases = tk.Canvas(f_cases, bg="lightblue", height=100, width=100)
+    recap_cases.pack(side="left", fill=tk.BOTH, expand=True)
     
     text_recap_cases = recap_cases.create_text(20,20,text="Régions:", fill="black", anchor="nw")
     
-    scrollbar_regions = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
-    scrollbar_regions.pack(side=tk.RIGHT, fill="y")
+    # scrollbar_regions = tk.Scrollbar(f_cases, orient="vertical", command=recap_cases.yview)
+    # scrollbar_regions.pack(side="left", fill="y")
     
-    recap_cases.configure(yscrollcommand=scrollbar_regions.set)
+    # recap_cases.configure(yscrollcommand=scrollbar_regions.set)
 
     #recap_cases = tk.Label(frame_recap, text="Régions:\n",foreground="white",relief="solid", borderwidth=2, anchor="w")
     #recap_cases.grid(row=0, column=1, sticky="nsew")
 
-   
         ###Fenetre de terminal
     frame_log = tk.LabelFrame(frame_haut, text="log",bg=theme.couleur_frame)
     frame_log.grid(row=1, column=0, sticky="nsew", padx=0, pady=(10,0))
@@ -392,7 +388,7 @@ if __name__ == "__main__":
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
     
-    label = tk.Label(frame_bas, text="loadbar") 
+    #label = tk.Label(frame_bas, text="loadbar") 
 
     # Configuration initiale de la progression
     progress_running = False
@@ -405,7 +401,7 @@ if __name__ == "__main__":
     loadbar.grid(row=0, column=0, sticky="ewns",pady = (0,30))
     #loadbar.pack(fill='x', expand=True)
     #loadbar.pack(ipady=8)
-
+        ##Bouton Start
     #style = ttk.Style()
     style.map("Custom.TButton",
               background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],

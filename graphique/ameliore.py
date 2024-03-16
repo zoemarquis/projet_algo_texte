@@ -23,9 +23,9 @@ def update_recap(check_vars, options, recap_inner_frame):
         
         # Calculez la largeur du texte pour positionner correctement la croix
         text_width = recap_inner_frame.bbox(text_id)[2]
-        cross_start_x = text_width + 20  # Définissez une marge après le texte pour la croix
-        cross_end_x = cross_start_x + 10  # La taille de la croix
-        cross_y = y_offset + 7  # Position Y ajustée pour centrer la croix par rapport au texte
+        cross_start_x = text_width + 10  # Définissez une marge après le texte pour la croix
+        cross_end_x = cross_start_x + 8  # La taille de la croix
+        cross_y = y_offset + 3  # Position Y ajustée pour centrer la croix par rapport au texte
 
         # Dessinez la croix
         recap_inner_frame.create_line(cross_start_x, cross_y, cross_end_x, cross_y + 10, fill="red", tags=("region_item", f"delete_{option}"))
@@ -361,7 +361,8 @@ if __name__ == "__main__":
     recap_arbo.pack(side="right", fill="both", expand=True)
     
     text_recap_arbo = recap_arbo.create_text(20,20,text="Dossier:", fill="black", anchor="nw")
-    
+    # Création et configuration de la scrollbar verticale
+
     # scrollbar_arbo = tk.Scrollbar(f_arbo, orient="vertical", command=recap_arbo.yview)
     # scrollbar_arbo.pack(side="right", fill="y")
     # recap_arbo.configure(yscrollcommand=scrollbar_arbo.set)

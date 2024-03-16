@@ -32,10 +32,13 @@ class FolderTree(tk.Frame):
         
         style = ttk.Style()
         style.configure("Custom.Treeview", background="#d3d3d3", fieldbackground="#d3d3d3", foreground="black")
-        # Configure le style pour les éléments sélectionnés avec une couleur de fond spécifique
-        style.map("Custom.Treeview", background=[('selected', 'lightblue')])
-
+        # Définir un style pour les éléments sélectionnés
+        style.map("Custom.Treeview", background=[('selected', 'lightblue')], foreground=[('selected', 'black')])
+        # Configure un tag pour les éléments sélectionnés
+        style.configure("Custom.Treeview.Item", background="lightblue")
+        
         self.tree = ttk.Treeview(self, style="Custom.Treeview", selectmode="browse", columns=("fullpath",), show="tree")
+        self.tree.tag_configure('selected', background='lightblue')  # Configurer le tag ici
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar_y = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
@@ -57,21 +60,29 @@ class FolderTree(tk.Frame):
         if item_id:
             if item_id in self.selected_items:
                 self.selected_items.remove(item_id)
-                # Utilise les tags pour enlever le style de surlignage
+                # Enlever le tag de surlignage
                 self.tree.item(item_id, tags=())
             else:
                 self.selected_items.add(item_id)
-                # Utilise les tags pour appliquer le style de surlignage
+                # Appliquer le tag de surlignage
                 self.tree.item(item_id, tags=('selected',))
             self.update_recap()
 
+
     def update_recap(self):
+        base_path = "Results"  # Définissez ici le chemin de base à omettre
         recap_text = "Dossier:\n"
         for item_id in self.selected_items:
             item_name = self.tree.item(item_id)['text']
-            item_path = self.dict_path[item_name]
-            recap_text += f"{item_path}\n"
+            full_item_path = self.dict_path[item_name]
+            # Tronquez le chemin pour qu'il commence après le `base_path`
+            if full_item_path.startswith(base_path):
+                display_path = full_item_path[len(base_path)+1:]  # +1 pour omettre également le slash
+            else:
+                display_path = full_item_path  # Au cas où le chemin ne commencerait pas par `base_path`
+            recap_text += f"{display_path}\n"
         self.canvas_arbo.itemconfig(self.recap_text, text=recap_text)
+
 
     def populate_tree(self, folder_structure, parent=""):
         for folder in folder_structure:

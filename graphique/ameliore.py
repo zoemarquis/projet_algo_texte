@@ -184,19 +184,31 @@ def configure_grid(num_columns=2):
 
 ##Bouton efface
 def effacer_selection():
-        # Réinitialisez les variables de case à cocher à False
-        for var in check_vars.values():
-            var.set(False)
-        
-        # Effacer les régions supplémentaires ajoutées
-        additional_regions.clear()
+    global folder_tree  # Assurez-vous que folder_tree est accessible
 
-        # Effacer le contenu de la zone de texte
-        zone_entre.set("")
+    # Réinitialisez les variables de case à cocher à False
+    for var in check_vars.values():
+        var.set(False)
 
-        # Mettez à jour le récapitulatif pour refléter les changements
-        update_recap(check_vars, regions + list(additional_regions), recap_cases)
-        recap_arbo.itemconfig(text_recap_arbo, text="Dossier:\n")
+    # Effacer les régions supplémentaires ajoutées
+    additional_regions.clear()
+
+    # Effacer le contenu de la zone de texte
+    zone_entre.set("")
+
+    # Désélectionner et retirer le surlignement de tous les éléments dans l'arbre
+    for item_id in folder_tree.tree.selection():
+        folder_tree.tree.selection_remove(item_id)
+        # Retirer le surlignement appliqué par les tags
+        folder_tree.tree.item(item_id, tags=())
+
+    # Réinitialiser également la sélection interne si votre structure le nécessite
+    folder_tree.selected_items.clear()
+
+    # Mettez à jour le récapitulatif pour refléter les changements
+    update_recap(check_vars, regions + list(additional_regions), recap_cases)
+    recap_arbo.itemconfig(text_recap_arbo, text="Dossier:\n")
+
 
 # Pour la petite fenetre avec les noms
 class ToolTip(object):

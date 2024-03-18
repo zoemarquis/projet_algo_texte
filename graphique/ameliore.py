@@ -5,6 +5,7 @@ from tkinter import ttk
 import folder
 import theme 
 import terminal
+import credit
 
 additional_regions = set()
 ## Placer région avec le delete
@@ -208,42 +209,9 @@ def effacer_selection():
     # Mettez à jour le récapitulatif pour refléter les changements
     update_recap(check_vars, regions + list(additional_regions), recap_cases)
     recap_arbo.itemconfig(text_recap_arbo, text="Dossier:\n")
-
-
-# Pour la petite fenetre avec les noms
-class ToolTip(object):
-            # Initialisation sans changement
-        def __init__(self, widget):
-            self.widget = widget
-            self.tipwindow = None
-            self.x = self.y = 0
-
-        def show_tip(self, text):
-            "Affiche le texte du tooltip"
-            if self.tipwindow or not text:
-                return
-            x = self.widget.winfo_rootx() - 100
-            y = self.widget.winfo_rooty() + self.widget.winfo_height() 
-            self.tipwindow = tw = tk.Toplevel(self.widget)
-            tw.wm_overrideredirect(True)
-            tw.wm_geometry("+%d+%d" % (x, y))
-            label = tk.Label(tw, text=text, justify=tk.LEFT,
-                            background="lightyellow", relief=tk.SOLID, borderwidth=1,
-                            font=("Arial", "10", "normal"), foreground="black")
-            label.pack(ipadx=1, ipady=1)
-
-        def hide_tip(self):
-            if self.tipwindow:
-                self.tipwindow.destroy()
-                self.tipwindow = None
-
-def enter(event):
-    tooltip.show_tip("Martin DENIAU\nChaïma JAIDANE\nCharlotte KRUZIC\nZoé MARQUIS\nValentin MASSEBEUF\nClément OBERHAUSER")
-
-def leave(event):
-        tooltip.hide_tip()
    
      
+
 if __name__ == "__main__":
     fenetre = tk.Tk()
 
@@ -283,13 +251,9 @@ if __name__ == "__main__":
     label = tk.Label(frame_titre, text="Acquisition des régions fonctionnelles dans les génomes", font=("Arial", 30), fg=theme.couleur_frame)
     label.grid(row=0, column=0, sticky="ew")
 
-    ##### INFO        
-    label_info = tk.Label(frame_titre, text="i", font=("Arial", 14, "bold"), fg="white", bg="white",
-                            width=2, height=1, borderwidth=2)
-    label_info.grid(row=0, column=1, padx=10, pady=20, sticky="e")
-    tooltip = ToolTip(label_info)
-    label_info.bind("<Enter>", enter)
-    label_info.bind("<Leave>", leave)
+    # le petit i : contient nos noms
+    credit = credit.Credits(frame_titre, grid_row=0, grid_column=1) 
+
 
 #PARTIE GAUCHE
     ##PARTIE ARBORESCENCE

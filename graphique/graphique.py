@@ -8,10 +8,7 @@ import log
 import credit
 import region
 import recap
-
-# pour bouton, à placer dans theme plutot ?
-def change_cursor(event):
-    event.widget.config(cursor="hand2")  # Change le curseur en main pointant
+import progressbar
 
 # def change_button_style(button, background_color, foreground_color):
 #     style = ttk.Style()
@@ -29,27 +26,6 @@ def change_treeview_colors(treeview, text_color, select_color, background_color)
 #     style = ttk.Style()
 #     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))
 
-
-# à placer dans dossier loadbar
-# Fonction pour démarrer ou arrêter la progression
-def toggle_progress():
-    global progress_running
-    progress_running = not progress_running  # Bascule l'état de progression
-    bouton.config(text="Stop" if progress_running else "Start")
-    if progress_running:
-        update_progress()
-# à placer dans dossier loadbar
-# Fonction pour mettre à jour la barre de progression
-def update_progress():
-    global progress_running
-    current_value = loadbar['value']
-    if progress_running and current_value < 100:
-        loadbar['value'] += 1  # Incrémente la valeur de la barre de progression
-        # Planifie la mise à jour de la progression après un délai
-        fenetre.after(100, update_progress)  # Continue à appeler update_progress toutes les 100 ms
-    elif not progress_running or current_value == 100:
-        progress_running = False  # Arrête la progression
-        bouton.config(text="Start")  # Réinitialise le texte du bouton
 
 if __name__ == "__main__":
     root_dir = "Results"
@@ -164,27 +140,13 @@ if __name__ == "__main__":
     frame_bas.columnconfigure(0, weight=1)
 
 
-    # progress bar à mettre dans un autre fichier ?
-    progress_running = False
-    style = ttk.Style()
-    style.theme_use('clam')  # Choix d'un thème, ici 'clam'
-    style.configure("Custom.Horizontal.TProgressbar", troughcolor=theme.couleur_frame, background=theme.couleur_selection)  # Personnalisation des couleurs
-    loadbar = ttk.Progressbar(frame_bas, orient='horizontal', mode='determinate', style="Custom.Horizontal.TProgressbar")
-    loadbar.grid(row=0, column=0, sticky="ewns",pady = (0,30))
-    #loadbar.pack(fill='x', expand=True)
-    #loadbar.pack(ipady=8)
-        ##Bouton Start
-    #style = ttk.Style()
     style.map("Custom.TButton",
               background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],
               foreground=[("!disabled", "white")],
               relief = "groove")
 
-
-    # bouton start / stop
-    bouton = ttk.Button(frame_bas, text="Start", command=toggle_progress, style="Custom.TButton")
-    bouton.grid(row=1, column=0)
-    bouton.bind("<Enter>", change_cursor)
+    # progress bar + bouton
+    pb = progressbar.ProgressBar(frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0)
     
 
     fenetre.mainloop()

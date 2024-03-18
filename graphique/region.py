@@ -16,13 +16,13 @@ class Regions:
         self.additional_regions = set()
         self.recap = recap
 
-        r, c = self.configure_grid()
+        r,c = self.configure_grid()
         for i in range(r+1):
             frame_parent.grid_rowconfigure(i, weight=1)
         for i in range(c+1):
             frame_parent.grid_columnconfigure(i, weight=1)
 
-        fenetre.after(100, self.configure_grid()) # ?
+        #fenetre.after(100, self.configure_grid()) # ?
 
     def configure_grid(self, num_columns=2):
             frame_width = self.frame_parent.winfo_height()
@@ -34,7 +34,7 @@ class Regions:
             for c in range(num_columns + 1):
                 self.frame_parent.grid_columnconfigure(c, minsize=column_width, pad=spacing_per_column)
 
-            r, c = 0, 0
+            r,c = 0,0
             for region in self.regions:
                 var = tk.BooleanVar(value=False)
                 self.variables[region] = var

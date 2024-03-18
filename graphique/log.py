@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk 
 
-class Terminal(tk.Frame):
+class Log(tk.Frame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
         

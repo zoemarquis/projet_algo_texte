@@ -1,33 +1,25 @@
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
 
 couleur_frame = "#EDC18D"
-#535878" #556C96"#"#516079"#BE9CC7"#535878"  
+# 535878" #556C96"#"#516079"#BE9CC7"#535878"
 couleur_fond = "#313950"
-#1B3358"#516079#"#556C96"#1C2942"#1B3358"  
-couleur_texte = "white"  
-couleur_selection="red"
+# 1B3358"#516079#"#556C96"#1C2942"#1B3358"
+couleur_texte = "red"  # "#313950"
+# "white"
+couleur_selection = "red"
 
-# def configurer_background(widget, bg_frame="#282C34", bg_principal="#3C3F41"):
-#     # Appliquer la couleur de fond principale au widget principal
-#     if isinstance(widget, tk.Tk) or isinstance(widget, tk.Frame):
-#         widget.configure(bg=bg_principal)
-#     else:
-#         # Appliquer la couleur de fond des frames
-#         widget.configure(bg=bg_frame)
-        
-#     for child in widget.winfo_children():
-#         configurer_background(child, bg_principal, bg_frame)
+couleur_contraste = "lightblue"
+
 
 def configurer_background(widget, bg_frame=couleur_fond, bg_principal=couleur_fond):
-    # Appliquer la couleur de fond principale au widget principal
+
     if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
-        widget.configure(bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame)
+        widget.configure(
+            bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame
+        )
     elif isinstance(widget, (ttk.Frame, ttk.Label, ttk.Button)):
-        # Pour les widgets ttk, la configuration du fond se fait via un style
         style = ttk.Style()
-        # Vous pouvez créer un style personnalisé pour chaque type de widget ttk si nécessaire
-        # Par exemple, pour les Progressbar:
         if isinstance(widget, ttk.Progressbar):
             style_name = "Custom.Horizontal.TProgressbar"
             style.configure(style_name, background=bg_frame)
@@ -36,4 +28,18 @@ def configurer_background(widget, bg_frame=couleur_fond, bg_principal=couleur_fo
 
     for child in widget.winfo_children():
         configurer_background(child, bg_principal, bg_frame)
- 
+
+
+#  style="Custom.Treeview",
+
+
+# def change_button_style(button, background_color, foreground_color):
+#     style = ttk.Style()
+#     style.configure("Custom.TButton",
+#                     background=background_color,
+#                     foreground=foreground_color)
+
+
+# def change_label_frame_font(label_frame, font_name, font_size):
+#     style = ttk.Style()
+#     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))

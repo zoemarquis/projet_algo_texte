@@ -2,70 +2,102 @@ import tkinter as tk
 from tkinter import ttk
 import theme
 
+
 class Regions:
-    def __init__(self, frame_parent, fenetre, recap): 
+    def __init__(self, frame_parent, fenetre, recap):
 
         self.frame_parent = frame_parent
         self.variables = {}
         self.checkboxes = {}
-        self.regions = ["CDS", "ncRNA", "3'UTR","tRNA", "rRNA", "5'UTR",
-               "Intron", "Telomère", "Mobile élément", "Centromère","All"]
+        self.regions = [
+            "CDS",
+            "ncRNA",
+            "3'UTR",
+            "tRNA",
+            "rRNA",
+            "5'UTR",
+            "Intron",
+            "Telomère",
+            "Mobile élément",
+            "Centromère",
+            "All",
+        ]
         self.check_vars = []
-        self.check_vars = {option: tk.BooleanVar(value=False) for option in self.regions}
+        self.check_vars = {
+            option: tk.BooleanVar(value=False) for option in self.regions
+        }
         self.zone_entre = tk.StringVar()
         self.additional_regions = set()
         self.recap = recap
 
-        r,c = self.configure_grid()
-        for i in range(r+1):
+        r, c = self.configure_grid()
+        for i in range(r + 1):
             frame_parent.grid_rowconfigure(i, weight=1)
-        for i in range(c+1):
+        for i in range(c + 1):
             frame_parent.grid_columnconfigure(i, weight=1)
 
-        #fenetre.after(100, self.configure_grid()) # ?
+        # fenetre.after(100, self.configure_grid()) # ?
 
     def configure_grid(self, num_columns=2):
-            frame_width = self.frame_parent.winfo_height()
-            column_width = frame_width // (num_columns + 2)
+        frame_width = self.frame_parent.winfo_height()
+        column_width = frame_width // (num_columns + 2)
 
-            total_spacing = frame_width - (num_columns * column_width)
-            spacing_per_column = total_spacing // (num_columns + 1)
+        total_spacing = frame_width - (num_columns * column_width)
+        spacing_per_column = total_spacing // (num_columns + 1)
 
-            for c in range(num_columns + 1):
-                self.frame_parent.grid_columnconfigure(c, minsize=column_width, pad=spacing_per_column)
+        for c in range(num_columns + 1):
+            self.frame_parent.grid_columnconfigure(
+                c, minsize=column_width, pad=spacing_per_column
+            )
 
-            r,c = 0,0
-            for region in self.regions:
-                var = tk.BooleanVar(value=False)
-                self.variables[region] = var
+        r, c = 0, 0
+        for region in self.regions:
+            var = tk.BooleanVar(value=False)
+            self.variables[region] = var
 
-                if region == "All":
-                    cb = ttk.Checkbutton(self.frame_parent, text=region, variable=var, style="CustomCheckbutton.TCheckbutton")
-                    cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
-                    self.checkboxes[region] = cb
-                else:
-                    cb = ttk.Checkbutton(self.frame_parent, text=region, variable=self.check_vars[region],
-                                        command=lambda: self.update_recap(self.check_vars, self.regions), style="CustomCheckbutton.TCheckbutton")
-                    cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
-                    self.checkboxes[region] = cb
-                    style = ttk.Style()
-                    style.configure("CustomCheckbutton.TCheckbutton", background=theme.couleur_frame, foreground="white")
-                
-                c += 1
-                if c >= num_columns:
-                    c = 0
-                    r += 1
-            self.variables["All"].trace("rwua", lambda *args: self.all_command())
+            if region == "All":
+                cb = ttk.Checkbutton(
+                    self.frame_parent,
+                    text=region,
+                    variable=var,
+                    style="CustomCheckbutton.TCheckbutton",
+                )
+                cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
+                self.checkboxes[region] = cb
+            else:
+                cb = ttk.Checkbutton(
+                    self.frame_parent,
+                    text=region,
+                    variable=self.check_vars[region],
+                    command=lambda: self.update_recap(self.check_vars, self.regions),
+                    style="CustomCheckbutton.TCheckbutton",
+                )
+                cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
+                self.checkboxes[region] = cb
+                style = ttk.Style()
+                style.configure(
+                    "CustomCheckbutton.TCheckbutton",
+                    background=theme.couleur_frame,
+                    foreground=theme.couleur_texte,
+                )
 
-            # zone de texte 
-            frame_saisie = tk.Frame(self.frame_parent, bg=theme.couleur_frame, relief="solid", borderwidth=1)
-            frame_saisie.grid(row=r, column=1, sticky="nsew")
-            zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
-            zone_texte.pack(expand=True)
-            zone_texte.bind('<Return>', self.on_text_entry)
+            c += 1
+            if c >= num_columns:
+                c = 0
+                r += 1
+        self.variables["All"].trace("rwua", lambda *args: self.all_command())
 
-            return r,c
-    
+        # zone de texte
+        frame_saisie = tk.Frame(
+            self.frame_parent, bg=theme.couleur_frame, relief="solid", borderwidth=1
+        )
+        frame_saisie.grid(row=r, column=1, sticky="nsew")
+        zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
+        zone_texte.pack(expand=True)
+        zone_texte.bind("<Return>", self.on_text_entry)
+
+        return r, c
+
     def all_command(self):
         all_checked = self.variables["All"].get()
         if all_checked:
@@ -73,7 +105,9 @@ class Regions:
             for region, var in self.check_vars.items():
                 var.set(True)
             # Liste toutes les régions sauf "All" pour le récapitulatif
-            self.update_recap(self.check_vars, [region for region in self.regions if region != "All"])
+            self.update_recap(
+                self.check_vars, [region for region in self.regions if region != "All"]
+            )
         else:
             # Si "All" est décochée, réinitialisez
             for region, var in self.check_vars.items():
@@ -88,8 +122,12 @@ class Regions:
             # Séparez le texte entré en régions basées sur le séparateur ";"
             entered_regions = entered_text.split(";")
             for entered_region in entered_regions:
-                entered_region = entered_region.strip()  # Supprimez les espaces superflus de chaque région
-                region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
+                entered_region = (
+                    entered_region.strip()
+                )  # Supprimez les espaces superflus de chaque région
+                region_found = (
+                    False  # Indicateur pour savoir si la région a été trouvée et cochée
+                )
                 if entered_region.lower() == "all":
                     # Si le texte est "all", cochez toutes les cases
                     for region, var in self.check_vars.items():
@@ -98,23 +136,38 @@ class Regions:
                 else:
                     for region in self.regions:
                         if entered_region.lower() == region.lower():
-                            self.check_vars[region].set(True)  # Cochez la case de la région correspondante
+                            self.check_vars[region].set(
+                                True
+                            )  # Cochez la case de la région correspondante
                             self.update_recap(self.check_vars, self.regions)
-                            region_found = True  # Marquez que la région a été trouvée et cochée
+                            region_found = (
+                                True  # Marquez que la région a été trouvée et cochée
+                            )
                             break  # Sortez de la boucle une fois la région trouvée
                     if not region_found:
                         # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions`
-                        if entered_region.lower() not in [region.lower() for region in self.regions + list(self.additional_regions)]:
-                            self.additional_regions.add(entered_region)  # Ajoutez la région à la liste des régions supplémentaires
-                            self.update_recap(self.check_vars, self.regions + list(self.additional_regions))
-            self.zone_entre.set("")  # Nettoyez la zone de texte après l'ajout ou si la région est déjà présente
+                        if entered_region.lower() not in [
+                            region.lower()
+                            for region in self.regions + list(self.additional_regions)
+                        ]:
+                            self.additional_regions.add(
+                                entered_region
+                            )  # Ajoutez la région à la liste des régions supplémentaires
+                            self.update_recap(
+                                self.check_vars,
+                                self.regions + list(self.additional_regions),
+                            )
+            self.zone_entre.set(
+                ""
+            )  # Nettoyez la zone de texte après l'ajout ou si la région est déjà présente
 
     def toggle_all(self, master_var, all_vars, all_checkboxes):
         for region, var in self.variables.items():
             if region != "All":
                 var.set(self.variables["All"].get())
-                self.checkboxes[region].config(state=tk.DISABLED if self.variables["All"].get() else tk.NORMAL)
-
+                self.checkboxes[region].config(
+                    state=tk.DISABLED if self.variables["All"].get() else tk.NORMAL
+                )
 
     def remove_region(self, region, check_vars, options):
         if region in self.additional_regions:
@@ -123,29 +176,66 @@ class Regions:
             check_vars[region].set(False)
         self.update_recap(check_vars, options)
 
-
-    def update_recap(self,check_vars, options):
-        if (self.recap is not None):
+    def update_recap(self, check_vars, options):
+        if self.recap is not None:
             # Supprimez tous les éléments précédemment dessinés sur le canvas sauf le titre "Régions"
             for item in self.recap.canvas_regions.find_withtag("region_item"):
                 self.recap.canvas_regions.delete(item)
-            all_options = sorted(list(self.additional_regions) + [option for option in options if check_vars.get(option, tk.BooleanVar()).get()])
-            
+            all_options = sorted(
+                list(self.additional_regions)
+                + [
+                    option
+                    for option in options
+                    if check_vars.get(option, tk.BooleanVar()).get()
+                ]
+            )
+
             y_offset = 30  # Commencez à dessiner le texte sous le titre "Régions"
             for option in all_options:
                 # Créez le texte pour la région
-                text_id = self.recap.canvas_regions.create_text(10, y_offset, text=option, anchor="nw", fill="black", tags=("region_item",))
-                
+                text_id = self.recap.canvas_regions.create_text(
+                    10,
+                    y_offset,
+                    text=option,
+                    anchor="nw",
+                    fill=theme.couleur_texte,
+                    tags=("region_item",),
+                )
+
                 # Calculez la largeur du texte pour positionner correctement la croix
                 text_width = self.recap.canvas_regions.bbox(text_id)[2]
-                cross_start_x = text_width + 10  # Définissez une marge après le texte pour la croix
+                cross_start_x = (
+                    text_width + 10
+                )  # Définissez une marge après le texte pour la croix
                 cross_end_x = cross_start_x + 8  # La taille de la croix
-                cross_y = y_offset + 3  # Position Y ajustée pour centrer la croix par rapport au texte
+                cross_y = (
+                    y_offset + 3
+                )  # Position Y ajustée pour centrer la croix par rapport au texte
                 # Dessinez la croix
-                self.recap.canvas_regions.create_line(cross_start_x, cross_y, cross_end_x, cross_y + 10, fill="red", tags=("region_item", f"delete_{option}"))
-                self.recap.canvas_regions.create_line(cross_start_x, cross_y + 10, cross_end_x, cross_y, fill="red", tags=("region_item", f"delete_{option}"))
+                self.recap.canvas_regions.create_line(
+                    cross_start_x,
+                    cross_y,
+                    cross_end_x,
+                    cross_y + 10,
+                    fill="red",
+                    tags=("region_item", f"delete_{option}"),
+                )
+                self.recap.canvas_regions.create_line(
+                    cross_start_x,
+                    cross_y + 10,
+                    cross_end_x,
+                    cross_y,
+                    fill="red",
+                    tags=("region_item", f"delete_{option}"),
+                )
                 # Associez la croix à un gestionnaire d'événement pour supprimer la région sur clic
-                self.recap.canvas_regions.tag_bind(f"delete_{option}", "<Button-1>", lambda event, opt=option: self.remove_region(opt, check_vars, options))
+                self.recap.canvas_regions.tag_bind(
+                    f"delete_{option}",
+                    "<Button-1>",
+                    lambda event, opt=option: self.remove_region(
+                        opt, check_vars, options
+                    ),
+                )
                 y_offset += 30  # Incrémentez l'offset vertical pour le prochain élément
 
     def effacer_selection(self):
@@ -154,8 +244,13 @@ class Regions:
         self.additional_regions.clear()
         self.zone_entre.set("")
         self.update_recap(self.check_vars, self.regions + list(self.additional_regions))
-            
 
-        
-
-
+    """
+    def get_regions(self):
+        ret = []
+        for region, var in self.check_vars.items():
+            if var.get():
+                ret.append(region)
+        print(ret)
+        return ret 
+    """

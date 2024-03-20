@@ -1,9 +1,7 @@
 from Bio import Entrez, SeqIO
 import analyse
 
-import threading
-
-
+"""
 def search(domain, name):
     Entrez.email = "martin.deniau@etu.unistra.fr"
 
@@ -15,6 +13,7 @@ def search(domain, name):
 
     return record["IdList"]
 
+"""
 
 def fetch(ids, regions):
     for id in ids:
@@ -25,4 +24,4 @@ def fetch(ids, regions):
             for feature in record.features:
                 for region in regions:
                     if feature.type == region:
-                        analyse.analyse_bornes(str(feature.location), len(record.seq))
+                        analyse.analyse_bornes(str(feature.location), record.seq, region == 'exon')

@@ -23,6 +23,13 @@ class Recap:
         )
         self.scrollbar_arbo.pack(side="right", fill="y")
         self.canvas_arbo.configure(yscrollcommand=self.scrollbar_arbo.set)
+        
+        #Scrollbar horizontale
+        self.scrollbar_arbo_x = ttk.Scrollbar(
+            self.canvas_arbo, orient="horizontal", command=self.canvas_arbo.xview
+        )
+        self.scrollbar_arbo_x.pack(side="bottom", fill="x")
+        self.canvas_arbo.configure(xscrollcommand=self.scrollbar_arbo_x.set)
 
         f_cases = tk.Frame(frame_parent)
         f_cases.grid(row=0, column=1, sticky="nsew")

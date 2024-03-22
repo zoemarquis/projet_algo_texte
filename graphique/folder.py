@@ -127,3 +127,6 @@ class FolderTree(tk.Frame):
                 display_path = full_item_path  # Au cas où le chemin ne commencerait pas par `base_path`
             recap_text += f"{display_path}\n"
         self.recap.canvas_arbo.itemconfig(self.recap.text_recap_arbo, text=recap_text)
+        self.recap.canvas_arbo.configure(
+            scrollregion=self.recap.canvas_arbo.bbox("all")
+        )

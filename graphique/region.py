@@ -238,6 +238,10 @@ class Regions:
                 )
                 y_offset += 30  # Incrémentez l'offset vertical pour le prochain élément
 
+                self.recap.canvas_regions.configure(
+                    scrollregion=self.recap.canvas_regions.bbox("all")
+                )
+
     def effacer_selection(self):
         for var in self.check_vars.values():
             var.set(False)

@@ -8,7 +8,7 @@ class ProgressBar:
     def __init__(self, frame_parent, fenetre, grid_row, grid_column):
         self.progress_running = False
         self.style = ttk.Style()
-        self.style.theme_use("clam")
+        # self.style.theme_use("clam")
         self.style.configure(
             "Custom.Horizontal.TProgressbar",
             troughcolor=theme.couleur_frame,

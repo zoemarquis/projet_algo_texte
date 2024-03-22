@@ -89,11 +89,12 @@ class Regions:
 
         # zone de texte
         frame_saisie = tk.Frame(
-            self.frame_parent, bg=theme.couleur_frame, relief="solid", borderwidth=1
+            self.frame_parent,
+            bg=theme.couleur_frame,
         )
         frame_saisie.grid(row=r, column=1, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
-        zone_texte.pack(expand=True)
+        zone_texte.pack(expand=True, fill="x", padx=(0, 40))
         zone_texte.bind("<Return>", self.on_text_entry)
 
         return r, c
@@ -185,21 +186,28 @@ class Regions:
                 options_to_display = [option for option in options if option != "All"]
             else:
                 options_to_display = [
-                    option for option in options if check_vars.get(option, tk.BooleanVar()).get()
+                    option
+                    for option in options
+                    if check_vars.get(option, tk.BooleanVar()).get()
                 ]
-            all_options = sorted(
-                list(self.additional_regions) + options_to_display
-            )
+            all_options = sorted(list(self.additional_regions) + options_to_display)
 
-            y_offset = 40  #Position du premeir mot en dessous de region
+            y_offset = 40  # Position du premeir mot en dessous de region
             for option in all_options:
                 self.recap.canvas_regions.create_text(
-                    10, y_offset, text=option, anchor="nw", fill=theme.couleur_texte, tags=("region_item",)
+                    10,
+                    y_offset,
+                    text=option,
+                    anchor="nw",
+                    fill=theme.couleur_texte,
+                    tags=("region_item",),
                 )
                 y_offset += 20  # Incrémentez l'offset vertical pour le prochain élément
 
-            self.recap.canvas_regions.configure(scrollregion=self.recap.canvas_regions.bbox("all"))
-            
+            self.recap.canvas_regions.configure(
+                scrollregion=self.recap.canvas_regions.bbox("all")
+            )
+
     def effacer_selection(self):
         for var in self.check_vars.values():
             var.set(False)

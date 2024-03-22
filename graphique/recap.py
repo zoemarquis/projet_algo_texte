@@ -16,7 +16,7 @@ class Recap:
         self.canvas_arbo = tk.Canvas(f_arbo, bg="pink")
         self.canvas_arbo.pack(side="right", fill="both", expand=True)
         self.text_recap_arbo = self.canvas_arbo.create_text(
-            20, 20, text="Dossier:", fill=theme.couleur_texte, anchor="nw"
+            10, 10, text="Dossier:", fill=theme.couleur_texte, anchor="nw"
         )
         self.scrollbar_arbo = ttk.Scrollbar(
             self.canvas_arbo, orient="vertical", command=self.canvas_arbo.yview
@@ -29,7 +29,7 @@ class Recap:
         self.canvas_regions = tk.Canvas(f_cases, bg="lightblue")
         self.canvas_regions.pack(side="left", fill="both", expand=True)
         self.text_recap_cases = self.canvas_regions.create_text(
-            20, 20, text="Régions:", fill=theme.couleur_texte, anchor="nw"
+            10, 10, text="Régions:", fill=theme.couleur_texte, anchor="nw"
         )
         self.scrollbar_regions = ttk.Scrollbar(
             self.canvas_regions, orient="vertical", command=self.canvas_regions.yview
@@ -37,13 +37,6 @@ class Recap:
         self.scrollbar_regions.pack(side="right", fill="y")
         self.canvas_regions.configure(yscrollcommand=self.scrollbar_regions.set)
 
-        """
-        self.scrollbar_regions = ttk.Scrollbar(
-            self.canvas_regions, orient="vertical", command=self.canvas_regions.yview
-        )
-        self.scrollbar_regions.pack(side="right", fill="y")
-        self.canvas_arbo.configure(yscrollcommand=self.scrollbar_regions.set)
-        """
         bouton_effacer_selection = ttk.Button(
             frame_parent,
             text="TOUT EFFACER",
@@ -54,7 +47,7 @@ class Recap:
             row=1,
             column=0,
             padx=(300, 300),
-            # pady=(10, 10),
+            pady=(10, 10),
             sticky="ew",
             columnspan=2,
         )

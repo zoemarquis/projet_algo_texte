@@ -12,8 +12,12 @@ couleur_selection = "red"
 couleur_contraste = "lightblue"
 
 
-def configurer_background(widget, bg_frame=couleur_fond, bg_principal=couleur_fond):
-
+def configurer_background(widget):
+    assert isinstance(widget, (tk.Frame, tk.Label))
+    style = ttk.Style()
+    style.theme_use("default")
+    widget.configure(bg=couleur_fond)
+    """
     if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
         widget.configure(
             bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame
@@ -28,9 +32,7 @@ def configurer_background(widget, bg_frame=couleur_fond, bg_principal=couleur_fo
 
     for child in widget.winfo_children():
         configurer_background(child, bg_principal, bg_frame)
-
-
-#  style="Custom.Treeview",
+    """
 
 
 # def change_button_style(button, background_color, foreground_color):

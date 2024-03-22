@@ -172,5 +172,11 @@ if __name__ == "__main__":
     )
 
     theme.configurer_background(frame_root)
+    theme.configurer_background(frame_titre)
+    theme.configurer_background(frame_principal)
+    theme.configurer_background(frame_haut)
+    theme.configurer_background(frame_bas)
+    theme.configurer_background(label)
+    # credit
 
     fenetre.mainloop()

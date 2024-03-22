@@ -178,70 +178,28 @@ class Regions:
 
     def update_recap(self, check_vars, options):
         if self.recap is not None:
-            # Supprimez tous les éléments précédemment dessinés sur le canvas sauf le titre "Régions"
             for item in self.recap.canvas_regions.find_withtag("region_item"):
                 self.recap.canvas_regions.delete(item)
-            all_options = sorted(
-                list(self.additional_regions)
-                + [
-                    option
-                    for option in options
-                    if check_vars.get(option, tk.BooleanVar()).get()
+
+            if check_vars["All"].get():
+                options_to_display = [option for option in options if option != "All"]
+            else:
+                options_to_display = [
+                    option for option in options if check_vars.get(option, tk.BooleanVar()).get()
                 ]
+            all_options = sorted(
+                list(self.additional_regions) + options_to_display
             )
 
-            y_offset = 30  # Commencez à dessiner le texte sous le titre "Régions"
+            y_offset = 40  #Position du premeir mot en dessous de region
             for option in all_options:
-                # Créez le texte pour la région
-                text_id = self.recap.canvas_regions.create_text(
-                    10,
-                    y_offset,
-                    text=option,
-                    anchor="nw",
-                    fill=theme.couleur_texte,
-                    tags=("region_item",),
+                self.recap.canvas_regions.create_text(
+                    10, y_offset, text=option, anchor="nw", fill=theme.couleur_texte, tags=("region_item",)
                 )
+                y_offset += 20  # Incrémentez l'offset vertical pour le prochain élément
 
-                # Calculez la largeur du texte pour positionner correctement la croix
-                text_width = self.recap.canvas_regions.bbox(text_id)[2]
-                cross_start_x = (
-                    text_width + 10
-                )  # Définissez une marge après le texte pour la croix
-                cross_end_x = cross_start_x + 8  # La taille de la croix
-                cross_y = (
-                    y_offset + 3
-                )  # Position Y ajustée pour centrer la croix par rapport au texte
-                # Dessinez la croix
-                self.recap.canvas_regions.create_line(
-                    cross_start_x,
-                    cross_y,
-                    cross_end_x,
-                    cross_y + 10,
-                    fill="red",
-                    tags=("region_item", f"delete_{option}"),
-                )
-                self.recap.canvas_regions.create_line(
-                    cross_start_x,
-                    cross_y + 10,
-                    cross_end_x,
-                    cross_y,
-                    fill="red",
-                    tags=("region_item", f"delete_{option}"),
-                )
-                # Associez la croix à un gestionnaire d'événement pour supprimer la région sur clic
-                self.recap.canvas_regions.tag_bind(
-                    f"delete_{option}",
-                    "<Button-1>",
-                    lambda event, opt=option: self.remove_region(
-                        opt, check_vars, options
-                    ),
-                )
-                y_offset += 30  # Incrémentez l'offset vertical pour le prochain élément
-
-                self.recap.canvas_regions.configure(
-                    scrollregion=self.recap.canvas_regions.bbox("all")
-                )
-
+            self.recap.canvas_regions.configure(scrollregion=self.recap.canvas_regions.bbox("all"))
+            
     def effacer_selection(self):
         for var in self.check_vars.values():
             var.set(False)

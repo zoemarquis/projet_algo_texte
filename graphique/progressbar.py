@@ -20,7 +20,7 @@ class ProgressBar:
             mode="determinate",
             style="Custom.Horizontal.TProgressbar",
         )
-        self.loadbar.grid(row=grid_row, column=grid_column, sticky="ewns", pady=(0, 30))
+        self.loadbar.grid(row=grid_row, column=grid_column, sticky="ewns", pady=(0, 20))
         self.fenetre = fenetre
 
         # bouton start / stop

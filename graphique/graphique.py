@@ -66,24 +66,36 @@ if __name__ == "__main__":
     #####################################################################################
     # FRAME contenant tout sauf titre et petit i : en grille
     frame_principal = tk.Frame(frame_root)
-    frame_principal.grid(row=1, column=0, sticky="nsew", padx=30, pady=(10, 20))
+    frame_principal.grid(row=1, column=0, sticky="nsew", padx=30, pady=(10, 30))
     frame_principal.grid_columnconfigure(0, weight=1)
     frame_principal.grid_columnconfigure(1, weight=1)
     frame_principal.grid_rowconfigure(0, weight=1)
-    frame_principal.grid_rowconfigure(1, weight=1)
+
+    frame_gauche = tk.Frame(frame_principal)
+    frame_gauche.grid(row=0, column=0, sticky="nsew", padx=(0, 20))
+    frame_gauche.grid_rowconfigure(0, weight=2)
+    frame_gauche.grid_rowconfigure(1, weight=1)
+    frame_gauche.grid_columnconfigure(0, weight=1)
+
+    frame_droite = tk.Frame(frame_principal)
+    frame_droite.grid(row=0, column=1, sticky="nsew")
+    frame_droite.grid_rowconfigure(0, weight=2)
+    frame_droite.grid_rowconfigure(1, weight=3)
+    frame_droite.grid_rowconfigure(2, weight=1)
+    frame_droite.grid_columnconfigure(0, weight=1)
 
     #####################################################################################
     # à gauche : tous les choix : arborescence + régions
 
     # FRAME arborescence
     frame_arbo = tk.LabelFrame(
-        frame_principal,
+        frame_gauche,
         text="Arborescence",
         relief="raised",
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
-    frame_arbo.grid(row=0, column=0, sticky="nsew", padx=(0, 10), pady=(0, 10))
+    frame_arbo.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
 
     # style.configure("Treeview", rowheight=25)
     # style.map("Treeview", background=[('selected', '#347083')])
@@ -98,12 +110,12 @@ if __name__ == "__main__":
 
     # FRAME régions
     frame_cases = tk.LabelFrame(
-        frame_principal,
+        frame_gauche,
         text="Sélection des régions",
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
-    frame_cases.grid(row=1, column=0, sticky="nsew", padx=(0, 10), pady=(10, 0))
+    frame_cases.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
 
     # à placer plus loin : besoin d'avoir déjà créé récap
     regions = region.Regions(frame_parent=frame_cases, fenetre=fenetre, recap=None)
@@ -112,11 +124,11 @@ if __name__ == "__main__":
     # à droite : récap + log + loadbar + bouton
 
     # FRAME HAUT CONTIENT RÉCAP ET LOG
-    frame_haut = tk.Frame(frame_principal)
-    frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
-    frame_haut.grid_columnconfigure(0, weight=1)
-    frame_haut.grid_rowconfigure(0, weight=1)
-    frame_haut.grid_rowconfigure(1, weight=1)
+    # frame_haut = tk.Frame(frame_droite)
+    # frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
+    # frame_haut.grid_columnconfigure(0, weight=1)
+    # frame_haut.grid_rowconfigure(0, weight=1)
+    # frame_haut.grid_rowconfigure(1, weight=1)
 
     """
     frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
@@ -128,14 +140,14 @@ if __name__ == "__main__":
 
     # recap
     frame_recap = tk.LabelFrame(
-        frame_haut,
+        frame_droite,
         text="Récapitulatif",
         relief="raised",
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
         height=200,
     )
-    frame_recap.grid(row=0, column=0, sticky="nsew")
+    frame_recap.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
     frame_recap.rowconfigure(0, weight=1)
     frame_recap.grid_columnconfigure(0, weight=1)
     frame_recap.grid_columnconfigure(1, weight=1)
@@ -148,17 +160,17 @@ if __name__ == "__main__":
 
     # log
     frame_log = tk.LabelFrame(
-        frame_haut, text="Log", foreground=theme.couleur_texte, bg=theme.couleur_frame
+        frame_droite, text="Log", foreground=theme.couleur_texte, bg=theme.couleur_frame
     )
-    frame_log.grid(row=1, column=0, sticky="nsew", padx=0, pady=(10, 0))
+    frame_log.grid(row=1, column=0, sticky="nsew", pady=(10, 20))
 
     terminal = log.Log(frame_log)
     terminal.pack(fill="both", expand=True)
     terminal.write("SalamAlaykom les pâtissiers\n")
 
     # FRAME BAS CONTIENT PROGRESS BAR ET BOUTON
-    frame_bas = tk.Frame(frame_principal)
-    frame_bas.grid(row=1, column=1, sticky="nsew", padx=(10, 0), pady=(10, 0))
+    frame_bas = tk.Frame(frame_droite)
+    frame_bas.grid(row=2, column=0, sticky="nsew", pady=(0, 0))
     frame_bas.rowconfigure(0, weight=1)
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
@@ -171,8 +183,9 @@ if __name__ == "__main__":
     theme.configurer_background(frame_root)
     theme.configurer_background(frame_titre)
     theme.configurer_background(frame_principal)
-    theme.configurer_background(frame_haut)
     theme.configurer_background(frame_bas)
+    theme.configurer_background(frame_gauche)
+    theme.configurer_background(frame_droite)
     theme.configurer_background(label)
     theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
     # credit

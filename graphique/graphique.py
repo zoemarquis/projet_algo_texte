@@ -116,7 +116,7 @@ if __name__ == "__main__":
     frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
     frame_haut.columnconfigure(0, weight=1)
     frame_haut.rowconfigure(0, weight=1)
-    frame_haut.rowconfigure(1, weight=2)
+    frame_haut.rowconfigure(1, weight=1)
 
     # que contient frame choix ?
     frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
@@ -133,17 +133,13 @@ if __name__ == "__main__":
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
-    frame_recap.grid(row=1, column=0, sticky="nsew", pady=(0, 10))
+    frame_recap.grid(row=0, column=0, sticky="nsew")
     frame_recap.rowconfigure(0, weight=1)
     frame_recap.grid_columnconfigure(0, weight=1)
-    frame_recap.grid_columnconfigure(1, weight=2)
+    frame_recap.grid_columnconfigure(1, weight=1)
 
     recapitulatif = recap.Recap(
-        frame_parent=frame_recap,
-        region=regions,
-        tree=folder_tree,
-        grid_row=1,
-        grid_column=0,
+        frame_parent=frame_recap, region=regions, tree=folder_tree
     )
     folder_tree.recap = recapitulatif
     regions.recap = recapitulatif

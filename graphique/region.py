@@ -88,12 +88,10 @@ class Regions:
         self.variables["All"].trace("rwua", lambda *args: self.all_command())
 
         # zone de texte
-        frame_saisie = tk.Frame(
-            self.frame_parent, bg=theme.couleur_frame, relief="solid", borderwidth=1
-        )
+        frame_saisie = tk.Frame(self.frame_parent, bg=theme.couleur_frame)
         frame_saisie.grid(row=r, column=1, sticky="nsew")
         zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
-        zone_texte.pack(expand=True)
+        zone_texte.pack(expand=True, fill="x", padx=(0, 40))
         zone_texte.bind("<Return>", self.on_text_entry)
 
         return r, c
@@ -185,19 +183,22 @@ class Regions:
                 options_to_display = [option for option in options if option != "All"]
             else:
                 options_to_display = [
-                    option for option in options if check_vars.get(option, tk.BooleanVar()).get()
+                    option
+                    for option in options
+                    if check_vars.get(option, tk.BooleanVar()).get()
                 ]
-            all_options = sorted(
-                list(self.additional_regions) + options_to_display
-            )
-            #selected_options = [option for option in self.regions if self.check_vars[option].get()]
+            all_options = sorted(list(self.additional_regions) + options_to_display)
+            # selected_options = [option for option in self.regions if self.check_vars[option].get()]
             recap_text = "Régions:\n" + "\n".join(all_options)
 
             # Mise à jour du canvas avec le nouveau texte
-            self.recap.canvas_regions.itemconfig(self.recap.text_recap_cases, text=recap_text)
-            self.recap.canvas_regions.configure(scrollregion=self.recap.canvas_regions.bbox("all"))
+            self.recap.canvas_regions.itemconfig(
+                self.recap.text_recap_cases, text=recap_text
+            )
+            self.recap.canvas_regions.configure(
+                scrollregion=self.recap.canvas_regions.bbox("all")
+            )
 
-   
     def effacer_selection(self):
         for var in self.check_vars.values():
             var.set(False)

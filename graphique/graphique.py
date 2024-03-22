@@ -114,24 +114,26 @@ if __name__ == "__main__":
     # FRAME HAUT CONTIENT RÉCAP ET LOG
     frame_haut = tk.Frame(frame_principal)
     frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
-    frame_haut.columnconfigure(0, weight=1)
-    frame_haut.rowconfigure(0, weight=1)
-    frame_haut.rowconfigure(1, weight=1)
+    frame_haut.grid_columnconfigure(0, weight=1)
+    frame_haut.grid_rowconfigure(0, weight=1)
+    frame_haut.grid_rowconfigure(1, weight=1)
 
-    # que contient frame choix ?
+    """
     frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
     frame_choix.grid(row=0, column=0, sticky="nsew")
     frame_choix.rowconfigure(0, weight=1)
     frame_choix.rowconfigure(1, weight=1)
     frame_choix.columnconfigure(0, weight=1)
+    """
 
     # recap
     frame_recap = tk.LabelFrame(
-        frame_choix,
+        frame_haut,
         text="Récapitulatif",
         relief="raised",
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
+        height=200,
     )
     frame_recap.grid(row=0, column=0, sticky="nsew")
     frame_recap.rowconfigure(0, weight=1)
@@ -161,11 +163,6 @@ if __name__ == "__main__":
     frame_bas.rowconfigure(1, weight=1)
     frame_bas.columnconfigure(0, weight=1)
 
-    # style.map("Custom.TButton",
-    #           background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],
-    #           foreground=[("!disabled", "white")],
-    #           relief = "groove")
-
     # progress bar + bouton
     pb = progressbar.ProgressBar(
         frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0
@@ -177,6 +174,7 @@ if __name__ == "__main__":
     theme.configurer_background(frame_haut)
     theme.configurer_background(frame_bas)
     theme.configurer_background(label)
+    theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
     # credit
 
     fenetre.mainloop()

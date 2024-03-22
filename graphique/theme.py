@@ -7,9 +7,14 @@ couleur_fond = "#313950"
 # 1B3358"#516079#"#556C96"#1C2942"#1B3358"
 couleur_texte = "red"  # "#313950"
 # "white"
-couleur_selection = "red"
+couleur_selection = "pink"
 
 couleur_contraste = "lightblue"
+
+# style.map("Custom.TButton",
+#           background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],
+#           foreground=[("!disabled", "white")],
+#           relief = "groove")
 
 
 def configurer_background(widget):
@@ -17,6 +22,7 @@ def configurer_background(widget):
     style = ttk.Style()
     style.theme_use("default")
     widget.configure(bg=couleur_fond)
+
     """
     if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
         widget.configure(
@@ -35,11 +41,9 @@ def configurer_background(widget):
     """
 
 
-# def change_button_style(button, background_color, foreground_color):
-#     style = ttk.Style()
-#     style.configure("Custom.TButton",
-#                     background=background_color,
-#                     foreground=foreground_color)
+def change_button_style(bg, fg):
+    style = ttk.Style()
+    style.configure("Custom.TButton", background=bg, foreground=fg)
 
 
 # def change_label_frame_font(label_frame, font_name, font_size):

@@ -2,6 +2,8 @@
 verbose = 0
 print_errors = 0
 
+from src.resultat import *
+
 
 def get_bornes(borne, genome):
     if verbose > 1: print('Analyse genome')
@@ -14,7 +16,7 @@ def get_bornes(borne, genome):
             return 0
         chaine += nucl
 
-    return [chaine]
+    return chaine
 
 
 def get_join(bornes, genome):
@@ -45,7 +47,7 @@ def get_complement(borne, genome):
             return 0
         chaine = complement[nucl] + chaine
 
-    if verbose: print(f'Complement: {len(chaines) + 1}')
+    if verbose: print(f'Complement: {len(chaine) + 1}')
     return [chaine]
 
 
@@ -149,32 +151,30 @@ def enleve_entete(txt, entete, fin):
 #-------------------------------------------------------------------------------
 
 
-def analyse_bornes(txt, genome, intron):
+def analyse_bornes(txt, genome, intron, path, region, nc):
     if verbose > 1: print('Analyse')
-    
+    nb_intron = 0
+    bornes_intron = []
     borne_max = len(genome)
     bornes = []
     if txt[:4] == 'join':
         txt = enleve_entete(txt, 'join{', '}')
         if not txt:
             return 0
-        if intron:
-            bornes = transforme_borne_intron(txt, borne_max)
-        else:
-            bornes = transforme_bornes_multiple(txt, borne_max)
+        bornes_intron = transforme_borne_intron(txt, borne_max)
+        bornes = transforme_bornes_multiple(txt, borne_max)
+        #nb_intron = len(bornes_intron)
         if bornes:
-            return get_join(bornes, genome)
+                create_result(path, region, bornes, get_join(bornes, genome), nc, 'join', nb_intron, bornes_intron)
         else:
             return 0
         
     elif txt[:15] == 'complement{join':
         txt = enleve_entete(txt, 'complement{join{', '}}')
-        if intron:
-            bornes = transforme_borne_intron(txt, borne_max)
-        else:
-            bornes = transforme_bornes_multiple(txt, borne_max)
+        bornes_intron = transforme_borne_intron(txt, borne_max)
+        bornes = transforme_bornes_multiple(txt, borne_max)
         if bornes:
-            return get_complement_join(bornes, genome)
+            create_result(path, region, bornes, get_complement_join(bornes, genome), nc, 'complement join', nb_intron, bornes_intron)
         else:
             return 0
             
@@ -182,14 +182,14 @@ def analyse_bornes(txt, genome, intron):
         txt = enleve_entete(txt, 'complement{', '}')
         borne = transforme_bornes_simple(txt, borne_max)
         if borne:
-            return get_complement(borne, genome)
+            create_result(path, region, bornes, get_complement(borne, genome), nc, 'complement', nb_intron, bornes_intron)
         else:
             return 0
             
     elif not intron:
         bornes = transforme_bornes_simple(txt, 0, borne_max, ':')
         if bornes:
-            return get_bornes(bornes, genome)
+            create_result(path, region, bornes, get_bornes(bornes, genome), nc, None, nb_intron, bornes_intron)
         else:
             return 0
 

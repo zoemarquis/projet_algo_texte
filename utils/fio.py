@@ -20,7 +20,7 @@ def get_ids(organismRecherche, kingdom):
     listeIds = []
     #On cherche 
     #Organism c'est row[5], on cherche ids qui est row[2] 
-    with open(f"../src/{kingdom}.txt", "r") as overview_file:
+    with open(f"{kingdom.lower()}.txt", "r") as overview_file:
         file = csv.reader(overview_file, delimiter="\t")
         for row in file:
             organism, ids = row[5], row[2]
@@ -29,15 +29,14 @@ def get_ids(organismRecherche, kingdom):
 
     return listeIds
 
-def get_nc(organismRecherche, kingdom):
-    listeNc = []
+def get_nc(id_, kingdom):
     #On cherche 
     #Organism c'est row[5], on cherche ids qui est row[2] 
-    with open(f"../src/{kingdom}.txt", "r") as overview_file:
+    with open(f"{kingdom.lower()}.txt", "r") as overview_file:
         file = csv.reader(overview_file, delimiter="\t")
         for row in file:
-            organism, ids = row[5], row[1]
-            if organismRecherche == organism:
-                listeNc.append(ids)
+            id, nc = row[2], row[1]
+            if id == str(id_):
+                return nc
 
-    return listeNc
+    return None

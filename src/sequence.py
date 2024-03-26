@@ -1,5 +1,6 @@
 from Bio import Entrez, SeqIO
-import analyse
+import src.analyse
+from utils.fio import get_nc
 
 """
 def search(domain, name):
@@ -15,7 +16,8 @@ def search(domain, name):
 
 """
 
-def fetch(ids, regions):
+def fetch(path, ids, regions):
+    Entrez.email = "martin.deniau@etu.unistra.fr"
     for id in ids:
         print("Fetching sequence", id)
         handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text")
@@ -23,5 +25,7 @@ def fetch(ids, regions):
         for record in SeqIO.parse(handle, "gb"):
             for feature in record.features:
                 for region in regions:
-                    if feature.type == region:
-                        analyse.analyse_bornes(str(feature.location), record.seq, region == 'exon')
+                    if feature.type == region:                            
+                        kingdom = path.split('/')[1]
+                        src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, region, get_nc(id, kingdom))
+

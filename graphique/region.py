@@ -120,27 +120,21 @@ class Regions:
             # Séparez le texte entré en régions basées sur le séparateur ";"
             entered_regions = entered_text.split(";")
             for entered_region in entered_regions:
-                entered_region = (
-                    entered_region.strip()
-                )  # Supprimez les espaces superflus de chaque région
-                region_found = (
-                    False  # Indicateur pour savoir si la région a été trouvée et cochée
-                )
+                entered_region = entered_region.strip()
+                  # Supprimez les espaces superflus de chaque région
+                region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
+                
                 if entered_region.lower() == "all":
                     # Si le texte est "all", cochez toutes les cases
                     for region, var in self.check_vars.items():
                         var.set(True)
-                    self.update_recap(self.check_vars, self.regions)
+                    #self.update_recap(self.check_vars, self.regions)
                 else:
                     for region in self.regions:
                         if entered_region.lower() == region.lower():
-                            self.check_vars[region].set(
-                                True
-                            )  # Cochez la case de la région correspondante
+                            self.check_vars[region].set(True)  # Cochez la case de la région correspondante
                             self.update_recap(self.check_vars, self.regions)
-                            region_found = (
-                                True  # Marquez que la région a été trouvée et cochée
-                            )
+                            region_found = True # Marquez que la région a été trouvée et cochée
                             break  # Sortez de la boucle une fois la région trouvée
                     if not region_found:
                         # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions`
@@ -148,9 +142,7 @@ class Regions:
                             region.lower()
                             for region in self.regions + list(self.additional_regions)
                         ]:
-                            self.additional_regions.add(
-                                entered_region
-                            )  # Ajoutez la région à la liste des régions supplémentaires
+                            self.additional_regions.add(entered_region)  # Ajoutez la région à la liste des régions supplémentaires
                             self.update_recap(
                                 self.check_vars,
                                 self.regions + list(self.additional_regions),

@@ -176,28 +176,27 @@ class Regions:
 
     def update_recap(self, check_vars, options):
         if self.recap is not None:
+            # Effacer les items précédents sauf 'Régions'
             for item in self.recap.canvas_regions.find_withtag("region_item"):
                 self.recap.canvas_regions.delete(item)
 
+            # Sélection des options à afficher
             if check_vars["All"].get():
+                # Exclure "All" de l'affichage
                 options_to_display = [option for option in options if option != "All"]
             else:
-                options_to_display = [
-                    option
-                    for option in options
-                    if check_vars.get(option, tk.BooleanVar()).get()
-                ]
-            all_options = sorted(list(self.additional_regions) + options_to_display)
-            # selected_options = [option for option in self.regions if self.check_vars[option].get()]
-            recap_text = "Régions:\n" + "\n".join(all_options)
+                # Afficher uniquement les options sélectionnées
+                options_to_display = [option for option in options if check_vars.get(option, tk.BooleanVar()).get()]
+            
+            # Tri des options sans tenir compte de la casse
+            all_options = sorted(list(self.additional_regions) + options_to_display, key=lambda x: x.lower())
 
-            # Mise à jour du canvas avec le nouveau texte
-            self.recap.canvas_regions.itemconfig(
-                self.recap.text_recap_cases, text=recap_text
-            )
-            self.recap.canvas_regions.configure(
-                scrollregion=self.recap.canvas_regions.bbox("all")
-            )
+            # Mise à jour du texte dans le canvas
+            recap_text = "Régions:\n" + "\n".join(all_options)
+            self.recap.canvas_regions.itemconfig(self.recap.text_recap_cases, text=recap_text)
+            
+            # Ajuster la zone de défilement pour s'assurer que tout est visible
+            self.recap.canvas_regions.configure(scrollregion=self.recap.canvas_regions.bbox("all"))
 
     def effacer_selection(self):
         for var in self.check_vars.values():

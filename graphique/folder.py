@@ -115,18 +115,26 @@ class FolderTree(tk.Frame):
     def update_recap(self):
         base_path = "Results"  # Définissez ici le chemin de base à omettre
         recap_text = "Dossier:\n"
+        
+        # Collecter tous les chemins dans une liste
+        paths = []
         for item_id in self.selected_items:
             item_name = self.tree.item(item_id)["text"]
             full_item_path = self.dict_path[item_name]
             # Tronquez le chemin pour qu'il commence après le `base_path`
             if full_item_path.startswith(base_path):
-                display_path = full_item_path[
-                    len(base_path) + 1 :
-                ]  # +1 pour omettre également le slash
+                display_path = full_item_path[len(base_path) + 1 :]  # +1 pour omettre également le slash
             else:
                 display_path = full_item_path  # Au cas où le chemin ne commencerait pas par `base_path`
-            recap_text += f"{display_path}\n"
+            paths.append(display_path)
+        
+        # Trier les chemins sans tenir compte de la casse
+        sorted_paths = sorted(paths, key=lambda x: x.lower())
+
+        # Construire le texte de récapitulatif avec les chemins triés
+        for path in sorted_paths:
+            recap_text += f"{path}\n"
+        
         self.recap.canvas_arbo.itemconfig(self.recap.text_recap_arbo, text=recap_text)
-        self.recap.canvas_arbo.configure(
-            scrollregion=self.recap.canvas_arbo.bbox("all")
-        )
+        self.recap.canvas_arbo.configure(scrollregion=self.recap.canvas_arbo.bbox("all"))
+

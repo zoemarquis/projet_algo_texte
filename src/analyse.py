@@ -1,8 +1,8 @@
+from resultat import *
+import re
 
 verbose = 0
 print_errors = 0
-
-from src.resultat import *
 
 
 def get_bornes(borne, genome):
@@ -72,7 +72,7 @@ def get_complement_join(bornes, genome):
 def transforme_bornes_simple(txt, borne_min, borne_max, sep):
     if verbose > 1: print('Parsing single bornes')
     
-    tmp = txt[1:-4].split(sep)
+    tmp = [s for s in re.split(sep + '|\(.?\)', txt) if s != '']
     if len(tmp) != 2:
         if print_errors: print(f'Parsing Error: {sep} ne sépare pas en 2 ({txt})')
         return 0
@@ -115,7 +115,7 @@ def transforme_borne_intron(txt, borne_max):
     borne_courante = 0
 
     for borne in txt.split(':')[1:-1]:
-        res = transforme_bornes_simple(borne, borne_courante, borne_max, sep=', ')
+        res = transforme_bornes_simple(borne, borne_courante, borne_max, ', ')
         if not res: return 0
 
         bornes += [res]
@@ -165,7 +165,7 @@ def analyse_bornes(txt, genome, intron, path, region, nc):
         bornes = transforme_bornes_multiple(txt, borne_max)
         #nb_intron = len(bornes_intron)
         if bornes:
-                create_result(path, region, bornes, get_join(bornes, genome), nc, 'join', nb_intron, bornes_intron)
+            create_result(path, region, bornes, get_join(bornes, genome), nc, 'join', nb_intron, bornes_intron)
         else:
             return 0
         
@@ -178,26 +178,20 @@ def analyse_bornes(txt, genome, intron, path, region, nc):
         else:
             return 0
             
-    elif txt[:10] == 'complement' and not intron:
+    elif txt[:10] == 'complement':
         txt = enleve_entete(txt, 'complement{', '}')
-        borne = transforme_bornes_simple(txt, borne_max)
+        borne = transforme_bornes_simple(txt, 0, borne_max, ':')
         if borne:
             create_result(path, region, bornes, get_complement(borne, genome), nc, 'complement', nb_intron, bornes_intron)
         else:
             return 0
             
-    elif not intron:
+    else:
         bornes = transforme_bornes_simple(txt, 0, borne_max, ':')
         if bornes:
             create_result(path, region, bornes, get_bornes(bornes, genome), nc, None, nb_intron, bornes_intron)
         else:
             return 0
 
-    else:
-        return 0
 
-
-
-#join{[702268:702511](+), [0:1023](+)} -> (0 < 702268 < 702511 < 702511)
-#join{[5631972:5632216](+), [5632215:5633123](+)} -> (5632216 < 5632215 < 5633123 < 6000087)
 

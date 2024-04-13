@@ -106,10 +106,10 @@ class FolderTree(tk.Frame):
                 self.populate_tree(folder["children"], folder_id)
 
     def effacer_selection(self):
-        for item_id in self.tree.selection():
+        for item_id in list(self.selected_items):
             self.tree.selection_remove(item_id)
             self.tree.item(item_id, tags=())
-        self.selected_items.clear()
+            self.selected_items.clear()
         self.update_recap()
 
     def update_recap(self):

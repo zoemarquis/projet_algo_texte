@@ -4,6 +4,7 @@ import shutil
 import requests
 from datetime import date
 from dateutil import parser
+import re
 
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -74,6 +75,7 @@ def get_tree():
                 for k, v in kingdom_nc.items():
                     if organism in v:
                         # Path Result/Kingdom/Group/Subgroup/Organism
+                        organism = re.sub(r'[<>:"/\\|?*]', '-', organism) #supprime les caractères interdit sur Windows
                         directory = os.path.join("Results", kingdom, group, subgroup, organism)
                         os.makedirs(directory, exist_ok=True)
 

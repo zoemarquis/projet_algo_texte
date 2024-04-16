@@ -64,7 +64,7 @@ if __name__ == "__main__":
     )
     style.configure(
         "Custom.Vertical.TScrollbar",
-        background="lightgray",
+        background="#9FADE4",
         troughcolor=theme.couleur_fond,
         bordercolor=theme.couleur_frame,
         arrowcolor=theme.couleur_fond,
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     )
     style.map(
         "Custom.Vertical.TScrollbar",
-        background=[("disabled", "lightgray")],
+        background=[("disabled", "#9FADE4")],
         troughcolor=[("disabled", theme.couleur_fond)],
         bordercolor=[("disabled", theme.couleur_frame)],
         arrowcolor=[("disabled", theme.couleur_fond)],
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     )
     style.configure(
         "Custom.Horizontal.TScrollbar",
-        background="lightgray",
+        background="#9FADE4",
         troughcolor=theme.couleur_fond,
         bordercolor=theme.couleur_frame,
         arrowcolor=theme.couleur_fond,
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     )
     style.map(
         "Custom.Horizontal.TScrollbar",
-        background=[("disabled", "lightgray")],
+        background=[("disabled", "#9FADE4")],
         troughcolor=[("disabled", theme.couleur_fond)],
         bordercolor=[("disabled", theme.couleur_frame)],
         arrowcolor=[("disabled", theme.couleur_fond)],
@@ -133,7 +133,7 @@ if __name__ == "__main__":
         frame_titre,
         text="Acquisition des régions fonctionnelles dans les génomes",
         font=("Arial", 30),
-        fg=theme.couleur_frame,
+        fg=theme.couleur_titre,
     )
     label.grid(row=0, column=0, sticky="ew")
 
@@ -174,16 +174,8 @@ if __name__ == "__main__":
     )
     frame_arbo.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
 
-    # style.configure("Treeview", rowheight=25)
-    # style.map("Treeview", background=[('selected', '#347083')])
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, dict_path, recap=None)
     folder_tree.pack(expand=True, fill=tk.BOTH)
-    # change_treeview_colors(
-    #     folder_tree,
-    #     text_color=theme.couleur_texte,
-    #     select_color="lightblue",
-    #     background_color=theme.couleur_frame,
-    # )
 
     # FRAME régions
     frame_cases = tk.LabelFrame(
@@ -199,21 +191,6 @@ if __name__ == "__main__":
 
     #####################################################################################
     # à droite : récap + log + loadbar + bouton
-
-    # FRAME HAUT CONTIENT RÉCAP ET LOG
-    # frame_haut = tk.Frame(frame_droite)
-    # frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
-    # frame_haut.grid_columnconfigure(0, weight=1)
-    # frame_haut.grid_rowconfigure(0, weight=1)
-    # frame_haut.grid_rowconfigure(1, weight=1)
-
-    """
-    frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
-    frame_choix.grid(row=0, column=0, sticky="nsew")
-    frame_choix.rowconfigure(0, weight=1)
-    frame_choix.rowconfigure(1, weight=1)
-    frame_choix.columnconfigure(0, weight=1)
-    """
 
     # recap
     frame_recap = tk.LabelFrame(
@@ -264,7 +241,5 @@ if __name__ == "__main__":
     theme.configurer_background(frame_gauche)
     theme.configurer_background(frame_droite)
     theme.configurer_background(label)
-    # theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
-    # credit
 
     fenetre.mainloop()

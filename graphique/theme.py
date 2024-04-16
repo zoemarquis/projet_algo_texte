@@ -1,15 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
-couleur_frame = "#EDC18D"
-# 535878" #556C96"#"#516079"#BE9CC7"#535878"
-couleur_fond = "#313950"
-# 1B3358"#516079#"#556C96"#1C2942"#1B3358"
-couleur_texte = "red"  # "#313950"
-# "white"
-couleur_selection = "pink"
-
-couleur_contraste = "lightblue"
+couleur_frame = "#5F90CB"
+couleur_fond = "#151854"
+couleur_texte = "#151854"
+couleur_selection = "#048B9A"
+couleur_contraste = "pink"
+couleur_titre = "#C8E1FE"
 
 
 def configurer_background(widget):

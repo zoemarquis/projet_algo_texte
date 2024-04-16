@@ -52,7 +52,7 @@ class Credits:
             frame_parent,
             text="i",
             font=("Arial", 14, "bold"),
-            fg="white",
+            fg=theme.couleur_titre,
             bg=theme.couleur_fond,
             width=2,
             height=1,

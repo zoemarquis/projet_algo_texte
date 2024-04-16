@@ -35,22 +35,14 @@ if __name__ == "__main__":
     style.theme_use("clam")
     style.configure(
         "Custom.Treeview",
-        background=theme.couleur_frame,
         fieldbackground=theme.couleur_frame,
-        foreground=theme.couleur_texte,
-    )
-    style.configure(
-        "Custom.Treeview.Item",
-        background="black",
-    )
-    style.map(
-        "Custom.Treeview",
         background=[
             ("selected", "lightblue"),
             ("!selected", theme.couleur_frame),
         ],
-        foreground=[("selected", theme.couleur_texte)],
+        foreground=theme.couleur_texte,
     )
+    style.configure("Custom.Treeview.Item", background="lightblue")
     style.configure(
         "Custom.TButton",
         foreground=theme.couleur_texte,

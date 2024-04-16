@@ -33,7 +33,7 @@ def fetch(path, ids, regions):
             for feature in record.features:
                 for region in regions:
                     if feature.type == region:                            
-                        kingdom = path.split('\\')[0]
+                        kingdom = path.split(os.sep)[0]
                         src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, region, get_nc(id, kingdom))
 
 
@@ -42,11 +42,12 @@ def fetch_all_sequence(paths, regions):
     all_paths = [] #sous chemin de tous les dossiers selectionnes
 
     for path in paths:
-        base_path = "Results\\" #chemin jusqu'à l'arborescence
+        base_path = "Results" + os.sep #chemin jusqu'à l'arborescence
         leaf_dirs = get_leaf_directories(base_path + path)
         relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
         all_paths.extend(relative_paths)
 
+    print(all_paths)
     '''
     Version sans les threads
     for path in all_paths:
@@ -65,7 +66,7 @@ def fetch_all_sequence(paths, regions):
 
 
 #A récupérer de l'interface
-paths_interface = ["Archaea\\Candidatus_Thermoplasmatota", "Eukaryota"]
+paths_interface = ["Archaea"+ os.sep + "Candidatus_Thermoplasmatota", "Eukaryota"]
 regions_interface = ["3'UTR", "CDS", "rRNA"]
 
 fetch_all_sequence(paths_interface, regions_interface)

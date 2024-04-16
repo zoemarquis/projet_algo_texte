@@ -63,7 +63,7 @@ def get_tree():
 
         # On supprime l'arborescence (si elle existe) pour ne pas laisser d'organisme qui n'existe plus
         try:
-            shutil.rmtree('./Results')
+            shutil.rmtree('Results')
         except FileNotFoundError:
             pass
 

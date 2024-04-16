@@ -1,6 +1,6 @@
 import requests
 import csv
-
+import os
 
 def request_kingdom(kingdom):
     request = requests.get("https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/IDS/" + kingdom[0].upper() + kingdom[1:] + ".ids")
@@ -9,12 +9,12 @@ def request_kingdom(kingdom):
 
 def get_path_from_organism(organismRecherche):
     
-    with open("../src/overview.txt", "r") as overview_file:
+    with open("overview.txt", "r") as overview_file:
         file = csv.reader(overview_file, delimiter="\t")
         for row in file:
             organism, kingdom, group, subgroup = row[0], row[1], row[2], row[3]
             if organismRecherche == organism:
-                return f"Results/{kingdom}/{group}/{subgroup}/{organism}"
+                return os.path.join("Results", kingdom, group, subgroup, organism) #f"Results/{kingdom}/{group}/{subgroup}/{organism}"
 
 def get_ids(organismRecherche, kingdom):
     listeIds = []

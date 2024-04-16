@@ -4,7 +4,7 @@ from utils.fio import get_ids
 
 def path_to_ids(path):
     organism = os.path.basename(path)
-    kingdom = path.split("\\")[0]
+    kingdom = path.split(os.sep)[0]
     ids = get_ids(organism, kingdom)
     return ids
 

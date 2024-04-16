@@ -35,59 +35,82 @@ if __name__ == "__main__":
     style.theme_use("clam")
     style.configure(
         "Custom.Treeview",
-        background="blue",
-        fieldbackground="blue",
-        foreground="blue",
+        background=theme.couleur_frame,
+        fieldbackground=theme.couleur_frame,
+        foreground=theme.couleur_texte,
     )
     style.configure(
-        "Custom.TButton", foreground="blue", background="blue", font=("Arial", 12)
+        "Custom.Treeview.Item",
+        background="black",
+    )
+    style.map(
+        "Custom.Treeview",
+        background=[
+            ("selected", "lightblue"),
+            ("!selected", theme.couleur_frame),
+        ],
+        foreground=[("selected", theme.couleur_texte)],
+    )
+    style.configure(
+        "Custom.TButton",
+        foreground=theme.couleur_texte,
+        background=theme.couleur_frame,
+        font=("Arial", 12),
+    )
+    style.map(
+        "Custom.TButton",
+        background=[("active", theme.couleur_selection)],
+        foreground=[("active", theme.couleur_texte)],
     )
     style.configure(
         "Custom.Vertical.TScrollbar",
-        background="blue",
-        troughcolor="blue",
-        bordercolor="blue",
-        arrowcolor="blue",
-        gripcolor="blue",
-        slidercolor="blue",
+        background="lightgray",
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
+        arrowcolor=theme.couleur_fond,
+        # gripcolor="purple",
+        # slidercolor="yellow",
+    )
+    style.map(
+        "Custom.Vertical.TScrollbar",
+        background=[("disabled", "lightgray")],
+        troughcolor=[("disabled", theme.couleur_fond)],
+        bordercolor=[("disabled", theme.couleur_frame)],
+        arrowcolor=[("disabled", theme.couleur_fond)],
+        # gripcolor=[("disabled", "purple")],
+        # slidercolor=[("disabled", "yellow")],
     )
     style.configure(
         "Custom.Horizontal.TScrollbar",
-        background="blue",
-        troughcolor="blue",
-        bordercolor="blue",
-        arrowcolor="blue",
-        gripcolor="blue",
-        slidercolor="blue",
+        background="lightgray",
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
+        arrowcolor=theme.couleur_fond,
+        # gripcolor="purple",
+        # slidercolor="yellow",
+    )
+    style.map(
+        "Custom.Horizontal.TScrollbar",
+        background=[("disabled", "lightgray")],
+        troughcolor=[("disabled", theme.couleur_fond)],
+        bordercolor=[("disabled", theme.couleur_frame)],
+        arrowcolor=[("disabled", theme.couleur_fond)],
+        # gripcolor=[("disabled", "purple")],
+        # slidercolor=[("disabled", "yellow")],
     )
     style.configure(
         "Custom.Horizontal.TProgressbar",
-        background="blue",
-        troughcolor="blue",
-        bordercolor="blue",
+        background=theme.couleur_selection,
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
     )
     style.configure(
         "Custom.TCheckbutton",
-        background="blue",
+        background=theme.couleur_frame,
+        foreground=theme.couleur_texte,
         font=("Arial", 12),
     )
-
-    # # à mettre dans theme
-    # style = ttk.Style()
-    # style.configure(
-    #     "Custom.Treeview",
-    #     background="#d3d3d3",
-    #     fieldbackground="#d3d3d3",
-    #     foreground=theme.couleur_texte,
-    # )
-    # # Définir un style pour les éléments sélectionnés
-    # style.map(
-    #     "Custom.Treeview",
-    #     background=[("selected", "pink"), ("!selected", "lightblue")],
-    #     foreground=[("selected", theme.couleur_texte)],
-    # )
-    # # Configure un tag pour les éléments sélectionnés
-    # style.configure("Custom.Treeview.Item", background="pink")
+    style.map("Custom.TCheckbutton", background=[("selected", theme.couleur_frame)])
 
     # FRAME pack pour pouvoir modifier la taille de la fenêtre
     frame_root = tk.Frame(fenetre)

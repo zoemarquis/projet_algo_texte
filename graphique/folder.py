@@ -34,7 +34,7 @@ class FolderTree(tk.Frame):
             columns=("fullpath",),
             show="tree",
         )
-        self.tree.tag_configure("selected", background="pink")  # Configurer le tag ici
+        self.tree.tag_configure("selected", background="red")  # Configurer le tag ici
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar_y = ttk.Scrollbar(

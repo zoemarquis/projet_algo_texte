@@ -83,8 +83,13 @@ class Regions:
         # zone de texte
         frame_saisie = tk.Frame(self.frame_parent, bg=theme.couleur_frame)
         frame_saisie.grid(row=r, column=1, columnspan=2, sticky="nsew")
-        zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
-        zone_texte.pack(expand=True, fill="x")
+        zone_texte = tk.Entry(
+            frame_saisie,
+            textvariable=self.zone_entre,
+            bg="#9FADE4",
+            fg=theme.couleur_texte,
+        )
+        zone_texte.pack(expand=True, fill="both", padx=(0, 10), pady=20)
         zone_texte.bind("<Return>", self.on_text_entry)
 
         return r, c

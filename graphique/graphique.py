@@ -110,7 +110,6 @@ if __name__ == "__main__":
     frame_root.rowconfigure(0, weight=1)
     frame_root.rowconfigure(1, weight=10)
     frame_root.columnconfigure(0, weight=1)
-    # + utiliser les fonctions pour modifier le theme
 
     #####################################################################################
     # FRAME titre : contient le texte du titre + le petit i

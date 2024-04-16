@@ -32,6 +32,7 @@ if __name__ == "__main__":
     height = fenetre.winfo_height()
 
     style = ttk.Style(fenetre)
+    style.theme_use("clam")
     style.configure(
         "Custom.Treeview",
         background="blue",
@@ -51,10 +52,24 @@ if __name__ == "__main__":
         slidercolor="blue",
     )
     style.configure(
+        "Custom.Horizontal.TScrollbar",
+        background="blue",
+        troughcolor="blue",
+        bordercolor="blue",
+        arrowcolor="blue",
+        gripcolor="blue",
+        slidercolor="blue",
+    )
+    style.configure(
         "Custom.Horizontal.TProgressbar",
         background="blue",
         troughcolor="blue",
         bordercolor="blue",
+    )
+    style.configure(
+        "Custom.TCheckbutton",
+        background="blue",
+        font=("Arial", 12),
     )
 
     # # à mettre dans theme

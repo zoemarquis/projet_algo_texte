@@ -59,7 +59,7 @@ class Regions:
                     self.frame_parent,
                     text=region,
                     variable=var,
-                    style="CustomCheckbutton.TCheckbutton",
+                    style="Custom.TCheckbutton",
                 )
                 cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
                 self.checkboxes[region] = cb
@@ -69,16 +69,10 @@ class Regions:
                     text=region,
                     variable=self.check_vars[region],
                     command=lambda: self.update_recap(self.check_vars, self.regions),
-                    style="CustomCheckbutton.TCheckbutton",
+                    style="Custom.TCheckbutton",
                 )
                 cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
                 self.checkboxes[region] = cb
-                # style = ttk.Style()
-                # style.configure(
-                #     "CustomCheckbutton.TCheckbutton",
-                #     background=theme.couleur_frame,
-                #     foreground=theme.couleur_texte,
-                # )
 
             c += 1
             if c >= num_columns:

@@ -19,14 +19,20 @@ class Recap:
             10, 10, text="Dossier:", fill=theme.couleur_texte, anchor="nw"
         )
         self.scrollbar_arbo = ttk.Scrollbar(
-            self.canvas_arbo, orient="vertical", command=self.canvas_arbo.yview
+            self.canvas_arbo,
+            orient="vertical",
+            command=self.canvas_arbo.yview,
+            style="Custom.Vertical.TScrollbar",
         )
         self.scrollbar_arbo.pack(side="right", fill="y")
         self.canvas_arbo.configure(yscrollcommand=self.scrollbar_arbo.set)
 
         # Scrollbar horizontale
         self.scrollbar_arbo_x = ttk.Scrollbar(
-            self.canvas_arbo, orient="horizontal", command=self.canvas_arbo.xview
+            self.canvas_arbo,
+            orient="horizontal",
+            command=self.canvas_arbo.xview,
+            style="Custom.Horizontal.TScrollbar",
         )
         self.scrollbar_arbo_x.pack(side="bottom", fill="x")
         self.canvas_arbo.configure(xscrollcommand=self.scrollbar_arbo_x.set)
@@ -39,7 +45,10 @@ class Recap:
             10, 10, text="Régions:", fill=theme.couleur_texte, anchor="nw"
         )
         self.scrollbar_regions = ttk.Scrollbar(
-            self.canvas_regions, orient="vertical", command=self.canvas_regions.yview
+            self.canvas_regions,
+            orient="vertical",
+            command=self.canvas_regions.yview,
+            style="Custom.Vertical.TScrollbar",
         )
         self.scrollbar_regions.pack(side="right", fill="y")
         self.canvas_regions.configure(yscrollcommand=self.scrollbar_regions.set)

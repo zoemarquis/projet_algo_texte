@@ -14,23 +14,4 @@ couleur_contraste = "lightblue"
 
 def configurer_background(widget):
     assert isinstance(widget, (tk.Frame, tk.Label))
-    # style = ttk.Style()
-    # style.theme_use("default")
     widget.configure(bg=couleur_fond)
-
-    """
-    if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Frame, tk.Label, tk.Button)):
-        widget.configure(
-            bg=bg_principal if isinstance(widget, (tk.Tk, tk.Toplevel)) else bg_frame
-        )
-    elif isinstance(widget, (ttk.Frame, ttk.Label, ttk.Button)):
-        style = ttk.Style()
-        if isinstance(widget, ttk.Progressbar):
-            style_name = "Custom.Horizontal.TProgressbar"
-            style.configure(style_name, background=bg_frame)
-            widget.configure(style=style_name)
-        return  # Ne pas essayer de configurer le fond pour d'autres widgets ttk
-
-    for child in widget.winfo_children():
-        configurer_background(child, bg_principal, bg_frame)
-    """

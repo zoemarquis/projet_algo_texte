@@ -88,6 +88,8 @@ class Regions:
             textvariable=self.zone_entre,
             bg="lightgrey",
             fg=theme.couleur_texte,
+            highlightbackground="white",
+            highlightthickness=1  
         )
         zone_texte.pack(expand=True, fill="both", padx=(0, 10), pady=20)
         zone_texte.bind("<Return>", self.on_text_entry)

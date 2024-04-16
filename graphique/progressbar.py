@@ -24,7 +24,7 @@ class ProgressBar:
             style="Custom.TButton",
         )
         self.bouton.grid(row=grid_row + 1, column=grid_column)
-        self.bouton.bind("<Enter>", self.change_cursor)
+       # self.bouton.bind("<Enter>", self.change_cursor)
 
     def update_progress(self):
         current_value = self.loadbar["value"]
@@ -48,6 +48,8 @@ class ProgressBar:
         if self.progress_running:
             self.update_progress()
 
+    '''
     # à placer dans theme plutot ?
     def change_cursor(self, event):
         event.widget.config(cursor="hand2")  # Change le curseur en main pointant
+    '''

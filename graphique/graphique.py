@@ -18,19 +18,6 @@ sys.path.append(chemin_src)
 import arborescence as ar
 
 
-# à mettre dans theme
-def change_treeview_colors(treeview, text_color, select_color, background_color):
-    # style = ttk.Style()
-    # style.configure(
-    #     "Custom.Treeview",
-    #     foreground=text_color,
-    #     fieldbackground=background_color,
-    #     background=background_color,
-    # )
-    # style.map("Custom.Treeview", background=[("selected", select_color)])
-    return
-
-
 if __name__ == "__main__":
     root_dir = "Results"
     folder_structure, dict_path = folder.create_folder_structure(root_dir)
@@ -47,10 +34,45 @@ if __name__ == "__main__":
     style = ttk.Style(fenetre)
     style.configure(
         "Custom.Treeview",
-        background=theme.couleur_frame,
-        fieldbackground=theme.couleur_frame,
-        foreground=theme.couleur_texte,
+        background="blue",
+        fieldbackground="blue",
+        foreground="blue",
     )
+    style.configure(
+        "Custom.TButton", foreground="blue", background="blue", font=("Arial", 12)
+    )
+    style.configure(
+        "Custom.Vertical.TScrollbar",
+        background="blue",
+        troughcolor="blue",
+        bordercolor="blue",
+        arrowcolor="blue",
+        gripcolor="blue",
+        slidercolor="blue",
+    )
+    style.configure(
+        "Custom.Horizontal.TProgressbar",
+        background="blue",
+        troughcolor="blue",
+        bordercolor="blue",
+    )
+
+    # # à mettre dans theme
+    # style = ttk.Style()
+    # style.configure(
+    #     "Custom.Treeview",
+    #     background="#d3d3d3",
+    #     fieldbackground="#d3d3d3",
+    #     foreground=theme.couleur_texte,
+    # )
+    # # Définir un style pour les éléments sélectionnés
+    # style.map(
+    #     "Custom.Treeview",
+    #     background=[("selected", "pink"), ("!selected", "lightblue")],
+    #     foreground=[("selected", theme.couleur_texte)],
+    # )
+    # # Configure un tag pour les éléments sélectionnés
+    # style.configure("Custom.Treeview.Item", background="pink")
 
     # FRAME pack pour pouvoir modifier la taille de la fenêtre
     frame_root = tk.Frame(fenetre)
@@ -118,12 +140,12 @@ if __name__ == "__main__":
     # style.map("Treeview", background=[('selected', '#347083')])
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, dict_path, recap=None)
     folder_tree.pack(expand=True, fill=tk.BOTH)
-    change_treeview_colors(
-        folder_tree,
-        text_color=theme.couleur_texte,
-        select_color="lightblue",
-        background_color=theme.couleur_frame,
-    )
+    # change_treeview_colors(
+    #     folder_tree,
+    #     text_color=theme.couleur_texte,
+    #     select_color="lightblue",
+    #     background_color=theme.couleur_frame,
+    # )
 
     # FRAME régions
     frame_cases = tk.LabelFrame(
@@ -204,7 +226,7 @@ if __name__ == "__main__":
     theme.configurer_background(frame_gauche)
     theme.configurer_background(frame_droite)
     theme.configurer_background(label)
-    theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
+    # theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
     # credit
 
     fenetre.mainloop()

@@ -21,42 +21,12 @@ def create_folder_structure(root_dir):
     return folder_structure, dict_path
 
 
-# à mettre dans theme
-def change_scrollbar_color(scrollbar, background_color, trough_color, border_color):
-    # style = ttk.Style()
-    # style.configure(
-    #     "Custom.Vertical.TScrollbar",
-    #     background=background_color,
-    #     troughcolor=trough_color,
-    #     bordercolor=border_color,
-    # )
-    return
-
-
 class FolderTree(tk.Frame):
     def __init__(self, master, folder_structure, dict_path, recap, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.selected_items = set()
         self.dict_path = dict_path
         self.recap = recap
-
-        # # à mettre dans theme
-        # style = ttk.Style()
-        # style.configure(
-        #     "Custom.Treeview",
-        #     background="#d3d3d3",
-        #     fieldbackground="#d3d3d3",
-        #     foreground=theme.couleur_texte,
-        # )
-        # # Définir un style pour les éléments sélectionnés
-        # style.map(
-        #     "Custom.Treeview",
-        #     background=[("selected", "pink"), ("!selected", "lightblue")],
-        #     foreground=[("selected", theme.couleur_texte)],
-        # )
-        # # Configure un tag pour les éléments sélectionnés
-        # style.configure("Custom.Treeview.Item", background="pink")
-
         self.tree = ttk.Treeview(
             self,
             style="Custom.Treeview",
@@ -68,7 +38,10 @@ class FolderTree(tk.Frame):
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar_y = ttk.Scrollbar(
-            self, orient="vertical", command=self.tree.yview
+            self,
+            orient="vertical",
+            command=self.tree.yview,
+            style="Custom.Vertical.TScrollbar",
         )
         self.scrollbar_y.pack(side=tk.RIGHT, fill="y")
         self.tree.configure(yscrollcommand=self.scrollbar_y.set)

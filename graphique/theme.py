@@ -11,11 +11,6 @@ couleur_selection = "pink"
 
 couleur_contraste = "lightblue"
 
-# style.map("Custom.TButton",
-#           background=[("active", theme.couleur_frame), ("!disabled", theme.couleur_frame)],
-#           foreground=[("!disabled", "white")],
-#           relief = "groove")
-
 
 def configurer_background(widget):
     assert isinstance(widget, (tk.Frame, tk.Label))
@@ -39,14 +34,3 @@ def configurer_background(widget):
     for child in widget.winfo_children():
         configurer_background(child, bg_principal, bg_frame)
     """
-
-
-def change_button_style(bg, fg):
-    # style = ttk.Style()
-    # style.configure("Custom.TButton", background=bg, foreground=fg)
-    return
-
-
-# def change_label_frame_font(label_frame, font_name, font_size):
-#     style = ttk.Style()
-#     style.configure("Custom.TLabelframe.Label", font=(font_name, font_size))

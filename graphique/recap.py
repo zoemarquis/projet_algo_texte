@@ -46,9 +46,9 @@ class Recap:
 
         bouton_effacer_selection = ttk.Button(
             frame_parent,
+            style="Custom.TButton",
             text="TOUT EFFACER",
             command=self.effacer_selection,
-            style="Custom.TButton",
         )
         bouton_effacer_selection.grid(
             row=1,

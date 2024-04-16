@@ -1,6 +1,8 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+from tkinter import font
+
 
 import folder
 import theme
@@ -12,19 +14,21 @@ import progressbar
 
 import sys
 
-chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
-sys.path.append(chemin_src)
-# sys.path.insert(1, "../src/")
-import arborescence as ar
+# chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
+# sys.path.append(chemin_src)
+# # sys.path.insert(1, "../src/")
+# import arborescence as ar
 
 
 if __name__ == "__main__":
     root_dir = "Results"
     folder_structure, dict_path = folder.create_folder_structure(root_dir)
 
-    ar.get_tree()
+    #ar.get_tree()
 
     fenetre = tk.Tk()
+    bold_font = font.Font(family="Helvetica", size=14, weight="bold")
+
     fenetre.title("GENBANK PARSER")
     fenetre.geometry("1300x800")
     fenetre.update()
@@ -56,7 +60,7 @@ if __name__ == "__main__":
     )
     style.configure(
         "Custom.Vertical.TScrollbar",
-        background="#9FADE4",
+        background="lightgrey",
         troughcolor=theme.couleur_fond,
         bordercolor=theme.couleur_frame,
         arrowcolor=theme.couleur_fond,
@@ -65,7 +69,7 @@ if __name__ == "__main__":
     )
     style.map(
         "Custom.Vertical.TScrollbar",
-        background=[("disabled", "#9FADE4")],
+        background=[("disabled", "lightgrey")],
         troughcolor=[("disabled", theme.couleur_fond)],
         bordercolor=[("disabled", theme.couleur_frame)],
         arrowcolor=[("disabled", theme.couleur_fond)],
@@ -74,7 +78,7 @@ if __name__ == "__main__":
     )
     style.configure(
         "Custom.Horizontal.TScrollbar",
-        background="#9FADE4",
+        background="lightgrey",
         troughcolor=theme.couleur_fond,
         bordercolor=theme.couleur_frame,
         arrowcolor=theme.couleur_fond,
@@ -83,7 +87,7 @@ if __name__ == "__main__":
     )
     style.map(
         "Custom.Horizontal.TScrollbar",
-        background=[("disabled", "#9FADE4")],
+        background=[("disabled", "lightgrey")],
         troughcolor=[("disabled", theme.couleur_fond)],
         bordercolor=[("disabled", theme.couleur_frame)],
         arrowcolor=[("disabled", theme.couleur_fond)],
@@ -154,12 +158,13 @@ if __name__ == "__main__":
 
     #####################################################################################
     # à gauche : tous les choix : arborescence + régions
-
+    
     # FRAME arborescence
     frame_arbo = tk.LabelFrame(
         frame_gauche,
-        text="Arborescence",
-        relief="raised",
+        text="Séléction des dossiers",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
@@ -172,6 +177,8 @@ if __name__ == "__main__":
     frame_cases = tk.LabelFrame(
         frame_gauche,
         text="Sélection des régions",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
@@ -187,7 +194,8 @@ if __name__ == "__main__":
     frame_recap = tk.LabelFrame(
         frame_droite,
         text="Récapitulatif",
-        relief="raised",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
         height=200,
@@ -205,7 +213,12 @@ if __name__ == "__main__":
 
     # log
     frame_log = tk.LabelFrame(
-        frame_droite, text="Log", foreground=theme.couleur_texte, bg=theme.couleur_frame
+        frame_droite, 
+        text="Log", 
+        font=bold_font,
+        relief="flat",
+        foreground=theme.couleur_texte, 
+        bg=theme.couleur_frame
     )
     frame_log.grid(row=1, column=0, sticky="nsew", pady=(10, 20))
 

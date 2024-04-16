@@ -86,7 +86,7 @@ class Regions:
         zone_texte = tk.Entry(
             frame_saisie,
             textvariable=self.zone_entre,
-            bg="#9FADE4",
+            bg="lightgrey",
             fg=theme.couleur_texte,
         )
         zone_texte.pack(expand=True, fill="both", padx=(0, 10), pady=20)

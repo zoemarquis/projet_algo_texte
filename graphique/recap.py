@@ -13,7 +13,7 @@ class Recap:
 
         f_arbo = tk.Frame(frame_parent)
         f_arbo.grid(row=0, column=0, sticky="nsew")
-        self.canvas_arbo = tk.Canvas(f_arbo, bg=theme.couleur_frame)
+        self.canvas_arbo = tk.Canvas(f_arbo, bg=theme.couleur_frame, highlightthickness=1,  highlightbackground="white")
         self.canvas_arbo.pack(side="right", fill="both", expand=True)
         self.text_recap_arbo = self.canvas_arbo.create_text(
             10, 10, text="Dossier:", fill=theme.couleur_texte, anchor="nw"
@@ -37,9 +37,9 @@ class Recap:
         self.scrollbar_arbo_x.pack(side="bottom", fill="x")
         self.canvas_arbo.configure(xscrollcommand=self.scrollbar_arbo_x.set)
 
-        f_cases = tk.Frame(frame_parent)
+        f_cases = tk.Frame(frame_parent, bd=0)
         f_cases.grid(row=0, column=1, sticky="nsew")
-        self.canvas_regions = tk.Canvas(f_cases, bg=theme.couleur_frame)
+        self.canvas_regions = tk.Canvas(f_cases, bg=theme.couleur_frame,  highlightthickness=1, highlightbackground="white")
         self.canvas_regions.pack(side="left", fill="both", expand=True)
         self.text_recap_cases = self.canvas_regions.create_text(
             10, 10, text="Régions:", fill=theme.couleur_texte, anchor="nw"
@@ -56,7 +56,7 @@ class Recap:
         bouton_effacer_selection = ttk.Button(
             frame_parent,
             style="Custom.TButton",
-            text="TOUT EFFACER",
+            text="Tout effacer",
             command=self.effacer_selection,
         )
         bouton_effacer_selection.grid(

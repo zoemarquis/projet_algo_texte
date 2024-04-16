@@ -10,9 +10,9 @@ import region
 import recap
 import progressbar
 
-import sys 
+import sys
 
-chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 sys.path.append(chemin_src)
 # sys.path.insert(1, "../src/")
 import arborescence as ar
@@ -20,14 +20,15 @@ import arborescence as ar
 
 # à mettre dans theme
 def change_treeview_colors(treeview, text_color, select_color, background_color):
-    style = ttk.Style()
-    style.configure(
-        "Custom.Treeview",
-        foreground=text_color,
-        fieldbackground=background_color,
-        background=background_color,
-    )
-    style.map("Custom.Treeview", background=[("selected", select_color)])
+    # style = ttk.Style()
+    # style.configure(
+    #     "Custom.Treeview",
+    #     foreground=text_color,
+    #     fieldbackground=background_color,
+    #     background=background_color,
+    # )
+    # style.map("Custom.Treeview", background=[("selected", select_color)])
+    return
 
 
 if __name__ == "__main__":
@@ -37,12 +38,19 @@ if __name__ == "__main__":
     ar.get_tree()
 
     fenetre = tk.Tk()
-    # style = ttk.Style(fenetre)
     fenetre.title("GENBANK PARSER")
     fenetre.geometry("1300x800")
     fenetre.update()
     width = fenetre.winfo_width()
     height = fenetre.winfo_height()
+
+    style = ttk.Style(fenetre)
+    style.configure(
+        "Custom.Treeview",
+        background=theme.couleur_frame,
+        fieldbackground=theme.couleur_frame,
+        foreground=theme.couleur_texte,
+    )
 
     # FRAME pack pour pouvoir modifier la taille de la fenêtre
     frame_root = tk.Frame(fenetre)

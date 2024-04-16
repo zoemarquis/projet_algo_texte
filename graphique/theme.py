@@ -19,8 +19,8 @@ couleur_contraste = "lightblue"
 
 def configurer_background(widget):
     assert isinstance(widget, (tk.Frame, tk.Label))
-    style = ttk.Style()
-    style.theme_use("default")
+    # style = ttk.Style()
+    # style.theme_use("default")
     widget.configure(bg=couleur_fond)
 
     """
@@ -42,8 +42,9 @@ def configurer_background(widget):
 
 
 def change_button_style(bg, fg):
-    style = ttk.Style()
-    style.configure("Custom.TButton", background=bg, foreground=fg)
+    # style = ttk.Style()
+    # style.configure("Custom.TButton", background=bg, foreground=fg)
+    return
 
 
 # def change_label_frame_font(label_frame, font_name, font_size):

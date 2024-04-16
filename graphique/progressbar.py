@@ -7,13 +7,13 @@ import theme
 class ProgressBar:
     def __init__(self, frame_parent, fenetre, grid_row, grid_column):
         self.progress_running = False
-        self.style = ttk.Style()
-        # self.style.theme_use("clam")
-        self.style.configure(
-            "Custom.Horizontal.TProgressbar",
-            troughcolor=theme.couleur_frame,
-            background=theme.couleur_selection,
-        )
+        # self.style = ttk.Style()
+        # # self.style.theme_use("clam")
+        # self.style.configure(
+        #     "Custom.Horizontal.TProgressbar",
+        #     troughcolor=theme.couleur_frame,
+        #     background=theme.couleur_selection,
+        # )
         self.loadbar = ttk.Progressbar(
             frame_parent,
             orient="horizontal",

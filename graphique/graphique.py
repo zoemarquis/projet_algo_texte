@@ -1,6 +1,8 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+from tkinter import font
+
 
 import folder
 import theme
@@ -10,30 +12,101 @@ import region
 import recap
 import progressbar
 
+import sys
 
-# à mettre dans theme
-def change_treeview_colors(treeview, text_color, select_color, background_color):
-    style = ttk.Style()
-    style.configure(
-        "Custom.Treeview",
-        foreground=text_color,
-        fieldbackground=background_color,
-        background=background_color,
-    )
-    style.map("Custom.Treeview", background=[("selected", select_color)])
+# chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
+# sys.path.append(chemin_src)
+# # sys.path.insert(1, "../src/")
+# import arborescence as ar
 
 
 if __name__ == "__main__":
     root_dir = "Results"
     folder_structure, dict_path = folder.create_folder_structure(root_dir)
 
+    #ar.get_tree()
+
     fenetre = tk.Tk()
-    # style = ttk.Style(fenetre)
+    bold_font = font.Font(family="Helvetica", size=14, weight="bold")
+
     fenetre.title("GENBANK PARSER")
     fenetre.geometry("1300x800")
     fenetre.update()
     width = fenetre.winfo_width()
     height = fenetre.winfo_height()
+
+    style = ttk.Style(fenetre)
+    style.theme_use("clam")
+    style.configure(
+        "Custom.Treeview",
+        fieldbackground=theme.couleur_frame,
+        background=[
+            ("selected", "lightblue"),
+            ("!selected", theme.couleur_frame),
+        ],
+        foreground=theme.couleur_texte,
+    )
+    style.configure("Custom.Treeview.Item", background="lightblue")
+    style.configure(
+        "Custom.TButton",
+        foreground=theme.couleur_texte,
+        background=theme.couleur_frame,
+        font=("Arial", 12),
+    )
+    style.map(
+        "Custom.TButton",
+        background=[("active", theme.couleur_selection)],
+        foreground=[("active", theme.couleur_texte)],
+    )
+    style.configure(
+        "Custom.Vertical.TScrollbar",
+        background="lightgrey",
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
+        arrowcolor=theme.couleur_fond,
+        # gripcolor="purple",
+        # slidercolor="yellow",
+    )
+    style.map(
+        "Custom.Vertical.TScrollbar",
+        background=[("disabled", "lightgrey")],
+        troughcolor=[("disabled", theme.couleur_fond)],
+        bordercolor=[("disabled", theme.couleur_frame)],
+        arrowcolor=[("disabled", theme.couleur_fond)],
+        # gripcolor=[("disabled", "purple")],
+        # slidercolor=[("disabled", "yellow")],
+    )
+    style.configure(
+        "Custom.Horizontal.TScrollbar",
+        background="lightgrey",
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
+        arrowcolor=theme.couleur_fond,
+        # gripcolor="purple",
+        # slidercolor="yellow",
+    )
+    style.map(
+        "Custom.Horizontal.TScrollbar",
+        background=[("disabled", "lightgrey")],
+        troughcolor=[("disabled", theme.couleur_fond)],
+        bordercolor=[("disabled", theme.couleur_frame)],
+        arrowcolor=[("disabled", theme.couleur_fond)],
+        # gripcolor=[("disabled", "purple")],
+        # slidercolor=[("disabled", "yellow")],
+    )
+    style.configure(
+        "Custom.Horizontal.TProgressbar",
+        background=theme.couleur_selection,
+        troughcolor=theme.couleur_fond,
+        bordercolor=theme.couleur_frame,
+    )
+    style.configure(
+        "Custom.TCheckbutton",
+        background=theme.couleur_frame,
+        foreground=theme.couleur_texte,
+        font=("Arial", 12),
+    )
+    style.map("Custom.TCheckbutton", background=[("selected", theme.couleur_frame)])
 
     # FRAME pack pour pouvoir modifier la taille de la fenêtre
     frame_root = tk.Frame(fenetre)
@@ -41,7 +114,6 @@ if __name__ == "__main__":
     frame_root.rowconfigure(0, weight=1)
     frame_root.rowconfigure(1, weight=10)
     frame_root.columnconfigure(0, weight=1)
-    # + utiliser les fonctions pour modifier le theme
 
     #####################################################################################
     # FRAME titre : contient le texte du titre + le petit i
@@ -56,7 +128,7 @@ if __name__ == "__main__":
         frame_titre,
         text="Acquisition des régions fonctionnelles dans les génomes",
         font=("Arial", 30),
-        fg=theme.couleur_frame,
+        fg=theme.couleur_titre,
     )
     label.grid(row=0, column=0, sticky="ew")
 
@@ -86,32 +158,27 @@ if __name__ == "__main__":
 
     #####################################################################################
     # à gauche : tous les choix : arborescence + régions
-
+    
     # FRAME arborescence
     frame_arbo = tk.LabelFrame(
         frame_gauche,
-        text="Arborescence",
-        relief="raised",
+        text="Séléction des dossiers",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
     frame_arbo.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
 
-    # style.configure("Treeview", rowheight=25)
-    # style.map("Treeview", background=[('selected', '#347083')])
     folder_tree = folder.FolderTree(frame_arbo, folder_structure, dict_path, recap=None)
     folder_tree.pack(expand=True, fill=tk.BOTH)
-    change_treeview_colors(
-        folder_tree,
-        text_color=theme.couleur_texte,
-        select_color="lightblue",
-        background_color=theme.couleur_frame,
-    )
 
     # FRAME régions
     frame_cases = tk.LabelFrame(
         frame_gauche,
         text="Sélection des régions",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
     )
@@ -123,26 +190,12 @@ if __name__ == "__main__":
     #####################################################################################
     # à droite : récap + log + loadbar + bouton
 
-    # FRAME HAUT CONTIENT RÉCAP ET LOG
-    # frame_haut = tk.Frame(frame_droite)
-    # frame_haut.grid(row=0, column=1, sticky="nsew", padx=(10, 0), pady=(0, 10))
-    # frame_haut.grid_columnconfigure(0, weight=1)
-    # frame_haut.grid_rowconfigure(0, weight=1)
-    # frame_haut.grid_rowconfigure(1, weight=1)
-
-    """
-    frame_choix = tk.Frame(frame_haut, bg=theme.couleur_frame)
-    frame_choix.grid(row=0, column=0, sticky="nsew")
-    frame_choix.rowconfigure(0, weight=1)
-    frame_choix.rowconfigure(1, weight=1)
-    frame_choix.columnconfigure(0, weight=1)
-    """
-
     # recap
     frame_recap = tk.LabelFrame(
         frame_droite,
         text="Récapitulatif",
-        relief="raised",
+        relief="flat",
+        font=bold_font,
         bg=theme.couleur_frame,
         foreground=theme.couleur_texte,
         height=200,
@@ -160,7 +213,12 @@ if __name__ == "__main__":
 
     # log
     frame_log = tk.LabelFrame(
-        frame_droite, text="Log", foreground=theme.couleur_texte, bg=theme.couleur_frame
+        frame_droite, 
+        text="Log", 
+        font=bold_font,
+        relief="flat",
+        foreground=theme.couleur_texte, 
+        bg=theme.couleur_frame
     )
     frame_log.grid(row=1, column=0, sticky="nsew", pady=(10, 20))
 
@@ -187,7 +245,5 @@ if __name__ == "__main__":
     theme.configurer_background(frame_gauche)
     theme.configurer_background(frame_droite)
     theme.configurer_background(label)
-    theme.change_button_style(bg=theme.couleur_frame, fg=theme.couleur_texte)
-    # credit
 
     fenetre.mainloop()

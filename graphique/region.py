@@ -16,7 +16,6 @@ class Regions:
             "tRNA",
             "rRNA",
             "5'UTR",
-            "Intron",
             "Telomère",
             "Mobile élément",
             "Centromère",
@@ -38,14 +37,14 @@ class Regions:
 
         # fenetre.after(100, self.configure_grid()) # ?
 
-    def configure_grid(self, num_columns=2):
+    def configure_grid(self, num_columns=3):
         frame_width = self.frame_parent.winfo_height()
         column_width = frame_width // (num_columns + 2)
 
         total_spacing = frame_width - (num_columns * column_width)
-        spacing_per_column = total_spacing // (num_columns + 1)
+        spacing_per_column = total_spacing // (num_columns)
 
-        for c in range(num_columns + 1):
+        for c in range(num_columns):
             self.frame_parent.grid_columnconfigure(
                 c, minsize=column_width, pad=spacing_per_column
             )
@@ -60,7 +59,7 @@ class Regions:
                     self.frame_parent,
                     text=region,
                     variable=var,
-                    style="CustomCheckbutton.TCheckbutton",
+                    style="Custom.TCheckbutton",
                 )
                 cb.grid(row=r, column=0, sticky="w", padx=0, pady=0)
                 self.checkboxes[region] = cb
@@ -70,16 +69,10 @@ class Regions:
                     text=region,
                     variable=self.check_vars[region],
                     command=lambda: self.update_recap(self.check_vars, self.regions),
-                    style="CustomCheckbutton.TCheckbutton",
+                    style="Custom.TCheckbutton",
                 )
                 cb.grid(row=r, column=c, sticky="wns", padx=0, pady=0)
                 self.checkboxes[region] = cb
-                style = ttk.Style()
-                style.configure(
-                    "CustomCheckbutton.TCheckbutton",
-                    background=theme.couleur_frame,
-                    foreground=theme.couleur_texte,
-                )
 
             c += 1
             if c >= num_columns:
@@ -89,9 +82,16 @@ class Regions:
 
         # zone de texte
         frame_saisie = tk.Frame(self.frame_parent, bg=theme.couleur_frame)
-        frame_saisie.grid(row=r, column=1, sticky="nsew")
-        zone_texte = tk.Entry(frame_saisie, textvariable=self.zone_entre)
-        zone_texte.pack(expand=True, fill="x", padx=(0, 40))
+        frame_saisie.grid(row=r, column=1, columnspan=2, sticky="nsew")
+        zone_texte = tk.Entry(
+            frame_saisie,
+            textvariable=self.zone_entre,
+            bg="lightgrey",
+            fg=theme.couleur_texte,
+            highlightbackground="white",
+            highlightthickness=1  
+        )
+        zone_texte.pack(expand=True, fill="both", padx=(0, 10), pady=20)
         zone_texte.bind("<Return>", self.on_text_entry)
 
         return r, c
@@ -121,20 +121,26 @@ class Regions:
             entered_regions = entered_text.split(";")
             for entered_region in entered_regions:
                 entered_region = entered_region.strip()
-                  # Supprimez les espaces superflus de chaque région
-                region_found = False  # Indicateur pour savoir si la région a été trouvée et cochée
-                
+                # Supprimez les espaces superflus de chaque région
+                region_found = (
+                    False  # Indicateur pour savoir si la région a été trouvée et cochée
+                )
+
                 if entered_region.lower() == "all":
                     # Si le texte est "all", cochez toutes les cases
                     for region, var in self.check_vars.items():
                         var.set(True)
-                    #self.update_recap(self.check_vars, self.regions)
+                    # self.update_recap(self.check_vars, self.regions)
                 else:
                     for region in self.regions:
                         if entered_region.lower() == region.lower():
-                            self.check_vars[region].set(True)  # Cochez la case de la région correspondante
+                            self.check_vars[region].set(
+                                True
+                            )  # Cochez la case de la région correspondante
                             self.update_recap(self.check_vars, self.regions)
-                            region_found = True # Marquez que la région a été trouvée et cochée
+                            region_found = (
+                                True  # Marquez que la région a été trouvée et cochée
+                            )
                             break  # Sortez de la boucle une fois la région trouvée
                     if not region_found:
                         # Si la région saisie n'est pas déjà présente, ajoutez-la à `additional_regions`
@@ -142,7 +148,9 @@ class Regions:
                             region.lower()
                             for region in self.regions + list(self.additional_regions)
                         ]:
-                            self.additional_regions.add(entered_region)  # Ajoutez la région à la liste des régions supplémentaires
+                            self.additional_regions.add(
+                                entered_region
+                            )  # Ajoutez la région à la liste des régions supplémentaires
                             self.update_recap(
                                 self.check_vars,
                                 self.regions + list(self.additional_regions),
@@ -178,17 +186,28 @@ class Regions:
                 options_to_display = [option for option in options if option != "All"]
             else:
                 # Afficher uniquement les options sélectionnées
-                options_to_display = [option for option in options if check_vars.get(option, tk.BooleanVar()).get()]
-            
+                options_to_display = [
+                    option
+                    for option in options
+                    if check_vars.get(option, tk.BooleanVar()).get()
+                ]
+
             # Tri des options sans tenir compte de la casse
-            all_options = sorted(list(self.additional_regions) + options_to_display, key=lambda x: x.lower())
+            all_options = sorted(
+                list(self.additional_regions) + options_to_display,
+                key=lambda x: x.lower(),
+            )
 
             # Mise à jour du texte dans le canvas
             recap_text = "Régions:\n" + "\n".join(all_options)
-            self.recap.canvas_regions.itemconfig(self.recap.text_recap_cases, text=recap_text)
-            
+            self.recap.canvas_regions.itemconfig(
+                self.recap.text_recap_cases, text=recap_text
+            )
+
             # Ajuster la zone de défilement pour s'assurer que tout est visible
-            self.recap.canvas_regions.configure(scrollregion=self.recap.canvas_regions.bbox("all"))
+            self.recap.canvas_regions.configure(
+                scrollregion=self.recap.canvas_regions.bbox("all")
+            )
 
     def effacer_selection(self):
         for var in self.check_vars.values():

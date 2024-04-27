@@ -7,13 +7,6 @@ import theme
 class ProgressBar:
     def __init__(self, frame_parent, fenetre, grid_row, grid_column):
         self.progress_running = False
-        self.style = ttk.Style()
-        # self.style.theme_use("clam")
-        self.style.configure(
-            "Custom.Horizontal.TProgressbar",
-            troughcolor=theme.couleur_frame,
-            background=theme.couleur_selection,
-        )
         self.loadbar = ttk.Progressbar(
             frame_parent,
             orient="horizontal",
@@ -31,7 +24,7 @@ class ProgressBar:
             style="Custom.TButton",
         )
         self.bouton.grid(row=grid_row + 1, column=grid_column)
-        self.bouton.bind("<Enter>", self.change_cursor)
+       # self.bouton.bind("<Enter>", self.change_cursor)
 
     def update_progress(self):
         current_value = self.loadbar["value"]
@@ -55,6 +48,8 @@ class ProgressBar:
         if self.progress_running:
             self.update_progress()
 
+    '''
     # à placer dans theme plutot ?
     def change_cursor(self, event):
         event.widget.config(cursor="hand2")  # Change le curseur en main pointant
+    '''

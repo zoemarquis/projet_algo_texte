@@ -21,41 +21,12 @@ def create_folder_structure(root_dir):
     return folder_structure, dict_path
 
 
-# à mettre dans theme
-def change_scrollbar_color(scrollbar, background_color, trough_color, border_color):
-    style = ttk.Style()
-    style.configure(
-        "Custom.Vertical.TScrollbar",
-        background=background_color,
-        troughcolor=trough_color,
-        bordercolor=border_color,
-    )
-
-
 class FolderTree(tk.Frame):
     def __init__(self, master, folder_structure, dict_path, recap, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.selected_items = set()
         self.dict_path = dict_path
         self.recap = recap
-
-        # à mettre dans theme
-        style = ttk.Style()
-        style.configure(
-            "Custom.Treeview",
-            background="#d3d3d3",
-            fieldbackground="#d3d3d3",
-            foreground=theme.couleur_texte,
-        )
-        # Définir un style pour les éléments sélectionnés
-        style.map(
-            "Custom.Treeview",
-            background=[("selected", "lightblue")],
-            foreground=[("selected", theme.couleur_texte)],
-        )
-        # Configure un tag pour les éléments sélectionnés
-        style.configure("Custom.Treeview.Item", background="lightblue")
-
         self.tree = ttk.Treeview(
             self,
             style="Custom.Treeview",
@@ -64,12 +35,15 @@ class FolderTree(tk.Frame):
             show="tree",
         )
         self.tree.tag_configure(
-            "selected", background="lightblue"
+            "selected", background=theme.couleur_selection
         )  # Configurer le tag ici
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar_y = ttk.Scrollbar(
-            self, orient="vertical", command=self.tree.yview
+            self,
+            orient="vertical",
+            command=self.tree.yview,
+            style="Custom.Vertical.TScrollbar",
         )
         self.scrollbar_y.pack(side=tk.RIGHT, fill="y")
         self.tree.configure(yscrollcommand=self.scrollbar_y.set)
@@ -106,16 +80,16 @@ class FolderTree(tk.Frame):
                 self.populate_tree(folder["children"], folder_id)
 
     def effacer_selection(self):
-        for item_id in self.tree.selection():
+        for item_id in list(self.selected_items):
             self.tree.selection_remove(item_id)
             self.tree.item(item_id, tags=())
-        self.selected_items.clear()
+            self.selected_items.clear()
         self.update_recap()
 
     def update_recap(self):
         base_path = "Results"  # Définissez ici le chemin de base à omettre
         recap_text = "Dossier:\n"
-        
+
         # Collecter tous les chemins dans une liste
         paths = []
         for item_id in self.selected_items:
@@ -123,18 +97,21 @@ class FolderTree(tk.Frame):
             full_item_path = self.dict_path[item_name]
             # Tronquez le chemin pour qu'il commence après le `base_path`
             if full_item_path.startswith(base_path):
-                display_path = full_item_path[len(base_path) + 1 :]  # +1 pour omettre également le slash
+                display_path = full_item_path[
+                    len(base_path) + 1 :
+                ]  # +1 pour omettre également le slash
             else:
                 display_path = full_item_path  # Au cas où le chemin ne commencerait pas par `base_path`
             paths.append(display_path)
-        
+
         # Trier les chemins sans tenir compte de la casse
         sorted_paths = sorted(paths, key=lambda x: x.lower())
 
         # Construire le texte de récapitulatif avec les chemins triés
         for path in sorted_paths:
             recap_text += f"{path}\n"
-        
-        self.recap.canvas_arbo.itemconfig(self.recap.text_recap_arbo, text=recap_text)
-        self.recap.canvas_arbo.configure(scrollregion=self.recap.canvas_arbo.bbox("all"))
 
+        self.recap.canvas_arbo.itemconfig(self.recap.text_recap_arbo, text=recap_text)
+        self.recap.canvas_arbo.configure(
+            scrollregion=self.recap.canvas_arbo.bbox("all")
+        )

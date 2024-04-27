@@ -1,8 +1,9 @@
 import os
 import sys
+import time
 
 from Bio import Entrez, SeqIO
-from concurrent.futures import ThreadPoolExecutor
+#from concurrent.futures import ThreadPoolExecutor
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import src.analyse
@@ -38,36 +39,65 @@ def fetch(path, ids, regions):
 
 
 
-def fetch_all_sequence(paths, regions):
-    all_paths = [] #sous chemin de tous les dossiers selectionnes
+def fetch_all_sequence(paths, regions, progress_bar):
+    all_paths = []  # sous chemin de tous les dossiers sélectionnés
+    total_ids = 0
+    print("fetch_all_sequence appelée")
 
-    for path in paths:
-        base_path = "Results" + os.sep #chemin jusqu'à l'arborescence
-        leaf_dirs = get_leaf_directories(base_path + path)
-        relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
-        all_paths.extend(relative_paths)
+    print(paths)
+    print(regions)
+    if paths and regions:
+        
+        for path in paths:
+            base_path = "Results" + os.sep  # chemin jusqu'à l'arborescence
+            leaf_dirs = get_leaf_directories(base_path + path)
+            relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
+            all_paths.extend(relative_paths)
 
-    print(all_paths)
-    '''
-    Version sans les threads
-    for path in all_paths:
-        ids = path_to_ids(path)
-        print(ids)
-        # Fetch avec le path global et les IDs
-        fetch(path, ids, regions)'''
+        print("lennn : ",len(all_paths))
 
-    # Threads
-    def process_path(path):
-        ids = path_to_ids(path)
-        fetch(path, ids, regions)
+        progress_bar.set_pas(len(all_paths))
+        #progress_bar.toggle_progress()
 
-    with ThreadPoolExecutor() as executor:
-        executor.map(process_path, all_paths)
+        for path in all_paths:
+            ids = path_to_ids(path)
+            fetch(path, ids, regions)
+            progress_bar.update_progress()
+
+        
+
+        '''for path in paths:
+            base_path = "Results" + os.sep  # chemin jusqu'à l'arborescence
+            leaf_dirs = get_leaf_directories(base_path + path)
+            relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
+            all_paths.extend(relative_paths)
+
+        for path in all_paths:
+            ids = path_to_ids(path)
+            print(ids)
+            total_ids += len(ids)
+
+        progress_bar.set_length(total_ids)
+
+        def process_path(path):
+            ids = path_to_ids(path)
+            fetch(path, ids, regions)
+            #progress_bar.update_progress()
+            #progress_bar.fenetre.after(0, progress_bar.update_progress)
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(process_path, all_paths)'''
+
+    else:
+        print("Veuillez sélectionner au moins un chemin et une région.")
 
 
+
+    
+    
 #A récupérer de l'interface
-paths_interface = ["Archaea"+ os.sep + "Candidatus_Thermoplasmatota", "Eukaryota"]
-regions_interface = ["3'UTR", "CDS", "rRNA"]
+#paths_interface = ["Bacteria"+ os.sep + "PVC group"+ os.sep + "Chlamydiota"]
+#regions_interface = ["3'UTR", "CDS", "rRNA"]
 
-fetch_all_sequence(paths_interface, regions_interface)
+#fetch_all_sequence(paths_interface, regions_interface)
 

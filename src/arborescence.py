@@ -71,6 +71,9 @@ def get_tree():
         with open("overview.txt", "r") as overview_file:
             file = csv.reader(overview_file, delimiter="\t")
             for row in file:
+                if len(row) < 4:
+                    print("La ligne ", row, "ne contient pas assez d'infos")
+                    continue
                 organism, kingdom, group, subgroup = row[0], row[1], row[2], row[3]
                 for k, v in kingdom_nc.items():
                     if organism in v:

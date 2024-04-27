@@ -1,4 +1,3 @@
-import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
@@ -11,8 +10,6 @@ import credit
 import region
 import recap
 import progressbar
-
-import sys
 
 # chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 # sys.path.append(chemin_src)
@@ -235,7 +232,7 @@ if __name__ == "__main__":
 
     # progress bar + bouton
     pb = progressbar.ProgressBar(
-        frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0
+        frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0, folder_tree=folder_tree, regions=regions
     )
 
     theme.configurer_background(frame_root)

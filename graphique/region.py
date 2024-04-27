@@ -216,12 +216,9 @@ class Regions:
         self.zone_entre.set("")
         self.update_recap(self.check_vars, self.regions + list(self.additional_regions))
 
-    """
-    def get_regions(self):
-        ret = []
+    def get_selected_regions(self):
+        selected_regions = []
         for region, var in self.check_vars.items():
             if var.get():
-                ret.append(region)
-        print(ret)
-        return ret 
-    """
+                selected_regions.append(region)
+        return selected_regions

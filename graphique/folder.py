@@ -115,3 +115,13 @@ class FolderTree(tk.Frame):
         self.recap.canvas_arbo.configure(
             scrollregion=self.recap.canvas_arbo.bbox("all")
         )
+    
+    def get_selected_paths(self):
+        selected_paths = []
+        base_path = "Results"
+        for item_id in self.selected_items:
+            item_name = self.tree.item(item_id)["text"]
+            full_item_path = self.dict_path[item_name]
+            relative_path = os.path.relpath(full_item_path, base_path)
+            selected_paths.append(relative_path)
+        return selected_paths

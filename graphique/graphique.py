@@ -3,6 +3,9 @@ from tkinter import ttk
 from tkinter import font
 
 
+import os
+import signal
+import sys
 import folder
 import theme
 import log
@@ -15,6 +18,10 @@ import progressbar
 # sys.path.append(chemin_src)
 # # sys.path.insert(1, "../src/")
 # import arborescence as ar
+
+def close_window(window, pb):
+    window.destroy()
+    os.kill(os.getpid(), signal.SIGINT)
 
 
 if __name__ == "__main__":
@@ -232,7 +239,7 @@ if __name__ == "__main__":
 
     # progress bar + bouton
     pb = progressbar.ProgressBar(
-        frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0, folder_tree=folder_tree, regions=regions
+        frame_parent=frame_bas, fenetre=fenetre, grid_row=0, grid_column=0, folder_tree=folder_tree, regions=regions, log=terminal
     )
 
     theme.configurer_background(frame_root)
@@ -242,5 +249,7 @@ if __name__ == "__main__":
     theme.configurer_background(frame_gauche)
     theme.configurer_background(frame_droite)
     theme.configurer_background(label)
-
+    
+    fenetre.protocol("WM_DELETE_WINDOW", lambda: close_window(fenetre, pb))
     fenetre.mainloop()
+

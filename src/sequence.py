@@ -10,6 +10,10 @@ import src.analyse
 from utils.fio import get_nc
 from utils.misc import get_leaf_directories, path_to_ids
 
+import threading
+from queue import Queue
+path_queue = Queue()
+
 """
 def search(domain, name):
     Entrez.email = "martin.deniau@etu.unistra.fr"
@@ -24,80 +28,85 @@ def search(domain, name):
 
 """
 
-def fetch(path, ids, regions):
+def fetch(path, ids, regions, progress_bar):
     Entrez.email = "martin.deniau@etu.unistra.fr"
     for id in ids:
+        if progress_bar.stop_fetching.is_set():
+            return
+
         print("Fetching sequence", id)
-        handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text")
+        try:
+            handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
+            for record in SeqIO.parse(handle, "gb"):
+                for feature in record.features:
+                    for region in regions:
+                        if feature.type == region:
+                            if progress_bar.stop_fetching.is_set():
+                                handle.close()
+                                return
+                            kingdom = path.split(os.sep)[0]
+                            src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, region, get_nc(id, kingdom))
+        except Exception as e:
+            print(f"Erreur lors de la récupération: {e}")
+        finally:
+            if 'handle' in locals():
+                handle.close()
         print("Fetched")
-        for record in SeqIO.parse(handle, "gb"):
-            for feature in record.features:
-                for region in regions:
-                    if feature.type == region:                            
-                        kingdom = path.split(os.sep)[0]
-                        src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, region, get_nc(id, kingdom))
 
 
 
 def fetch_all_sequence(paths, regions, progress_bar):
-    all_paths = []  # sous chemin de tous les dossiers sélectionnés
-    total_ids = 0
-    print("fetch_all_sequence appelée")
+    global path_queue
 
-    print(paths)
-    print(regions)
+    all_paths = []
+
     if paths and regions:
-        
+        progress_bar.log.write("Démarrage du fetching")
+
+        #recupération du nombre de chemins pour initialiser la barre de progression
         for path in paths:
-            base_path = "Results" + os.sep  # chemin jusqu'à l'arborescence
+            base_path = "Results" + os.sep
             leaf_dirs = get_leaf_directories(base_path + path)
             relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
             all_paths.extend(relative_paths)
-
-        print("lennn : ",len(all_paths))
-
-        progress_bar.set_pas(len(all_paths))
-        #progress_bar.toggle_progress()
-
-        for path in all_paths:
-            ids = path_to_ids(path)
-            fetch(path, ids, regions)
-            progress_bar.update_progress()
-
         
+        all_paths = list(set(all_paths)) #suppression des doublons
 
-        '''for path in paths:
-            base_path = "Results" + os.sep  # chemin jusqu'à l'arborescence
-            leaf_dirs = get_leaf_directories(base_path + path)
-            relative_paths = [os.path.relpath(leaf_dir, base_path) for leaf_dir in leaf_dirs]
-            all_paths.extend(relative_paths)
+        progress_bar.set_nb_paths_a_traiter(len(all_paths))
 
+        #Ajout des chemins à la liste des chemins à fetch par les threads
         for path in all_paths:
-            ids = path_to_ids(path)
-            print(ids)
-            total_ids += len(ids)
+            path_queue.put(path)
 
-        progress_bar.set_length(total_ids)
+        # Lancement des threads (max 4 sinon surcharge du serveur)
+        max_threads = 4
+        for _ in range(max_threads):
+            thread = threading.Thread(target=process_paths, args=(regions, progress_bar))
+            progress_bar.active_threads.append(thread)
+            thread.start()
 
-        def process_path(path):
-            ids = path_to_ids(path)
-            fetch(path, ids, regions)
-            #progress_bar.update_progress()
-            #progress_bar.fenetre.after(0, progress_bar.update_progress)
+        path_queue.join()
 
-        with ThreadPoolExecutor() as executor:
-            executor.map(process_path, all_paths)'''
+        progress_bar.log.write("Fin du fetching")
 
     else:
-        print("Veuillez sélectionner au moins un chemin et une région.")
+        progress_bar.log.write("Veuillez sélectionner au moins un chemin et une région.")
+        progress_bar.toggle_progress()
 
 
-
+#Fonction de fetch exécutée par les threads
+def process_paths(regions, progress_bar):
+    while not progress_bar.stop_fetching.is_set():
+        path = path_queue.get()
+        if path is None:  
+            break
+        ids = path_to_ids(path)
+        fetch(path, ids, regions, progress_bar)
+        path_queue.task_done()
+        progress_bar.update_progress()
     
-    
-#A récupérer de l'interface
-#paths_interface = ["Bacteria"+ os.sep + "PVC group"+ os.sep + "Chlamydiota"]
-#regions_interface = ["3'UTR", "CDS", "rRNA"]
+    if progress_bar.stop_fetching.is_set():
+        return
 
-#fetch_all_sequence(paths_interface, regions_interface)
+
 

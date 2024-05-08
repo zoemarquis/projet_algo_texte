@@ -17,7 +17,7 @@ import progressbar
 # chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 # sys.path.append(chemin_src)
 # # sys.path.insert(1, "../src/")
-# import arborescence as ar
+import arborescence as ar
 
 def close_window(window, pb):
     window.destroy()
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     root_dir = "Results"
     folder_structure, dict_path = folder.create_folder_structure(root_dir)
 
-    #ar.get_tree()
+    ar.get_tree()
 
     fenetre = tk.Tk()
     bold_font = font.Font(family="Helvetica", size=14, weight="bold")

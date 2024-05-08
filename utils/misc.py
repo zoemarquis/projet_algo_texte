@@ -1,4 +1,5 @@
 import os
+from unidecode import unidecode
 
 from utils.fio import get_ids
 
@@ -21,13 +22,21 @@ def get_leaf_directories(path):
 def generate_join_string(bornes):
     join_string = ""
 
-    for i, (start, end) in enumerate(bornes):
-        if i > 0:
-            join_string += ", "
+    start = bornes[0]
+    end = bornes[1]
 
-        if start == end:
-            join_string += str(start)
-        else:
-            join_string += f"{start}..{end}"
+    if join_string:
+        join_string += ", "
+
+    if start == end:
+        join_string += str(start)
+    else:
+        join_string += f"{start}..{end}"
 
     return join_string
+
+
+def remove_accents_and_lowercase(text):
+    text_without_accents = unidecode(text)
+    lowercase_text = text_without_accents.lower()
+    return lowercase_text

@@ -1,4 +1,4 @@
-from resultat import *
+from src.resultat import *
 import re
 
 verbose = 0
@@ -26,12 +26,13 @@ def get_join(bornes, genome):
     chaine_globale = ''
     
     for borne in bornes:
-        chaine = get_bornes(borne, genome)[0]
+        chaine = get_bornes(borne, genome)
+        if not chaine: return 0
         chaine_globale += chaine
         chaines += [chaine]
 
     if verbose: print(f'Join: {len(chaines) + 1}')
-    return [chaine_globale] + chaines
+    return chaines
 
 
 def get_complement(borne, genome):
@@ -58,12 +59,13 @@ def get_complement_join(bornes, genome):
     chaine_globale = ''
     
     for borne in bornes:
-        chaine = get_complement(borne, genome)[0]
+        chaine = get_complement(borne, genome)
+        if not chaine: return 0
         chaine_globale = chaine + chaine_globale
         chaines = [chaine] + chaines
 
     if verbose: print(f'Complement-Join: {len(chaines) + 1}')
-    return [chaine_globale] + chaines
+    return chaines
 
 
 #-------------------------------------------------------------------------------
@@ -77,8 +79,8 @@ def transforme_bornes_simple(txt, borne_min, borne_max, sep):
         if print_errors: print(f'Parsing Error: {sep} ne sépare pas en 2 ({txt})')
         return 0
     try:
-        borne_inf = int(tmp[0])
-        borne_sup = int(tmp[1])
+        borne_inf = int(tmp[0][1:])
+        borne_sup = int(tmp[1][:-1])
     except:
         if print_errors: print(f'Parsing Error: {tmp[0]} ou {tmp[1]} non entier ({txt})')
         return 0
@@ -115,6 +117,8 @@ def transforme_borne_intron(txt, borne_max):
     borne_courante = 0
 
     for borne in txt.split(':')[1:-1]:
+        translation_table = str.maketrans('', '', '](+)[')
+        borne = '(' + borne.translate(translation_table) + ')'
         res = transforme_bornes_simple(borne, borne_courante, borne_max, ', ')
         if not res: return 0
 
@@ -163,9 +167,12 @@ def analyse_bornes(txt, genome, intron, path, region, nc):
             return 0
         bornes_intron = transforme_borne_intron(txt, borne_max)
         bornes = transforme_bornes_multiple(txt, borne_max)
-        #nb_intron = len(bornes_intron)
-        if bornes:
-            create_result(path, region, bornes, get_join(bornes, genome), nc, 'join', nb_intron, bornes_intron)
+        if bornes and bornes_intron:
+            nb_intron = len(bornes_intron)  
+            seq = get_join(bornes, genome)
+            seq_intron = get_join(bornes_intron, genome)
+            if not seq or not seq_intron : return 0
+            create_result(path, region, bornes, seq, nc, 'join', nb_intron, bornes_intron, seq_intron)
         else:
             return 0
         
@@ -173,8 +180,12 @@ def analyse_bornes(txt, genome, intron, path, region, nc):
         txt = enleve_entete(txt, 'complement{join{', '}}')
         bornes_intron = transforme_borne_intron(txt, borne_max)
         bornes = transforme_bornes_multiple(txt, borne_max)
-        if bornes:
-            create_result(path, region, bornes, get_complement_join(bornes, genome), nc, 'complement join', nb_intron, bornes_intron)
+        if bornes and bornes_intron:
+            nb_intron = len(bornes_intron)
+            seq = get_complement_join(bornes, genome)
+            seq_intron = get_complement_join(bornes_intron, genome)
+            if not seq or not seq_intron: return 0
+            create_result(path, region, bornes, seq, nc, 'complement join', nb_intron, bornes_intron, seq_intron)
         else:
             return 0
             
@@ -182,14 +193,18 @@ def analyse_bornes(txt, genome, intron, path, region, nc):
         txt = enleve_entete(txt, 'complement{', '}')
         borne = transforme_bornes_simple(txt, 0, borne_max, ':')
         if borne:
-            create_result(path, region, bornes, get_complement(borne, genome), nc, 'complement', nb_intron, bornes_intron)
+            seq = get_complement(bornes, genome)
+            if not seq: return 0
+            create_result(path, region, bornes, seq, nc, 'complement', nb_intron, bornes_intron)
         else:
             return 0
             
     else:
         bornes = transforme_bornes_simple(txt, 0, borne_max, ':')
         if bornes:
-            create_result(path, region, bornes, get_bornes(bornes, genome), nc, None, nb_intron, bornes_intron)
+            seq = get_bornes(bornes, genome)
+            if not seq: return 0
+            create_result(path, region, bornes, seq, nc, None, nb_intron, bornes_intron)
         else:
             return 0
 

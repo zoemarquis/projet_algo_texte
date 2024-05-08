@@ -8,7 +8,7 @@ from Bio import Entrez, SeqIO
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import src.analyse
 from utils.fio import get_nc
-from utils.misc import get_leaf_directories, path_to_ids
+from utils.misc import get_leaf_directories, path_to_ids, remove_accents_and_lowercase
 
 import threading
 from queue import Queue
@@ -35,22 +35,22 @@ def fetch(path, ids, regions, progress_bar):
             return
 
         print("Fetching sequence", id)
-        try:
-            handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
-            for record in SeqIO.parse(handle, "gb"):
-                for feature in record.features:
-                    for region in regions:
-                        if feature.type == region:
-                            if progress_bar.stop_fetching.is_set():
-                                handle.close()
-                                return
-                            kingdom = path.split(os.sep)[0]
-                            src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, region, get_nc(id, kingdom))
-        except Exception as e:
-            print(f"Erreur lors de la récupération: {e}")
-        finally:
-            if 'handle' in locals():
-                handle.close()
+        #try:
+        handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
+        for record in SeqIO.parse(handle, "gb"):
+            for feature in record.features:
+                for region in regions:
+                    if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
+                        if progress_bar.stop_fetching.is_set():
+                            handle.close()
+                            return
+                        kingdom = path.split(os.sep)[0]
+                        src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, feature.type, get_nc(id, kingdom))
+        #except Exception as e:
+        #    print(f"Erreur lors de la récupération: {e}")
+        #finally:
+        #    if 'handle' in locals():
+        #        handle.close()
         print("Fetched")
 
 

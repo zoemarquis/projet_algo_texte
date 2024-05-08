@@ -19,58 +19,70 @@ def generate_string_complement(region, organism, nc, bornes, seq):
     return f"{region} {organism} {nc}: complement({min_val}..{max_val})\n{seq}"
 
 
-def generate_string_complement_join(region, organism, nc, bornes, seq, cmp):
+def generate_string_complement_join(region, organism, nc, bornes, seq, intron, cmp, index):
     join_string = generate_join_string(bornes)
     result = f"{region} {organism} {nc}: complement(join({join_string}))\n{seq}"
-    if region in ['exon', 'intron']:
-        result = f"{region} {organism} {nc}: complement(join({join_string})) {region[0].upper()}{region[1:]} {cmp}\n{seq}"
+    if intron:
+        result = f"{region} {organism} {nc}: complement(join({join_string})) Intron {cmp}\n{seq[cmp-1]}"
+    else:
+        result = f"{region} {organism} {nc}: complement(join({join_string})) Exon {cmp}\n{seq[cmp-1]}"
     return result
 
 
-def generate_string_join(region, organism, nc, bornes, seq, cmp):
+def generate_string_join(region, organism, nc, bornes, intron, seq, cmp, index):
     join_string = generate_join_string(bornes)
     result = f"{region} {organism} {nc}: join({join_string})\n{seq}"
-    if region in ['exon', 'intron']:
-        result = f"{region} {organism} {nc}: join({join_string}) {region[0].upper()}{region[1:]} {cmp}\n{seq}"
+    if intron:
+        result = f"{region} {organism} {nc}: join({join_string}) Intron {cmp}\n{seq[cmp-1]}"
+    else:
+        result = f"{region} {organism} {nc}: join({join_string}) Exon {cmp}\n{seq[cmp-1]}"
     return result
 
 
 def result_to_file(file_path, content):
-    with open(file_path, 'a') as f:
+    with open('Results/' + file_path, 'a') as f:
         if f.tell() > 0:
             f.write('\n\n')
         f.write(content)
 
 
-def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_intron):
+def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_intron, seq_intron=None):
     organism = path.split('/')[-1]
     file_path = f"{path}/{region}_{organism}_{nc}.txt"
     content = ''
     match operation:
         case 'join':
-            #create_result_join(file_path, nb_intron, organism, nc, bornes, seq, bornes_intron)
-            pass
+            create_result_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
         case 'complement':
             content = generate_string_complement(region, organism, nc, bornes, seq)
         case 'complement join':
-            #create_result_complement_join(file_path, nb_intron, organism, nc, bornes, seq, bornes_intron)
-            pass
+            create_result_complement_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
         case None:
             content = generate_string(region, organism, nc, bornes, seq)
     result_to_file(file_path, content)
 
 
-def create_result_join(file_path, nb, organism, nc, bornes, seq, bornes_intron):
-    for i in range(nb):
-        content = generate_string_join('exon', organism, nc, bornes_intron[i-1], seq, i)
+def create_result_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
+    cmp = 0
+    for i in range(1,nb+1):
+        content = generate_string_join(region, organism, nc, bornes[i-1], False, seq, i, cmp)
         result_to_file(file_path, content)
-        content = generate_string_join('intron', organism, nc, bornes[i-1], seq, i)
+        cmp = cmp + 1
+        content = generate_string_join(region, organism, nc, bornes_intron[i-1], True, seq_intron, i, cmp)
         result_to_file(file_path, content)
+        cmp = cmp + 1
+    content = generate_string_join(region, organism, nc, bornes[nb-1], False, seq, nb+1, cmp)
+    result_to_file(file_path, content)
 
-def create_result_complement_join(file_path, nb, organism, nc, bornes, seq, bornes_intron):
-    for i in range(nb):
-        content = generate_string_complement_join('exon', organism, nc, bornes_intron[i-1], seq, i)
+def create_result_complement_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
+    cmp = 0
+    for i in range(1, nb + 1):
+        content = generate_string_complement_join(region, organism, nc, bornes_intron[i-1], seq, False, i, cmp)
         result_to_file(file_path, content)
-        content = generate_string_complement_join('intron', organism, nc, bornes[i-1], seq, i)
+        cmp += 1
+        content = generate_string_complement_join(region, organism, nc, bornes[i-1], seq_intron, True, i, cmp)
         result_to_file(file_path, content)
+        cmp += 1
+    content = generate_string_complement_join(region, organism, nc, bornes_intron[nb-1], seq, False, nb+1, cmp)
+    result_to_file(file_path, content)
         

@@ -1,5 +1,6 @@
 from utils.fio import get_nc
 from utils.misc import generate_join_string
+import os
 
 """
 fichier : Region_Organisme_NC.txt
@@ -40,15 +41,15 @@ def generate_string_join(region, organism, nc, bornes, intron, seq, cmp, index):
 
 
 def result_to_file(file_path, content):
-    with open('Results/' + file_path, 'a') as f:
+    with open('Results' + os.sep + file_path, 'a') as f:
         if f.tell() > 0:
             f.write('\n\n')
         f.write(content)
 
 
 def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_intron, seq_intron=None):
-    organism = path.split('/')[-1]
-    file_path = f"{path}/{region}_{organism}_{nc}.txt"
+    organism = path.split(os.sep)[-1]
+    file_path = f"{path}{os.sep}{region}_{organism}_{nc}.txt"
     content = ''
     match operation:
         case 'join':

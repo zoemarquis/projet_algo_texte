@@ -74,7 +74,7 @@ def get_complement_join(bornes, genome):
 def transforme_bornes_simple(txt, borne_min, borne_max, sep):
     if verbose > 1: print('Parsing single bornes')
     
-    tmp = [s for s in re.split(sep + '|\(.?\)', txt) if s != '']
+    tmp = [s for s in re.split(sep + r'|\(.?\)', txt) if s != '']
     if len(tmp) != 2:
         if print_errors: print(f'Parsing Error: {sep} ne sépare pas en 2 ({txt})')
         return 0

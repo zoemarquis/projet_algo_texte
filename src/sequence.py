@@ -7,52 +7,49 @@ from Bio import Entrez, SeqIO
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import src.analyse
-from utils.fio import get_nc
+from utils.fio import get_nc, save_processed_info, load_processed_info
 from utils.misc import get_leaf_directories, path_to_ids, remove_accents_and_lowercase
 
 import threading
 from queue import Queue
 path_queue = Queue()
 
-"""
-def search(domain, name):
-    Entrez.email = "martin.deniau@etu.unistra.fr"
-
-    handle = Entrez.esearch(db="nucleotide", term="("+name+"["+domain+"]"+") AND (NC_*[Accession])", retmax ="9999")
-
-    record = Entrez.read(handle)
-
-    print("Records found:", record["IdList"])
-
-    return record["IdList"]
-
-"""
 
 def fetch(path, ids, regions, progress_bar):
     Entrez.email = "martin.deniau@etu.unistra.fr"
+    
+    # Trace des séquences et régions traitées (pour optimisation)
+    processed_info = load_processed_info()
+
     for id in ids:
         if progress_bar.stop_fetching.is_set():
             return
 
-        print("Fetching sequence", id)
-        #try:
-        handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
-        for record in SeqIO.parse(handle, "gb"):
-            for feature in record.features:
-                for region in regions:
-                    if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
-                        if progress_bar.stop_fetching.is_set():
-                            handle.close()
-                            return
-                        kingdom = path.split(os.sep)[0]
-                        src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, feature.type, get_nc(id, kingdom))
-        #except Exception as e:
-        #    print(f"Erreur lors de la récupération: {e}")
-        #finally:
-        #    if 'handle' in locals():
-        #        handle.close()
-        print("Fetched")
+        for region in regions:
+            # Si la séquence a déjà été traitée pour cette région, on ignore
+            if (id, region) in processed_info:
+                progress_bar.log.write(f"Skipping already processed ID {id} for region {region}")
+                continue
 
+            progress_bar.log.write(f"Fetching sequence {id}")
+            handle = None
+            try:
+                handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
+                for record in SeqIO.parse(handle, "gb"):
+                    for feature in record.features:
+                        if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
+                            if progress_bar.stop_fetching.is_set():
+                                return
+                            kingdom = path.split(os.sep)[0]
+                            src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, feature.type, get_nc(id, kingdom), progress_bar.log)
+                progress_bar.log.write(f"Fetched sequence {id}")
+            except Exception as e:
+                progress_bar.log.write(f"Erreur lors de la récupération: {e}")
+            finally:
+                if handle is not None:
+                    handle.close()
+                # On inscrit la séquence comme traitée pour cette région
+                save_processed_info((id, region))
 
 
 def fetch_all_sequence(paths, regions, progress_bar):

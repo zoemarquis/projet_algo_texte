@@ -59,7 +59,6 @@ class ProgressBar:
         #Remise à 0
         if self.paths_traite + 1 == self.nb_paths_a_traiter:
             self.toggle_progress()
-            self.log.write("Fin du fetch")
     
     #Exécutée lors d'un clique sur le bouton
     def commands(self):

@@ -228,7 +228,6 @@ if __name__ == "__main__":
 
     terminal = log.Log(frame_log)
     terminal.pack(fill="both", expand=True)
-    terminal.write("SalamAlaykom les pâtissiers\n")
 
     # FRAME BAS CONTIENT PROGRESS BAR ET BOUTON
     frame_bas = tk.Frame(frame_droite)

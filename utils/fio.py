@@ -40,3 +40,17 @@ def get_nc(id_, kingdom):
                 return nc
 
     return None
+
+def load_processed_info(file_path=".processed_info.txt"):
+    processed_info = set()
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            for line in file:
+                id, region = line.strip().split(",")
+                processed_info.add((id, region))
+    return processed_info
+
+def save_processed_info(processed_info, file_path=".processed_info.txt"):
+    with open(file_path, "a") as file:
+        id, region = processed_info
+        file.write(f"{id},{region}\n")

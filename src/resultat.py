@@ -9,6 +9,7 @@ Contenu :
             séquence
 """
 
+logger = None
 
 def generate_string(region, organism, nc, bornes, seq):
     min_val, max_val = bornes
@@ -47,17 +48,19 @@ def result_to_file(file_path, content):
         f.write(content)
 
 
-def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_intron, seq_intron=None):
+def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_intron, log, seq_intron=None):
+    global logger
+    logger = log
     organism = path.split(os.sep)[-1]
     file_path = f"{path}{os.sep}{region}_{organism}_{nc}.txt"
     content = ''
     match operation:
         case 'join':
-            create_result_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
+            content = create_result_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
         case 'complement':
             content = generate_string_complement(region, organism, nc, bornes, seq)
         case 'complement join':
-            create_result_complement_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
+            content = create_result_complement_join(file_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
         case None:
             content = generate_string(region, organism, nc, bornes, seq)
     result_to_file(file_path, content)
@@ -72,8 +75,7 @@ def create_result_join(file_path, nb, organism, nc, region, bornes, seq, bornes_
         content = generate_string_join(region, organism, nc, bornes_intron[i-1], True, seq_intron, i, cmp)
         result_to_file(file_path, content)
         cmp = cmp + 1
-    content = generate_string_join(region, organism, nc, bornes[nb-1], False, seq, nb+1, cmp)
-    result_to_file(file_path, content)
+    return generate_string_join(region, organism, nc, bornes[nb-1], False, seq, nb+1, cmp)
 
 def create_result_complement_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
     cmp = 0
@@ -84,6 +86,6 @@ def create_result_complement_join(file_path, nb, organism, nc, region, bornes, s
         content = generate_string_complement_join(region, organism, nc, bornes[i-1], seq_intron, True, i, cmp)
         result_to_file(file_path, content)
         cmp += 1
-    content = generate_string_complement_join(region, organism, nc, bornes_intron[nb-1], seq, False, nb+1, cmp)
-    result_to_file(file_path, content)
+    return generate_string_complement_join(region, organism, nc, bornes_intron[nb-1], seq, False, nb+1, cmp)
+
         

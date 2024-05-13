@@ -9,6 +9,7 @@ import re
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from utils.fio import request_kingdom
+from utils.misc import rename_other_directories
 
 # Dictionnaire des Kingdoms et de leur fichier (NC)
 kingdoms_file = {
@@ -81,5 +82,8 @@ def get_tree():
                         organism = re.sub(r'[<>:"/\\|?*]', '-', organism) #supprime les caractères interdit sur Windows
                         directory = os.path.join("Results", kingdom, group, subgroup, organism)
                         os.makedirs(directory, exist_ok=True)
+
+        # On renomme tous les dossiers 'Other' car ils ne sont pas uniques et sont confondus dans l'interface
+        rename_other_directories()
 
 get_tree()

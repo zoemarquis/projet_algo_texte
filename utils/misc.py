@@ -40,3 +40,19 @@ def remove_accents_and_lowercase(text):
     text_without_accents = unidecode(text)
     lowercase_text = text_without_accents.lower()
     return lowercase_text
+
+def rename_other_directories():
+    directories_to_rename = []
+    cmp_other = 1
+
+    # Traversing through the directory tree and collecting directories named 'Other'
+    for root, dirs, files in os.walk("Results"):
+        for directory in dirs:
+            if directory == "Other":
+                directories_to_rename.append(os.path.join(root, directory))
+
+    # Renaming collected directories
+    for old_path in directories_to_rename[::-1]:
+        new_path = f'{old_path}{cmp_other}'
+        os.rename(old_path, new_path)
+        cmp_other += 1

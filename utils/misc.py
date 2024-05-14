@@ -20,20 +20,12 @@ def get_leaf_directories(path):
 
 
 def generate_join_string(bornes):
-    join_string = ""
+    string = ''
+    for start, end in bornes:
 
-    start = bornes[0]
-    end = bornes[1]
+        string += f'{start}..{end}, '
 
-    if join_string:
-        join_string += ", "
-
-    if start == end:
-        join_string += str(start)
-    else:
-        join_string += f"{start}..{end}"
-
-    return join_string
+    return string[:-2]
 
 
 def remove_accents_and_lowercase(text):

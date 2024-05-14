@@ -69,13 +69,13 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
 def create_result_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
     cmp = 0
     for i in range(1,nb+1):
-        content = generate_string_join(region, organism, nc, bornes[i-1], False, seq, i, cmp)
+        content = generate_string_join(region, organism, nc, bornes, False, seq, i, cmp)
         result_to_file(file_path, content)
         cmp = cmp + 1
-        content = generate_string_join(region, organism, nc, bornes_intron[i-1], True, seq_intron, i, cmp)
+        content = generate_string_join(region, organism, nc, bornes_intron, True, seq_intron, i, cmp)
         result_to_file(file_path, content)
         cmp = cmp + 1
-    return generate_string_join(region, organism, nc, bornes[nb-1], False, seq, nb+1, cmp)
+    return generate_string_join(region, organism, nc, bornes, False, seq, nb+1, cmp)
 
 def create_result_complement_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
     cmp = 0

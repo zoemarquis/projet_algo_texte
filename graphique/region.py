@@ -16,6 +16,7 @@ class Regions:
             "tRNA",
             "rRNA",
             "5'UTR",
+            "Intron",
             "Telomère",
             "Mobile élément",
             "Centromère",
@@ -37,12 +38,12 @@ class Regions:
 
         # fenetre.after(100, self.configure_grid()) # ?
 
-    def configure_grid(self, num_columns=3):
+    def configure_grid(self, num_columns=2):
         frame_width = self.frame_parent.winfo_height()
         column_width = frame_width // (num_columns + 2)
 
         total_spacing = frame_width - (num_columns * column_width)
-        spacing_per_column = total_spacing // (num_columns)
+        spacing_per_column = total_spacing // (num_columns+1)
 
         for c in range(num_columns):
             self.frame_parent.grid_columnconfigure(
@@ -82,7 +83,7 @@ class Regions:
 
         # zone de texte
         frame_saisie = tk.Frame(self.frame_parent, bg=theme.couleur_frame)
-        frame_saisie.grid(row=r, column=1, columnspan=2, sticky="nsew")
+        frame_saisie.grid(row=r, column=1, sticky="nsew")
         zone_texte = tk.Entry(
             frame_saisie,
             textvariable=self.zone_entre,
@@ -91,7 +92,7 @@ class Regions:
             highlightbackground="white",
             highlightthickness=1  
         )
-        zone_texte.pack(expand=True, fill="both", padx=(0, 10), pady=20)
+        zone_texte.pack(expand=True, fill="both", padx=(0, 40))
         zone_texte.bind("<Return>", self.on_text_entry)
 
         return r, c

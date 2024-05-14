@@ -13,7 +13,7 @@ def get_bornes(borne, genome):
 
     for nucl in genome[borne[0] : borne[1]]:
         if nucl not in ('A', 'C', 'G', 'T'):
-            logger.write(f'Analyse Error: {nucl} not in A,C,G,T')
+            logger.write(f'Analysis Error: {nucl} not in A,C,G,T')
             return 0
         chaine += nucl
 

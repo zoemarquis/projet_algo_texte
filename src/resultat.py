@@ -87,12 +87,12 @@ def create_result_join(file_path, nb, organism, nc, region, bornes, seq, bornes_
 def create_result_complement_join(file_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
     cmp = 0
     for i in range(1, nb + 1):
-        content = generate_string_complement_join(region, organism, nc, bornes_intron[i-1], seq, False, i, cmp)
+        content = generate_string_complement_join(region, organism, nc, bornes_intron, seq, False, i, cmp)
         result_to_file(file_path, content)
         cmp += 1
-        content = generate_string_complement_join(region, organism, nc, bornes[i-1], seq_intron, True, i, cmp)
+        content = generate_string_complement_join(region, organism, nc, bornes, seq_intron, True, i, cmp)
         result_to_file(file_path, content)
         cmp += 1
-    return generate_string_complement_join(region, organism, nc, bornes_intron[nb-1], seq, False, nb+1, cmp)
+    return generate_string_complement_join(region, organism, nc, bornes_intron, seq, False, nb+1, cmp)
 
         

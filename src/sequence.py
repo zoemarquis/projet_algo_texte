@@ -93,6 +93,8 @@ def fetch_all_sequence(paths, regions, progress_bar):
 
 #Fonction de fetch exécutée par les threads
 def process_paths(regions, progress_bar):
+    if "All" in regions:
+        regions.remove("All")
     while not progress_bar.stop_fetching.is_set():
         path = path_queue.get()
         if path is None:  

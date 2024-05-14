@@ -56,7 +56,7 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
         if region == 'CDS':
             if isinstance(seq, list):
                 if seq[0][:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
-                    logger.write(f'Analysis Error : Illegal Start CDS {seq[:3]}')
+                    logger.write(f'Analysis Error : Illegal Start CDS {seq[0][:3]}')
                     return 0
             else:
                 if seq[:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:

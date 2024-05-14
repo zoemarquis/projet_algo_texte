@@ -52,11 +52,18 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
     global logger
     logger = log
 
-    if region == 'CDS':
-        for sequence in seq:
+    try:
+        if region == 'CDS' and isinstance(seq, list):
+            for sequence in seq:
+                if sequence[:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
+                    logger.write(f'Analysis Error : Illegal Start CDS {sequence[:3]}')
+                    return 0
+        else:
             if seq[:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
-                logger.write(f'Analysis Error : Illegal Start CDS {seq[:3]}')
-                return 0
+                    logger.write(f'Analysis Error : Illegal Start CDS {seq[:3]}')
+                    return 0
+    except:
+        return 0
 
     organism = path.split(os.sep)[-1]
     file_path = f"{path}{os.sep}{region}_{organism}_{nc}.txt"

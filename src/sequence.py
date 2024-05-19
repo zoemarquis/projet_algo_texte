@@ -39,21 +39,21 @@ def fetch(path, ids, regions, progress_bar):
 
             progress_bar.log.write(f"Fetching sequence {id}")
             handle = None
-            #try:
-            handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
-            for record in SeqIO.parse(handle, "gb"):
-                for feature in record.features:
-                    if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
-                        if progress_bar.stop_fetching.is_set():
-                            return
-                        kingdom = path.split(os.sep)[0]
-                        src.analyse.analyse_bornes(str(feature.location), record.seq, create_intron, path, feature.type, get_nc(id, kingdom), progress_bar.log)
-            progress_bar.log.write(f"Fetched sequence {id}")
-            #except Exception as e:
-            #    progress_bar.log.write(f"Erreur lors de la récupération: {e}")
-            #finally:
-                #if handle is not None:
-                #    handle.close()
+            try:
+                handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
+                for record in SeqIO.parse(handle, "gb"):
+                    for feature in record.features:
+                        if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
+                            if progress_bar.stop_fetching.is_set():
+                                return
+                            kingdom = path.split(os.sep)[0]
+                            src.analyse.analyse_bornes(str(feature.location), record.seq, create_intron, path, feature.type, get_nc(id, kingdom), progress_bar.log)
+                progress_bar.log.write(f"Fetched sequence {id}")
+            except Exception as e:
+                progress_bar.log.write(f"Erreur lors de la récupération: {e}")
+            finally:
+                if handle is not None:
+                    handle.close()
                 # On inscrit la séquence comme traitée pour cette région
             save_processed_info((id, region))
 

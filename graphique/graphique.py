@@ -6,18 +6,18 @@ from tkinter import font
 import os
 import signal
 import sys
-import folder
-import theme
-import log
-import credit
-import region
-import recap
-import progressbar
+import graphique.folder as folder
+import graphique.theme as theme
+import graphique.log as log
+import graphique.credit as credit
+import graphique.region as region
+import graphique.recap as recap
+import graphique.progressbar as progressbar
 
 # chemin_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 # sys.path.append(chemin_src)
 # # sys.path.insert(1, "../src/")
-import arborescence as ar
+import src.arborescence as ar
 
 def close_window(window, pb):
     window.destroy()

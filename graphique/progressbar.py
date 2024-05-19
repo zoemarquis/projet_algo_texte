@@ -1,14 +1,14 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from sequence import fetch_all_sequence
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from src.sequence import fetch_all_sequence
 
 import threading
 
 import tkinter as tk
 from tkinter import ttk
 
-import theme
+import graphique.theme as theme
 
 
 class ProgressBar:

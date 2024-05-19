@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk
 
-import theme
+import graphique.theme as theme
 
 
 def create_folder_structure(root_dir):

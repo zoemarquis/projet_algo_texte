@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import theme
+import graphique.theme as theme
 
 
 class Regions:

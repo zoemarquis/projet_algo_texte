@@ -50,8 +50,6 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
     try:
         if region == 'CDS':
             if isinstance(seq, list):
-                if operation == 'complement join':
-                    seq = seq[::-1]
                 if seq[0][:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
                     logger.write(f'Analysis Error : Illegal Start CDS {seq[0][:3]}')
                     return 0
@@ -100,7 +98,6 @@ def create_result_join(file_path, intron_path, nb, organism, nc, region, bornes,
 
 def create_result_complement_join(file_path, intron_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
 
-    bornes = [(a, b) for a, b in reversed(bornes)]
     
     cmp = 0
     if nb == 0:

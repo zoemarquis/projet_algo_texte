@@ -224,8 +224,12 @@ def analyse_bornes(txt, genome, intron, path, region, nc, log):
     elif txt[:4] == 'join' and complement:
         txt = enleve_entete(txt, 'join{', '}')
         if intron:
-            bornes_intron = transforme_borne_intron(txt, borne_max)
+            #bornes_intron = transforme_borne_intron(txt, borne_max)
             bornes = transforme_bornes_multiple(txt, borne_max)
+            bornes = [(a, b) for a, b in reversed(bornes)]
+
+            bornes_intron = [(bornes[i][1], bornes[i+1][0]) for i in range(len(bornes) - 1)]
+
             if bornes and bornes_intron:
                 nb_intron = len(bornes_intron)
                 seq = get_complement_join(bornes, genome)

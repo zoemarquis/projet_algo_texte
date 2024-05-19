@@ -75,7 +75,8 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
             content = create_result_complement_join(file_path, intron_path, nb_intron, organism, nc, region, bornes, seq, bornes_intron, seq_intron)
         case None:
             content = generate_string(region, organism, nc, bornes, seq)
-    result_to_file(file_path, content)
+    if content != None:
+        result_to_file(file_path, content)
 
 def create_result_join(file_path, intron_path, nb, organism, nc, region, bornes, seq, bornes_intron, seq_intron):
 

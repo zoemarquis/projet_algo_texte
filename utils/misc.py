@@ -23,7 +23,7 @@ def generate_join_string(bornes):
     string = ''
     for start, end in bornes:
 
-        string += f'{start}..{end}, '
+        string += f'{start+1}..{end}, '
 
     return string[:-2]
 

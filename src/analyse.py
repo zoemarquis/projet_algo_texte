@@ -43,14 +43,19 @@ def get_complement(borne, genome):
 
     chaine = ''
 
-    for nucl in genome[borne[0] : borne[1]]:
+    if borne[0] < borne[1]:
+        liste = genome[borne[0]:borne[1]]
+    else:
+        liste = genome[borne[1] : borne[0]]
+
+    for nucl in liste:
         if nucl not in ('A', 'C', 'G', 'T'):
             logger.write(f'Analyse Error: {nucl} not in A,C,G,T')
             return 0
         chaine = complement[nucl] + chaine
 
     if verbose: print(f'Complement: {len(chaine) + 1}')
-    return [chaine]
+    return chaine
 
 
 def get_complement_join(bornes, genome):
@@ -87,7 +92,7 @@ def transforme_bornes_simple(txt, borne_min, borne_max, sep, txt_join=None, stra
         return 0
 
     if strand_pos:
-        if borne_min <= borne_inf < borne_sup <= borne_max:
+        if borne_min <= borne_inf and borne_sup <= borne_max:
             if verbose > 1:
                 print('borne_inf', borne_inf, ' borne_sup ', borne_sup)
             return (borne_inf, borne_sup)
@@ -107,11 +112,9 @@ def transforme_bornes_simple(txt, borne_min, borne_max, sep, txt_join=None, stra
 
 def transforme_bornes_multiple(txt, borne_max):
     if verbose: print('Parsing multiple bornes')
-    strand_pos = False
-    if '+' in txt and '-' in txt:
-        logger.write(f'Parsing Error: Incohérence dans les strands (+) et (-) ({txt})')
-        return 0
-    if '+' in txt: strand_pos = True
+    strand_pos = True
+    if '-' in txt:
+        strand_pos = False
 
     bornes = []
     borne_courante = 0
@@ -184,36 +187,63 @@ def analyse_bornes(txt, genome, intron, path, region, nc, log):
     bornes_intron = []
     borne_max = len(genome)
     bornes = []
-    if txt[:4] == 'join':
+    complement = False
+
+
+    if '+' in txt and '-' in txt:
+        logger.write(f'Parsing Error: Incohérence dans les strands (+) et (-) ({txt})')
+        return 0
+    if '-' in txt:
+        complement = True
+
+
+    if txt[:4] == 'join' and not complement:            
         txt = enleve_entete(txt, 'join{', '}')
         if not txt:
             return 0
-        bornes_intron = transforme_borne_intron(txt, borne_max)
-        bornes = transforme_bornes_multiple(txt, borne_max)
-        if bornes and bornes_intron:
-            nb_intron = len(bornes_intron)  
-            seq = get_join(bornes, genome)
-            seq_intron = get_join(bornes_intron, genome)
-            if not seq or not seq_intron : return 0
-            create_result(path, region, bornes, seq, nc, 'join', nb_intron, bornes_intron, log, seq_intron)
+        if intron:
+            bornes_intron = transforme_borne_intron(txt, borne_max)
+            bornes = transforme_bornes_multiple(txt, borne_max)
+            if bornes and bornes_intron:
+                nb_intron = len(bornes_intron)  
+                seq = get_join(bornes, genome)
+                seq_intron = get_join(bornes_intron, genome)
+                if not seq or not seq_intron : return 0
+                create_result(path, region, bornes, seq, nc, 'join', nb_intron, bornes_intron, log, seq_intron)
+            else:
+                return 0
         else:
-            return 0
+            bornes = transforme_bornes_multiple(txt, borne_max)
+            if bornes:
+                seq = get_join(bornes, genome)
+                if not seq: return 0
+                create_result(path, region, bornes, seq, nc, 'join', 0, bornes_intron, log)
+            else:
+                return 0
         
-    elif txt[:15] == 'complement{join':
-        txt = enleve_entete(txt, 'complement{join{', '}}')
-        bornes_intron = transforme_borne_intron(txt, borne_max)
-        bornes = transforme_bornes_multiple(txt, borne_max)
-        if bornes and bornes_intron:
-            nb_intron = len(bornes_intron)
-            seq = get_complement_join(bornes, genome)
-            seq_intron = get_complement_join(bornes_intron, genome)
-            if not seq or not seq_intron: return 0
-            create_result(path, region, bornes, seq, nc, 'complement join', nb_intron, bornes_intron, log, seq_intron)
+    elif txt[:4] == 'join' and complement:
+        txt = enleve_entete(txt, 'join{', '}')
+        if intron:
+            bornes_intron = transforme_borne_intron(txt, borne_max)
+            bornes = transforme_bornes_multiple(txt, borne_max)
+            if bornes and bornes_intron:
+                nb_intron = len(bornes_intron)
+                seq = get_complement_join(bornes, genome)
+                seq_intron = get_complement_join(bornes_intron, genome)
+                if not seq or not seq_intron: return 0
+                create_result(path, region, bornes, seq, nc, 'complement join', nb_intron, bornes_intron, log, seq_intron)
+            else:
+                return 0
         else:
-            return 0
+            bornes = transforme_bornes_multiple(txt, borne_max)
+            if bornes:
+                seq = get_complement_join(bornes, genome)
+                if not seq: return 0
+                create_result(path, region, bornes, seq, nc, 'complement join', 0, bornes_intron, log)
+            else:
+                return 0
             
-    elif txt[:10] == 'complement':
-        txt = enleve_entete(txt, 'complement{', '}')
+    elif complement:
         translation_table = str.maketrans('', '', '](+)[-')
         borne = '(' + txt.translate(translation_table) + ')'
         borne = transforme_bornes_simple(borne, 0, borne_max, ':')

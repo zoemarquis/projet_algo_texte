@@ -21,6 +21,12 @@ def fetch(path, ids, regions, progress_bar):
     # Trace des séquences et régions traitées (pour optimisation)
     processed_info = load_processed_info()
 
+    create_intron = False
+
+    if 'Intron' in regions:
+        create_intron = True
+        regions.remove('Intron')
+
     for id in ids:
         if progress_bar.stop_fetching.is_set():
             return
@@ -41,15 +47,15 @@ def fetch(path, ids, regions, progress_bar):
                         if progress_bar.stop_fetching.is_set():
                             return
                         kingdom = path.split(os.sep)[0]
-                        src.analyse.analyse_bornes(str(feature.location), record.seq, False, path, feature.type, get_nc(id, kingdom), progress_bar.log)
+                        src.analyse.analyse_bornes(str(feature.location), record.seq, create_intron, path, feature.type, get_nc(id, kingdom), progress_bar.log)
             progress_bar.log.write(f"Fetched sequence {id}")
             #except Exception as e:
             #    progress_bar.log.write(f"Erreur lors de la récupération: {e}")
             #finally:
-            #    if handle is not None:
-            #        handle.close()
+                #if handle is not None:
+                #    handle.close()
                 # On inscrit la séquence comme traitée pour cette région
-            #    save_processed_info((id, region))
+            save_processed_info((id, region))
 
 
 def fetch_all_sequence(paths, regions, progress_bar):

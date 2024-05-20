@@ -14,10 +14,14 @@ import threading
 from queue import Queue
 path_queue = Queue()
 
+emails = ["martin.deniau@etu.unistra.fr", "deniau.martin@gmail.com"]
 
-def fetch(path, ids, regions, progress_bar):
-    Entrez.email = "martin.deniau@etu.unistra.fr"
-    
+
+def fetch(path, ids, regions, progress_bar, email):
+    Entrez.email = email
+
+    print(email)
+
     # Trace des séquences et régions traitées (pour optimisation)
     processed_info = load_processed_info()
 
@@ -39,23 +43,23 @@ def fetch(path, ids, regions, progress_bar):
 
             progress_bar.log.write(f"Fetching sequence {id}")
             handle = None
-            #try:
-            handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
-            for record in SeqIO.parse(handle, "gb"):
-                for feature in record.features:
-                    if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
-                        if progress_bar.stop_fetching.is_set():
-                            return
-                        kingdom = path.split(os.sep)[0]
-                        src.analyse.analyse_bornes(str(feature.location), record.seq, create_intron, path, feature.type, get_nc(id, kingdom), progress_bar.log)
-            progress_bar.log.write(f"Fetched sequence {id}")
-            #except Exception as e:
-            #    progress_bar.log.write(f"Erreur lors de la récupération: {e}")
-            #finally:
-                #if handle is not None:
-                #    handle.close()
-                # On inscrit la séquence comme traitée pour cette région
-            save_processed_info((id, region))
+            try:
+                handle = Entrez.efetch(db="nucleotide", id=id, rettype="gbwithparts", retmode="text", timeout=10)
+                for record in SeqIO.parse(handle, "gb"):
+                    for feature in record.features:
+                        if remove_accents_and_lowercase(feature.type) == remove_accents_and_lowercase(region):
+                            if progress_bar.stop_fetching.is_set():
+                                return
+                            kingdom = path.split(os.sep)[0]
+                            src.analyse.analyse_bornes(str(feature.location), record.seq, create_intron, path, feature.type, get_nc(id, kingdom), progress_bar.log)
+                progress_bar.log.write(f"Fetched sequence {id}")
+            except Exception as e:
+                progress_bar.log.write(f"Erreur lors de la récupération: {e}")
+            finally:
+                if handle is not None:
+                    handle.close()
+                 #On inscrit la séquence comme traitée pour cette région
+                save_processed_info((id, region))
 
 
 def fetch_all_sequence(paths, regions, progress_bar):
@@ -83,8 +87,9 @@ def fetch_all_sequence(paths, regions, progress_bar):
 
         # Lancement des threads (max 4 sinon surcharge du serveur)
         max_threads = 4
-        for _ in range(max_threads):
-            thread = threading.Thread(target=process_paths, args=(regions, progress_bar))
+        for i in range(max_threads):
+            email = emails[i%len(emails)]
+            thread = threading.Thread(target=process_paths, args=(regions, progress_bar, email))
             progress_bar.active_threads.append(thread)
             thread.start()
 
@@ -98,7 +103,7 @@ def fetch_all_sequence(paths, regions, progress_bar):
 
 
 #Fonction de fetch exécutée par les threads
-def process_paths(regions, progress_bar):
+def process_paths(regions, progress_bar, email):
     if "All" in regions:
         regions.remove("All")
     while not progress_bar.stop_fetching.is_set():
@@ -106,7 +111,7 @@ def process_paths(regions, progress_bar):
         if path is None:  
             break
         ids = path_to_ids(path)
-        fetch(path, ids, regions, progress_bar)
+        fetch(path, ids, regions, progress_bar, email)
         path_queue.task_done()
         progress_bar.update_progress()
     

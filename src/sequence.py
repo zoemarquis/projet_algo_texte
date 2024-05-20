@@ -14,9 +14,10 @@ import threading
 from queue import Queue
 path_queue = Queue()
 
+emails = ["martin.deniau@etu.unistra.fr", "deniau.martin@gmail.com"]
 
-def fetch(path, ids, regions, progress_bar):
-    Entrez.email = "martin.deniau@etu.unistra.fr"
+def fetch(path, ids, regions, progress_bar, email):
+    Entrez.email = email
     
     # Trace des séquences et régions traitées (pour optimisation)
     processed_info = load_processed_info()
@@ -83,8 +84,9 @@ def fetch_all_sequence(paths, regions, progress_bar):
 
         # Lancement des threads (max 4 sinon surcharge du serveur)
         max_threads = 4
-        for _ in range(max_threads):
-            thread = threading.Thread(target=process_paths, args=(regions, progress_bar))
+        for i in range(max_threads):
+            email = emails[i%len(emails)]
+            thread = threading.Thread(target=process_paths, args=(regions, progress_bar, email))
             progress_bar.active_threads.append(thread)
             thread.start()
 
@@ -98,7 +100,7 @@ def fetch_all_sequence(paths, regions, progress_bar):
 
 
 #Fonction de fetch exécutée par les threads
-def process_paths(regions, progress_bar):
+def process_paths(regions, progress_bar, email):
     if "All" in regions:
         regions.remove("All")
     while not progress_bar.stop_fetching.is_set():
@@ -106,7 +108,7 @@ def process_paths(regions, progress_bar):
         if path is None:  
             break
         ids = path_to_ids(path)
-        fetch(path, ids, regions, progress_bar)
+        fetch(path, ids, regions, progress_bar, email)
         path_queue.task_done()
         progress_bar.update_progress()
     

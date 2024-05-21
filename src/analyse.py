@@ -105,7 +105,7 @@ def transforme_bornes_simple(txt, borne_min, borne_max, sep, txt_join=None, stra
                 print('borne_inf', borne_inf, ' borne_sup ', borne_sup)
             return (borne_inf, borne_sup)
         else:
-            logger.write(f'Parsing Error : Bornes non ordonnées ({borne_min} >= {borne_inf} or {borne_sup} >= {borne_max}) ({txt_join if txt_join else txt})')
+            logger.write(f'Parsing Error : Bornes non ordonnées ({borne_min} >= {borne_inf} and {borne_sup} >= {borne_max}) ({txt_join if txt_join else txt})')
             return 0
 
 
@@ -122,8 +122,8 @@ def transforme_bornes_multiple(txt, borne_max):
     for borne in txt.split(', '):
         translation_table = str.maketrans('', '', '](+)[-')
         borne = '(' + borne.translate(translation_table) + ')'
-        if not strand_pos: res = transforme_bornes_simple(borne, borne_max, borne_courante, ':', txt, strand_pos)
-        else: res = transforme_bornes_simple(borne, borne_courante, borne_max, ':', txt, strand_pos)
+        if not strand_pos: res = transforme_bornes_simple(borne, borne_max, 0, ':', txt, strand_pos)
+        else: res = transforme_bornes_simple(borne, 0, borne_max, ':', txt, strand_pos)
         if not res: return 0
         
         bornes += [res]

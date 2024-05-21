@@ -50,6 +50,7 @@ def get_tree():
     global kingdoms_file
 
     if update():
+        print("Création de l'arborescence")
         # Mise à jour de la date de notre arborescence
         with open(".date", "wb") as f:
             f.write(str(date.today()).encode('utf-8'))

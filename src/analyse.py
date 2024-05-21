@@ -97,10 +97,10 @@ def transforme_bornes_simple(txt, borne_min, borne_max, sep, txt_join=None, stra
                 print('borne_inf', borne_inf, ' borne_sup ', borne_sup)
             return (borne_inf, borne_sup)
         else:
-            logger.write(f'Parsing Error: Bornes non ordonnées ({borne_min} <= {borne_inf} < {borne_sup} <= {borne_max}) ({txt_join if txt_join else txt})')
+            logger.write(f'Parsing Error: Bornes non ordonnées ({borne_min} <= {borne_inf} or {borne_sup} <= {borne_max}) ({txt_join if txt_join else txt})')
             return 0
     else:
-        if borne_min >= borne_inf or borne_sup >= borne_max:
+        if borne_min >= borne_inf and borne_sup >= borne_max:
             if verbose > 1:
                 print('borne_inf', borne_inf, ' borne_sup ', borne_sup)
             return (borne_inf, borne_sup)

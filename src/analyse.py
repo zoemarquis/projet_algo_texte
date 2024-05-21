@@ -50,7 +50,7 @@ def get_complement(borne, genome):
 
     for nucl in liste:
         if nucl not in ('A', 'C', 'G', 'T'):
-            logger.write(f'Analyse Error: {nucl} not in A,C,G,T')
+            logger.write(f'Analysis Error: {nucl} not in A,C,G,T')
             return 0
         chaine = complement[nucl] + chaine
 

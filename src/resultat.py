@@ -48,14 +48,22 @@ def create_result(path, region, bornes, seq, nc, operation, nb_intron, bornes_in
     logger = log
 
     try:
+        valid_start_codons = {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}
+        valid_stop_codons = {'TAA', 'TAG', 'TGA'}
         if region == 'CDS':
             if isinstance(seq, list):
-                if seq[0][:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
+                if seq[0][:3] not in valid_start_codons:
                     logger.write(f'Analysis Error : Illegal Start CDS {seq[0][:3]}')
                     return 0
+                if seq[-1][-3:] not in valid_stop_codons:
+                    logger.write(f'Analysis Error : Illegal Stop CDS {seq[-1][-3:]}')
+                    return 0
             else:
-                if seq[:3] not in {'ATG', 'CTG', 'TTG', 'GTG', 'ATA', 'ATC', 'ATT', 'TTA'}:
+                if seq[:3] not in valid_start_codons:
                     logger.write(f'Analysis Error : Illegal Start CDS {seq[:3]}')
+                    return 0
+                if seq[-3:] not in valid_stop_codons:
+                    logger.write(f'Analysis Error : Illegal Stop CDS {seq[-3:]}')
                     return 0
     except:
         return 0

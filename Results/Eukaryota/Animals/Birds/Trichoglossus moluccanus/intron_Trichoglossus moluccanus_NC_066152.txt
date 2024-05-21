@@ -1,0 +1,2 @@
+intron Trichoglossus moluccanus NC_066152: join(9512..9684, 9686..9862) Intron 1
+C

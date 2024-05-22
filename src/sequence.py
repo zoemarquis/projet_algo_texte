@@ -26,13 +26,14 @@ def fetch(path, ids, regions, progress_bar, email):
 
     if 'Intron' in regions:
         create_intron = True
-        regions.remove('Intron')
 
     for id in ids:
         if progress_bar.stop_fetching.is_set():
             return
 
         for region in regions:
+            if region == 'Intron':
+                continue
             # Si la séquence a déjà été traitée pour cette région, on ignore
             if (id, region) in processed_info:
                 progress_bar.log.write(f"Skipping already processed ID {id} for region {region}")
